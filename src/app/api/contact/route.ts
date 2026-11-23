@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
-import { validateContact } from "@/lib/contact";
+import { validateContact, type ContactInput } from "@/lib/contact";
+import { buildAutoReply, buildNotification, mailConfigFromEnv, sendEmail } from "@/lib/mailer";
+import { site } from "@/content/site";
 
 /**
  * Contact endpoint.
- * Delivery is provider-agnostic: set CONTACT_WEBHOOK_URL (e.g. a Slack/Discord/Make/Zapier webhook
- * or your own mail relay). Without it the endpoint validates and answers 503 so the UI can fall back
- * to a mailto link — no message is silently dropped.
+ * - RESEND_API_KEY set → enquiry is emailed to CONTACT_TO_EMAIL (reply-to = visitor), plus an optional
+ *   confirmation to the visitor (CONTACT_AUTOREPLY=true).
+ * - CONTACT_WEBHOOK_URL set → Slack/Discord/Make ping (primary channel if email isn't configured).
+ * - Neither → 503 so the UI falls back to a mailto link. No message is silently dropped.
  */
 
 const WINDOW_MS = 10 * 60 * 1000;
@@ -41,26 +44,41 @@ export async function POST(req: Request) {
   // Honeypot: pretend success for bots.
   if (result.data.website) return NextResponse.json({ ok: true });
 
+  const data = result.data;
+  const mail = mailConfigFromEnv(process.env, site.email);
   const webhook = process.env.CONTACT_WEBHOOK_URL;
-  if (!webhook) {
+  if (!mail && !webhook) {
     return NextResponse.json({ ok: false, error: "not-configured" }, { status: 503 });
   }
 
-  const { name, email, company, type, message } = result.data;
+  // Primary channel: email if configured, otherwise the webhook. Failure here → 502 → UI mailto fallback.
   try {
-    const res = await fetch(webhook, {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        text: `New project enquiry — ${type}\nFrom: ${name} <${email}>${company ? ` (${company})` : ""}\n\n${message}`,
-      }),
-      signal: AbortSignal.timeout(8000),
-    });
-    if (!res.ok) throw new Error(`webhook ${res.status}`);
+    if (mail) await sendEmail(mail.apiKey, buildNotification(data, mail));
+    else await postWebhook(webhook!, data);
   } catch (err) {
     // Log metadata only — never the message content.
-    console.error("contact delivery failed", { type, error: err instanceof Error ? err.message : "unknown" });
+    console.error("contact delivery failed", { type: data.type, error: err instanceof Error ? err.message : "unknown" });
     return NextResponse.json({ ok: false, error: "delivery-failed" }, { status: 502 });
   }
+
+  // Best-effort extras: the enquiry is already delivered, so these never fail the request.
+  const extras: Promise<void>[] = [];
+  if (mail?.autoReply) extras.push(sendEmail(mail.apiKey, buildAutoReply(data, mail)));
+  if (mail && webhook) extras.push(postWebhook(webhook, data));
+  for (const r of await Promise.allSettled(extras)) {
+    if (r.status === "rejected") console.warn("contact extra failed", { error: r.reason instanceof Error ? r.reason.message : "unknown" });
+  }
   return NextResponse.json({ ok: true });
+}
+
+async function postWebhook(url: string, d: ContactInput) {
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({
+      text: `New project enquiry — ${d.type}\nFrom: ${d.name} <${d.email}>${d.company ? ` (${d.company})` : ""}\n\n${d.message}`,
+    }),
+    signal: AbortSignal.timeout(8000),
+  });
+  if (!res.ok) throw new Error(`webhook ${res.status}`);
 }

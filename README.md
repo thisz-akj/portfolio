@@ -33,7 +33,7 @@ npm test
 ## Before publishing (TODOs for the owner)
 - `src/content/site.ts`: the email, social URLs, location and experience entries are placeholders.
 - `src/content/clients.ts`: the client tiles are placeholders. Add approved logos under `public/clients/`.
-- Set `NEXT_PUBLIC_SITE_URL` and optionally `CONTACT_WEBHOOK_URL` (see `.env.example`).
+- Set `NEXT_PUBLIC_SITE_URL` and the contact-form email vars (`RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`, `CONTACT_AUTOREPLY`; optional `CONTACT_WEBHOOK_URL`) (see `.env.example`).
 - Fonts: to use a Dirtyline Studio face, follow the instructions in `src/lib/fonts.ts`.
 - Your product media: set `media` on a solution in `src/content/solutions.ts` to replace the "In the wild" placeholder in its side panel.
 - Stock photos and video are CC0 or Mixkit-licensed; see `docs/credits.md`.
