@@ -16,8 +16,8 @@
 type Listener = (on: boolean) => void;
 
 const PREF_KEY = "sound-pref";
-const MASTER = 0.9;
-const AMBIENT_LEVEL = 0.05;
+const MASTER = 1.75; // ~+6 dB over the original 0.9 (louder effects)
+const AMBIENT_LEVEL = 0.026; // compensates MASTER so the pad stays at its original loudness (0.05 × 0.9 ÷ 1.75)
 
 // A calm, unresolved progression (A minor 9 → F maj7 → C add9 → G sus2), low register.
 const CHORDS = [
