@@ -50,6 +50,7 @@ export function valueSchema(field: FieldMeta, op: Op): z.ZodType | null {
       return op === "between" ? z.tuple([num, num]).refine(ordered, "min must be ≤ max") : num;
     case "date":
       if (op === "preset") return z.enum(DATE_PRESETS);
+      if (op === "older_than" || op === "within_last") return z.number().int().min(0).max(3650);
       return op === "between" ? z.tuple([isoDate, isoDate]).refine(ordered, "start must be ≤ end") : isoDate;
     case "relation":
       return z.array(z.number().int().positive()).min(1).max(LIMITS.list);

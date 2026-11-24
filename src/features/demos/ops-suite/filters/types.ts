@@ -10,7 +10,7 @@ export const OPS = {
   enum: ["in", "not_in", "is_empty", "is_not_empty"],
   number: ["eq", "neq", "gt", "gte", "lt", "lte", "between", "is_empty", "is_not_empty"],
   money: ["eq", "neq", "gt", "gte", "lt", "lte", "between", "is_empty", "is_not_empty"],
-  date: ["preset", "on", "before", "after", "between", "is_empty", "is_not_empty"],
+  date: ["preset", "older_than", "within_last", "on", "before", "after", "between", "is_empty", "is_not_empty"],
   boolean: ["is_true", "is_false"],
   relation: ["in", "not_in", "is_empty", "is_not_empty"],
   tags: ["has_any", "has_all", "has_none"],
@@ -37,6 +37,8 @@ export const OP_LABELS: Record<Op, string> = {
   lte: "≤",
   between: "between",
   preset: "in",
+  older_than: "more than … days ago",
+  within_last: "in the last … days",
   on: "on",
   before: "before",
   after: "after",
@@ -119,6 +121,8 @@ export interface Option {
   value: string;
   label: string;
   color?: string;
+  /** parent key for dependent pickers, e.g. a contact's company id */
+  group?: string;
 }
 
 /** Client-safe description of one field of an entity. */
@@ -158,6 +162,10 @@ export interface EntityMeta {
   fields: FieldMeta[];
   defaultSort: SortKey[];
   views: SavedView[];
+  /** bulk actions offered on selected rows */
+  bulk?: { owner?: boolean; enums?: string[]; tags?: boolean };
+  /** Kanban board grouped by an enum field, summing a money field */
+  board?: { field: string; sum: string; closed?: string[] };
 }
 
 export const emptyGroup = (): Group => ({ combinator: "and", conditions: [] });

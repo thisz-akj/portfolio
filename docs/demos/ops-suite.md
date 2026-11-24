@@ -7,7 +7,8 @@ One Postgres database shared by a CRM, an ERP and a data portal, browsed through
 - [x] 0 Setup: Drizzle, Postgres client, migrations, seed/reset scripts, portal shell (`(portal)` route group)
 - [x] 1 Full schema (22 tables) + deterministic seed (~16k rows)
 - [x] 2 Filter engine + DataTable (Companies)
-- [ ] 3 CRM · [ ] 4 ERP + cross-module flows · [ ] 5 Data portal + dashboard
+- [x] 3 CRM: companies, contacts, leads, deals (+ Kanban), record drawer & pages, forms, bulk actions, lead conversion, audit
+- [ ] 4 ERP + cross-module flows · [ ] 5 Data portal + dashboard
 - [ ] 6 Hardening (rate limit, nightly reset, roles) · [ ] 7 Portfolio integration · [ ] 8 AI "ask your data"
 
 ## Database
@@ -76,6 +77,28 @@ URL is the state: `?q=…&f=<filter JSON>&sort=-field,field&page=&size=&cols=a,b
   formula-injection safe, 10k row cap
 
 Adding an entity: write its meta + server config, register both, flip `ready` in `nav.ts`.
+Relative date ops `older_than` / `within_last` take a number of days (e.g. "no order in 90 days").
+
+## Records, editing & audit
+- **Drawer** (`ui/record/RecordDrawer.tsx`): click a row's name → view/edit/create without leaving the list (Ctrl/⌘-click opens
+  the full page). Related records open in the same drawer. **Full page**: `/<entity>/<id>` (`RecordPage`).
+- **Detail** (`data/detail.ts`): all fields, related sections with "View all" links into filtered lists, and a timeline merging
+  activities (calls, meetings, open tasks first) with audit events for the record.
+- **Forms** (`entities/forms.ts`): one definition per entity (keys = Drizzle columns), validated in the browser and again on the
+  server (`validateForm`). Supports ₹ shorthand, GSTIN/phone patterns, dependent pickers (deal contact ⊂ company), conditional
+  fields (lost reason only when stage = lost).
+- **Writes** (`data/mutate.ts`, via server actions in `data/actions.ts`): one transaction per request; entity rules
+  (deal stage → default probability, closedAt stamped/cleared, lost reason required, contact must belong to the company;
+  one primary contact per company); audit row per changed record with a before/after diff of changed fields only and a
+  readable summary. Unique GSTIN violations surface as a field error.
+- **Bulk actions** (`ui/table/BulkBar.tsx`): assign owner, set lifecycle/status/stage, add/remove tags — allow-listed per
+  entity in `meta.bulk`, max 500 rows, all-or-nothing.
+- **Lead conversion**: lead → prospect company + primary contact (+ optional qualified deal); lead marked converted and linked.
+- **Kanban** (`/<entity>/board`, entities with `meta.board`; deals today): columns per stage with count and ₹ total under the
+  current search/filters, top 40 cards per column, drag-and-drop or a "Move to" picker per card (keyboard friendly);
+  moving to Lost asks for a reason; optimistic with rollback on failure.
+- Actor: the first admin user for now (`currentActor`); the Phase 6 role switcher replaces it. Writes are not rate-limited
+  yet — Phase 6 adds that before any public deploy.
 
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)

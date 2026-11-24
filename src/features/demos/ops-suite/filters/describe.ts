@@ -14,6 +14,7 @@ export function describeCondition(meta: EntityMeta, c: Condition, dynamic: Recor
   const v = c.value;
   let value: string;
   if (c.op === "preset") value = DATE_PRESET_LABELS[v as DatePreset] ?? String(v);
+  else if (c.op === "older_than" || c.op === "within_last") return { field, op: c.op === "older_than" ? "more than" : "in the last", value: `${v} days${c.op === "older_than" ? " ago" : ""}` };
   else if (c.op === "between" && Array.isArray(v)) value = `${one(v[0])} – ${one(v[1])}`;
   else if (Array.isArray(v)) {
     const labels = v.map(label);

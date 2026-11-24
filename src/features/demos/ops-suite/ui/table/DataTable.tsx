@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowDown,
   ArrowUp,
@@ -13,6 +15,7 @@ import {
   ChevronsRight,
   Columns3,
   Download,
+  Plus,
   RotateCcw,
   Rows3,
   Rows4,
@@ -23,6 +26,9 @@ import {
 import { getEntityMeta } from "../../entities";
 import { countConditions, parseListQuery, serializeListQuery } from "../../filters/parse";
 import { PAGE_SIZES, defaultQuery, fieldOf, visibleColumns, type EntityMeta, type ListQuery, type Option, type SortKey } from "../../filters/types";
+import { PORTAL_BASE } from "../../nav";
+import { RecordDrawer, type DrawerTarget } from "../record/RecordDrawer";
+import { BulkBar } from "./BulkBar";
 import { Cell } from "./Cell";
 import { FilterBar } from "./FilterBar";
 import { Popover } from "./Popover";
@@ -70,6 +76,14 @@ const viewKey = (meta: EntityMeta, q: ListQuery) => serializeListQuery(meta, { .
 export function DataTable({ entity, query: serverQuery, rows, total, facets, options }: DataTableProps) {
   const meta = getEntityMeta(entity)!;
   const { query, update, replace, isPending } = useListQuery(meta, serverQuery);
+  const router = useRouter();
+  const [drawer, setDrawer] = useState<DrawerTarget | null>(null);
+  const [notice, setNotice] = useState<{ text: string; ok: boolean } | null>(null);
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(null), 6000);
+    return () => clearTimeout(t);
+  }, [notice]);
   const cols = visibleColumns(meta, query.cols);
   const fields = cols.map((k) => fieldOf(meta, k)!);
 
@@ -246,6 +260,9 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
         </Popover>
 
         <div className="ops-toolbar-end">
+          <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
+            <Plus size={14} /> New {meta.singular}
+          </button>
           <Popover
             open={colsOpen}
             onOpenChange={setColsOpen}
@@ -320,6 +337,26 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
             </button>
           </span>
         )}
+        {selected.size > 0 && meta.bulk && (
+          <BulkBar
+            entity={entity}
+            meta={meta}
+            ids={[...selected]}
+            options={options}
+            onDone={(text, ok) => {
+              setNotice({ text, ok });
+              if (ok) {
+                setSelected(new Set());
+                router.refresh();
+              }
+            }}
+          />
+        )}
+        {notice && (
+          <span className={notice.ok ? "ops-notice" : "ops-error"} role="status">
+            {notice.text}
+          </span>
+        )}
       </div>
 
       <div className="ops-scroll" tabIndex={0} role="region" aria-label={`${meta.label} table`}>
@@ -371,7 +408,21 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
                 </td>
                 {fields.map((f) => (
                   <td key={f.key} className={f.align === "end" ? "is-end" : undefined}>
-                    <Cell field={f} row={r} options={options[f.key]} />
+                    {f.primary ? (
+                      <Link
+                        href={`${PORTAL_BASE}/${entity}/${r.id}`}
+                        className="ops-row-link"
+                        onClick={(e) => {
+                          if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
+                          e.preventDefault();
+                          setDrawer({ entity, id: r.id });
+                        }}
+                      >
+                        <Cell field={f} row={r} options={options[f.key]} />
+                      </Link>
+                    ) : (
+                      <Cell field={f} row={r} options={options[f.key]} />
+                    )}
                   </td>
                 ))}
               </tr>
@@ -387,6 +438,8 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
           </div>
         )}
       </div>
+
+      {drawer && <RecordDrawer target={drawer} onClose={() => setDrawer(null)} onChanged={() => router.refresh()} />}
 
       <nav className="ops-pager" aria-label="Pagination">
         <span>

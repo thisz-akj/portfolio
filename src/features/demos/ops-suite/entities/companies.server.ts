@@ -1,7 +1,8 @@
-import { asc, sql } from "drizzle-orm";
-import { companies, tags, users } from "../db/schema";
+import { sql } from "drizzle-orm";
+import { companies } from "../db/schema";
 import { istDate, outer, tagsSelect, type EntityServer } from "../filters/toSql";
 import { companiesMeta } from "./companies";
+import { loadOwners, loadTags } from "./options.server";
 
 /** Companies: base columns plus live aggregates from CRM (deals) and ERP (orders, invoices). Server-only. */
 
@@ -48,13 +49,7 @@ export const companiesServer: EntityServer = {
     updatedAt: { expr: istDate(companies.updatedAt), select: companies.updatedAt },
   },
   options: async (db) => {
-    const [owners, tagRows] = await Promise.all([
-      db.select({ id: users.id, name: users.name }).from(users).where(sql`${users.role} in ('sales', 'admin')`).orderBy(asc(users.name)),
-      db.select({ name: tags.name, color: tags.color }).from(tags).orderBy(asc(tags.name)),
-    ]);
-    return {
-      owner: owners.map((u) => ({ value: String(u.id), label: u.name })),
-      tags: tagRows.map((t) => ({ value: t.name, label: t.name, color: t.color })),
-    };
+    const [owner, tags] = await Promise.all([loadOwners(db), loadTags(db)]);
+    return { owner, tags };
   },
 };

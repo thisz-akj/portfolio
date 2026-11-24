@@ -48,6 +48,7 @@ const draftFrom = (meta: EntityMeta, c?: Condition): Draft => {
     text: typeof v === "string" && !pair ? v : "",
     list: Array.isArray(v) && !pair ? v.map(String) : [],
     a: pair ? String(pair[0]) : typeof v === "number" ? String(v) : type === "date" && typeof v === "string" && c?.op !== "preset" ? v : "",
+    // (older_than / within_last store a number of days, handled by the typeof v === "number" branch)
     b: pair ? String(pair[1]) : "",
   };
 };
@@ -82,7 +83,10 @@ function toCondition(meta: EntityMeta, d: Draft): Condition | null {
       break;
     }
     case "date":
-      value = d.op === "preset" ? d.text || "last_30_days" : d.op === "between" ? [d.a, d.b] : d.a;
+      if (d.op === "older_than" || d.op === "within_last") {
+        if (!/^\d+$/.test(d.a.trim())) return null;
+        value = Number(d.a);
+      } else value = d.op === "preset" ? d.text || "last_30_days" : d.op === "between" ? [d.a, d.b] : d.a;
       break;
     default:
       return null;
@@ -207,7 +211,14 @@ export function ConditionEditor({
           )}
 
           {field.type === "date" &&
-            (d.op === "preset" ? (
+            (d.op === "older_than" || d.op === "within_last" ? (
+              <div className="ops-cond-pair">
+                <input inputMode="numeric" aria-label="Number of days" placeholder="e.g. 90" value={d.a} onChange={(e) => set({ a: e.target.value })} />
+                <span className="ops-hint" style={{ alignSelf: "center" }}>
+                  days{d.op === "older_than" ? " ago" : ""}
+                </span>
+              </div>
+            ) : d.op === "preset" ? (
               <select aria-label="Period" value={d.text || "last_30_days"} onChange={(e) => set({ text: e.target.value })}>
                 {DATE_PRESETS.map((p) => (
                   <option key={p} value={p}>

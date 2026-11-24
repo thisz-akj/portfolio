@@ -21,7 +21,7 @@ export const portalNav: NavGroup[] = [
   { label: "Overview", items: [item("Dashboard", "", true)] },
   {
     label: "CRM",
-    items: [item("Companies", "companies", true), item("Contacts", "contacts"), item("Leads", "leads"), item("Deals", "deals")],
+    items: [item("Companies", "companies", true), item("Contacts", "contacts", true), item("Leads", "leads", true), item("Deals", "deals", true)],
   },
   {
     label: "ERP",

@@ -42,6 +42,7 @@ export const companiesMeta: EntityMeta = {
   label: "Companies",
   singular: "company",
   defaultSort: [{ field: "revenue12m", dir: "desc" }],
+  bulk: { owner: true, enums: ["lifecycle"], tags: true },
   fields: [
     { key: "name", label: "Company", type: "text", primary: true, visible: true },
     { key: "lifecycle", label: "Lifecycle", type: "enum", options: LIFECYCLE, facet: true, visible: true },
@@ -91,6 +92,11 @@ export const companiesMeta: EntityMeta = {
         },
         sort: [{ field: "pipeline", dir: "desc" }],
       },
+    },
+    {
+      id: "dormant",
+      label: "Customers with no order in 90 days",
+      query: { filter: { combinator: "and", conditions: [{ field: "lifecycle", op: "in", value: ["customer"] }, { field: "lastOrder", op: "older_than", value: 90 }] }, sort: [{ field: "lastOrder", dir: "asc" }] },
     },
     {
       id: "south-customers",

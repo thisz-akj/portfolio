@@ -1,6 +1,6 @@
 import { and, asc, desc, getTableName, inArray, not, or, sql, type SQL } from "drizzle-orm";
 import type { AnyPgColumn, PgTable } from "drizzle-orm/pg-core";
-import { presetRange } from "./dates";
+import { addDaysISO, presetRange, todayIST } from "./dates";
 import type { Db } from "../db/client";
 import { fieldOf, isGroup, type Condition, type DatePreset, type EntityMeta, type Group, type ListQuery, type Option } from "./types";
 
@@ -130,6 +130,10 @@ export function conditionToSql(ent: EntityServer, c: Condition, now = new Date()
           const r = presetRange(v as DatePreset, now);
           return and(r.from ? sql`${e} >= ${r.from}::date` : undefined, r.to ? sql`${e} < ${r.to}::date` : undefined);
         }
+        case "older_than":
+          return sql`${e} < ${addDaysISO(todayIST(now), -Number(v))}::date`;
+        case "within_last":
+          return sql`${e} >= ${addDaysISO(todayIST(now), -Number(v))}::date`;
         case "on":
           return sql`${e} = ${v}::date`;
         case "before":
