@@ -6,7 +6,7 @@ One Postgres database shared by a CRM, an ERP and a data portal, browsed through
 ## Status by phase
 - [x] 0 Setup: Drizzle, Postgres client, migrations, seed/reset scripts, portal shell (`(portal)` route group)
 - [x] 1 Full schema (22 tables) + deterministic seed (~16k rows)
-- [ ] 2 Filter engine + DataTable
+- [x] 2 Filter engine + DataTable (Companies)
 - [ ] 3 CRM · [ ] 4 ERP + cross-module flows · [ ] 5 Data portal + dashboard
 - [ ] 6 Hardening (rate limit, nightly reset, roles) · [ ] 7 Portfolio integration · [ ] 8 AI "ask your data"
 
@@ -54,6 +54,28 @@ are invoiced → payments by each customer's payment behaviour (good/slow/bad) �
 speciality; reorder levels from the last 90 days of demand; reservations from confirmed orders; ~30 days of audit events.
 Websites and emails use the reserved `.example` domain. `db/seed/index.ts` truncates and refills every table in one
 transaction, then resets id sequences. `tests/ops-suite-db.test.ts` checks determinism and the money/status invariants.
+
+## Lists & filters
+URL is the state: `?q=…&f=<filter JSON>&sort=-field,field&page=&size=&cols=a,b`. `f` is compact JSON — an array of
+`[field, op, value?]` (AND) or `{"or":[…]}` / `{"and":[…]}` groups (max depth 2, max 20 conditions).
+
+- `filters/types.ts` — field types, operators per type, ListQuery, EntityMeta (client-safe)
+- `filters/parse.ts` — URL ⇄ ListQuery; every condition validated with zod against field metadata; invalid parts dropped
+- `filters/toSql.ts` — server-only: condition tree → Drizzle SQL, search, sort (+ id tiebreak), facets. Values are always
+  bound parameters; only fields declared in an entity's server config reach SQL. **Use `outer(col)` for any outer-row column
+  inside a correlated subquery** — Drizzle drops the table name in single-table queries, which rebinds e.g. `"id"` to the
+  subquery's own table.
+- `filters/dates.ts` — presets in IST with Indian FY quarters (Q1 = Apr–Jun)
+- `entities/<name>.ts` (meta: fields, options, default columns, saved views) + `entities/<name>.server.ts` (field → SQL,
+  incl. computed aggregates like revenue (12 mo), outstanding, open deals) — register in `entities/index.ts` and `entities/server.ts`
+- `data/list.ts` — page + total + facet counts (each facet ignores its own filter) + relation/tag options; CSV export rows
+- `ui/table/` — DataTable (search `/`, saved views incl. per-browser custom views, column show/hide/reorder, multi-sort
+  with shift-click, selection, density, pagination), FilterBar (chips, match all/any), ConditionEditor (typed value
+  editors, facet counts, ₹ shorthand like 5L / 1.2Cr)
+- `GET /api/demos/ops-suite/<entity>/export` — CSV of the current view or `ids=`, labels not codes, BOM for Excel,
+  formula-injection safe, 10k row cap
+
+Adding an entity: write its meta + server config, register both, flip `ready` in `nav.ts`.
 
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)

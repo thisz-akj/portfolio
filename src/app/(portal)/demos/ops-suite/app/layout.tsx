@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { Sidebar } from "@/features/demos/ops-suite/ui/Sidebar";
 import "@/features/demos/ops-suite/ui/portal.css";
+import "@/features/demos/ops-suite/ui/table/table.css";
 
 export const metadata: Metadata = {
   title: "Ops Suite — CRM, ERP & data portal demo",
