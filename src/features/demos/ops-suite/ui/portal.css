@@ -41,8 +41,7 @@ a.ops-nav-link:hover { background: #161616; color: var(--white); }
 .ops-main { min-width: 0; display: flex; flex-direction: column; }
 .ops-top { display: flex; justify-content: space-between; align-items: center; gap: 1rem; height: 3.25rem; padding: 0 1.5rem; border-bottom: 1px solid var(--line); }
 .ops-badge { font-family: var(--f-mono); font-size: 0.7rem; color: var(--mid); border: 1px solid var(--line-2); border-radius: 999px; padding: 0.25rem 0.7rem; }
-.ops-persona { font-size: 0.8rem; color: var(--white); }
-.ops-persona em { font-style: normal; margin-left: 0.4rem; font-family: var(--f-mono); font-size: 0.68rem; color: var(--live); }
+.ops-persona select { max-width: 15rem; }
 .ops-content { padding: 1.75rem 1.5rem 3rem; display: flex; flex-direction: column; gap: 1.25rem; }
 
 .ops-head h1 { font-family: var(--f-display); font-style: italic; font-weight: 400; font-size: 2.2rem; line-height: 1.1; }

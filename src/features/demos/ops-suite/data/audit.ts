@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import type { Db } from "../db/client";
 import { auditLog, users } from "../db/schema";
 
@@ -14,8 +14,15 @@ export const AUDIT_NAME: Record<string, string> = {
 };
 export const auditName = (entity: string) => AUDIT_NAME[entity] ?? entity;
 
-/** The acting user. Phase 6 swaps this for the persona chosen in the role switcher. */
+/** The acting user: the persona picked in the top bar (admin outside a request). */
 export async function currentActor(db: Db | Tx): Promise<Actor> {
+  // look up through the caller's connection/transaction (PGlite has a single connection)
+  const { personaCookieId, PERSONA_EMAILS } = await import("../auth/persona.server");
+  const id = await personaCookieId();
+  if (id) {
+    const [p] = await db.select({ id: users.id, name: users.name }).from(users).where(and(eq(users.id, id), inArray(users.email, PERSONA_EMAILS)));
+    if (p) return p;
+  }
   const [u] = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, "admin")).orderBy(users.id).limit(1);
   return u ?? null;
 }

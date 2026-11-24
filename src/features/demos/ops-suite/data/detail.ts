@@ -376,7 +376,7 @@ async function workflow(db: Db, entity: string, id: number): Promise<{ actions: 
       return {
         editable: false,
         actions: importable ? [{ key: "import", label: "Import CSV", tone: "primary", input: "import" }] : [],
-        context: { datasetId: id, slug: ds.slug, schema: JSON.stringify(ds.schema.columns), sample: `/api/demos/ops-suite/datasets/${ds.slug}/sample` },
+        context: { datasetId: id, slug: ds.slug, target: ds.targetEntity, schema: JSON.stringify(ds.schema.columns), sample: `/api/demos/ops-suite/datasets/${ds.slug}/sample` },
       };
     }
     case "payments":

@@ -11,6 +11,8 @@ import { PORTAL_BASE } from "../../nav";
 import { Cell, Pill } from "../table/Cell";
 import { ActionForm } from "./ActionForms";
 import { ImportWizard } from "./ImportWizard";
+import { canAction, canImport, canWrite, ROLE_LABEL } from "../../auth/permissions";
+import { usePersona } from "../Persona";
 import { Lines } from "./Lines";
 
 const KIND_ICON = { call: Phone, email: Mail, meeting: Users, note: StickyNote, task: SquareCheck, audit: CircleDot } as const;
@@ -35,6 +37,11 @@ export function RecordView({
   showOpenLink?: boolean;
 }) {
   const meta = getEntityMeta(detail.entity)!;
+  const { role } = usePersona();
+  const allowed = (a: RecordAction) => (a.input === "import" ? canImport(role, String(detail.context?.target ?? "")) : canAction(role, detail.entity, a.key));
+  const actions = detail.actions.filter(allowed);
+  const editable = detail.editable && canWrite(role, detail.entity);
+  const hidden = detail.actions.length - actions.length + (detail.editable && !editable ? 1 : 0);
   const [pending, start] = useTransition();
   const [active, setActive] = useState<RecordAction | null>(null);
   const [confirming, setConfirming] = useState<string | null>(null);
@@ -65,7 +72,7 @@ export function RecordView({
           {tags.length > 0 && tagsField && <Cell field={tagsField} row={detail.row} options={detail.options[tagsField.key]} />}
         </div>
         <div className="ops-record-actions">
-          {detail.actions.map((a) =>
+          {actions.map((a) =>
             confirming === a.key ? (
               <span key={a.key} className="ops-confirm" role="group" aria-label={a.confirm}>
                 {a.confirm}
@@ -89,16 +96,17 @@ export function RecordView({
               </button>
             ),
           )}
-          {detail.editable && (
+          {editable && (
             <button type="button" className="ops-btn" onClick={onEdit}>
               <Pencil size={14} /> Edit
             </button>
           )}
-          {onConvert && (
+          {onConvert && canAction(role, "leads", "convert") && (
             <button type="button" className="ops-btn" onClick={onConvert}>
               <ArrowRightLeft size={14} /> Convert lead
             </button>
           )}
+          {hidden > 0 && <span className="ops-hint">Some actions are hidden for {ROLE_LABEL[role]} — switch persona in the top bar</span>}
           {showOpenLink && (
             <Link className="ops-btn is-ghost" href={`${PORTAL_BASE}/${detail.entity}/${detail.id}`}>
               <ExternalLink size={14} /> Open page
@@ -144,7 +152,7 @@ export function RecordView({
           key={`${detail.id}-${detail.lines.rows.map((r) => `${r.id}:${r.qty}:${r.discountPct}`).join(",")}`}
           entity={detail.entity}
           id={detail.id}
-          block={detail.lines}
+          block={{ ...detail.lines, editable: detail.lines.editable && canWrite(role, detail.entity) }}
           onChanged={(text, ok) => {
             setNotice({ text, ok });
             if (ok) onChanged();

@@ -28,6 +28,8 @@ import { countConditions, parseListQuery, serializeListQuery } from "../../filte
 import { PAGE_SIZES, defaultQuery, fieldOf, visibleColumns, type EntityMeta, type ListQuery, type Option, type SortKey } from "../../filters/types";
 import { PORTAL_BASE } from "../../nav";
 import { forms } from "../../entities/forms";
+import { canWrite } from "../../auth/permissions";
+import { usePersona } from "../Persona";
 import { RecordDrawer, type DrawerTarget } from "../record/RecordDrawer";
 import { BulkBar } from "./BulkBar";
 import { Cell } from "./Cell";
@@ -78,6 +80,8 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
   const meta = getEntityMeta(entity)!;
   const { query, update, replace, isPending } = useListQuery(meta, serverQuery);
   const router = useRouter();
+  const { role } = usePersona();
+  const writable = canWrite(role, entity);
   const [drawer, setDrawer] = useState<DrawerTarget | null>(null);
   const [notice, setNotice] = useState<{ text: string; ok: boolean } | null>(null);
   useEffect(() => {
@@ -261,7 +265,7 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
         </Popover>
 
         <div className="ops-toolbar-end">
-          {forms[entity] && (
+          {forms[entity] && writable && (
             <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
               <Plus size={14} /> New {meta.singular}
             </button>
@@ -340,7 +344,7 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
             </button>
           </span>
         )}
-        {selected.size > 0 && meta.bulk && (
+        {selected.size > 0 && meta.bulk && writable && (
           <BulkBar
             entity={entity}
             meta={meta}
@@ -396,7 +400,7 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
           <tbody>
             {rows.map((r) => (
               <tr key={r.id} aria-selected={selected.has(r.id)}>
-                <td className="ops-check">
+                <td className="ops-check" data-label="">
                   <input
                     type="checkbox"
                     aria-label={`Select row ${r.id}`}
@@ -410,7 +414,7 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
                   />
                 </td>
                 {fields.map((f) => (
-                  <td key={f.key} className={f.align === "end" ? "is-end" : undefined}>
+                  <td key={f.key} className={`${f.align === "end" ? "is-end" : ""}${f.primary ? " is-primary-cell" : ""}`.trim() || undefined} data-label={f.label}>
                     {f.primary && meta.rowHref ? (
                       meta.rowHref(r) ? (
                         <Link href={meta.rowHref(r)!} className="ops-row-link">

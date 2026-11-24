@@ -13,6 +13,8 @@ import type { ListQuery, Option } from "../../filters/types";
 import { formatDate, formatINR } from "../../lib/format";
 import { PORTAL_BASE } from "../../nav";
 import { RecordDrawer, type DrawerTarget } from "../record/RecordDrawer";
+import { canWrite } from "../../auth/permissions";
+import { usePersona } from "../Persona";
 import { Pill } from "./Cell";
 import { FilterBar } from "./FilterBar";
 import { useListQuery } from "./useListQuery";
@@ -22,6 +24,7 @@ export function Board({ entity, query: serverQuery, columns: serverColumns, opti
   const meta = getEntityMeta(entity)!;
   const board = meta.board!;
   const router = useRouter();
+  const writable = canWrite(usePersona().role, entity);
   const { query, update, isPending } = useListQuery(meta, serverQuery);
   const [columns, setColumns] = useState(serverColumns);
   const [drag, setDrag] = useState<{ id: number; from: string } | null>(null);
@@ -86,9 +89,13 @@ export function Board({ entity, query: serverQuery, columns: serverColumns, opti
           <input type="search" value={text} onChange={(e) => setText(e.target.value)} placeholder={`Search ${meta.label.toLowerCase()}…`} aria-label={`Search ${meta.label.toLowerCase()}`} maxLength={200} />
         </div>
         <div className="ops-toolbar-end">
-          <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
-            <Plus size={14} /> New {meta.singular}
-          </button>
+          {writable ? (
+            <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
+              <Plus size={14} /> New {meta.singular}
+            </button>
+          ) : (
+            <span className="ops-hint">Read-only for your role — switch persona to move deals</span>
+          )}
         </div>
       </div>
       <FilterBar meta={meta} filter={query.filter} facets={{}} options={options} onChange={(filter) => update({ filter })} />
@@ -128,7 +135,7 @@ export function Board({ entity, query: serverQuery, columns: serverColumns, opti
                 <li
                   key={c.id}
                   className={`ops-card-k${drag?.id === c.id ? " is-dragging" : ""}`}
-                  draggable
+                  draggable={writable}
                   onDragStart={(e) => {
                     e.dataTransfer.effectAllowed = "move";
                     e.dataTransfer.setData("text/plain", String(c.id));
@@ -170,7 +177,7 @@ export function Board({ entity, query: serverQuery, columns: serverColumns, opti
                     <label className="ops-sr" htmlFor={`mv-${c.id}`}>
                       Move {String(c.title)} to
                     </label>
-                    <select id={`mv-${c.id}`} className="ops-card-move" value={col.value} onChange={(e) => move(c.id, col.value, e.target.value)}>
+                    <select id={`mv-${c.id}`} className="ops-card-move" value={col.value} disabled={!writable} onChange={(e) => move(c.id, col.value, e.target.value)}>
                       {columns.map((o) => (
                         <option key={o.value} value={o.value}>
                           {o.value === col.value ? `In ${o.label}` : `Move to ${o.label}`}

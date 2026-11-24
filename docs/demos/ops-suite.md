@@ -9,7 +9,7 @@ One Postgres database shared by a CRM, an ERP and a data portal, browsed through
 - [x] 2 Filter engine + DataTable (Companies)
 - [x] 3 CRM: companies, contacts, leads, deals (+ Kanban), record drawer & pages, forms, bulk actions, lead conversion, audit
 - [x] 4 ERP: products, inventory, sales/purchase orders, invoices, payments + order-to-cash and procure-to-stock flows · [ ] 5 Data portal + dashboard
-- [ ] 6 Hardening (rate limit, nightly reset, roles) · [ ] 7 Portfolio integration · [ ] 8 AI "ask your data"
+- [x] 6 Hardening: personas + role permissions, rate limits, nightly reset cron, phone card layout · [ ] 7 Portfolio integration · [ ] 8 AI "ask your data"
 
 ## Database
 Real Postgres everywhere the app runs; PGlite (in-process Postgres) only inside tests.
@@ -97,8 +97,7 @@ Relative date ops `older_than` / `within_last` take a number of days (e.g. "no o
 - **Kanban** (`/<entity>/board`, entities with `meta.board`; deals today): columns per stage with count and ₹ total under the
   current search/filters, top 40 cards per column, drag-and-drop or a "Move to" picker per card (keyboard friendly);
   moving to Lost asks for a reason; optimistic with rollback on failure.
-- Actor: the first admin user for now (`currentActor`); the Phase 6 role switcher replaces it. Writes are not rate-limited
-  yet — Phase 6 adds that before any public deploy.
+- Actor: the persona chosen in the top bar (see Personas below).
 
 ## ERP flows (`data/erp.ts`)
 Every flow runs in one transaction with row locks (`select … for update`), writes audit rows, and fails with a readable
@@ -147,6 +146,27 @@ Server-action body limit is raised to 2 MB in `next.config.ts` for uploads.
 ## Audit log
 `/audit-log` lists every audit event with the usual filters; rows link to the record they describe (`meta.rowHref`).
 
+## Personas, permissions & abuse limits
+- **Personas** (`auth/persona.server.ts`): no passwords — the top-bar switcher sets an `ops_persona` cookie
+  (Demo Admin, Riya Mehta · Sales, Kavya Iyer · Warehouse). Audit rows are attributed to the persona; outside a
+  request (tests, scripts, cron) it's the admin.
+- **Permissions** (`auth/permissions.ts`, shared by UI and server):
+
+  | | Admin | Sales | Warehouse |
+  |---|---|---|---|
+  | Edit/bulk CRM (companies, contacts, leads, deals), convert leads | ✓ | ✓ | — |
+  | Draft / confirm / cancel sales orders, create order from deal | ✓ | ✓ | — |
+  | Fulfil orders, products, purchase orders (send/receive/cancel), stock counts | ✓ | — | ✓ |
+  | Invoices & payments | ✓ | — | — |
+  | Imports | all | leads | stock counts |
+
+  The UI hides what a role can't do; every server action re-checks (`guard()` in `data/actions.ts`).
+- **Rate limits** (`lib/rateLimit.ts`): per client IP, 40 writes/minute and 8 import previews+runs per 10 minutes.
+  In-memory per server instance — on serverless each warm instance limits separately; the nightly reset bounds the rest.
+- **Nightly reset**: `vercel.json` cron (21:30 UTC = 03:00 IST) → `GET /api/demos/ops-suite/cron/reset` with
+  `Authorization: Bearer $CRON_SECRET` (constant-time compare; 503 when unset) → full re-seed in one transaction.
+- **Phones**: list tables turn into labelled cards under 640 px; the Kanban scrolls sideways by column.
+
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)
 - `src/features/demos/ops-suite/lib/format.ts` — `formatINR` (₹12,40,000 / ₹12.4L / ₹1.25Cr)
@@ -158,5 +178,6 @@ Server-action body limit is raised to 2 MB in `next.config.ts` for uploads.
 ## Vercel setup (when ready)
 1. Create a Neon project (or Vercel → Storage → Neon) and copy the pooled connection string.
 2. Add `DATABASE_URL` to the Vercel project env (Production + Preview).
-3. Locally, with that URL in `.env.local`: `npm run db:migrate && npm run db:seed`.
+3. Add `CRON_SECRET` (any long random string) to the Vercel project env — it enables the nightly reset.
+4. Locally, with the Neon URL in `.env.local`: `npm run db:migrate && npm run db:seed`.
 On Vercel without `DATABASE_URL`, the portal shows "database unavailable" instead of crashing.

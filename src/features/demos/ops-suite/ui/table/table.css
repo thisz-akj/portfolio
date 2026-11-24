@@ -157,3 +157,20 @@
   .ops-cond { width: auto; }
   .ops-pager-btns { margin-left: 0; }
 }
+
+/* Phones: each row becomes a card with labelled fields (no sideways scrolling through a wide table). */
+@media (max-width: 640px) {
+  .ops-scroll { border: 0; background: transparent; overflow: visible; }
+  .ops-table:not(.ops-lines) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+  .ops-table:not(.ops-lines), .ops-table:not(.ops-lines) tbody { display: block; }
+  .ops-table:not(.ops-lines) tbody tr { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 0.8rem; margin-bottom: 0.6rem; padding: 0.8rem 0.9rem 0.8rem 2.4rem; border: 1px solid var(--line); border-radius: 12px; background: #101010; }
+  .ops-table:not(.ops-lines) tbody td { display: flex; flex-direction: column; gap: 0.1rem; padding: 0; border: 0; white-space: normal; text-align: left; min-width: 0; }
+  .ops-table:not(.ops-lines) tbody td::before { content: attr(data-label); font-family: var(--f-heading); font-size: 0.66rem; color: var(--dim); }
+  .ops-table:not(.ops-lines) tbody td.is-primary-cell { grid-column: 1 / -1; font-size: 0.9rem; }
+  .ops-table:not(.ops-lines) tbody td.is-primary-cell::before { display: none; }
+  .ops-table:not(.ops-lines) tbody td.ops-check { position: absolute; left: 0.8rem; top: 0.95rem; }
+  .ops-table:not(.ops-lines) tbody td.ops-check::before { display: none; }
+  .ops-table:not(.ops-lines) td.is-end { font-family: var(--f-mono); }
+  .ops-pager { justify-content: space-between; }
+  .ops-pager > span { flex-basis: 100%; }
+}

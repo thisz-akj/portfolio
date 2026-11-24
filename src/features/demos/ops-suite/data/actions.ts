@@ -1,12 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { eq } from "drizzle-orm";
 import { getDb } from "../db/client";
+import { datasets } from "../db/schema";
 import { forms } from "../entities/forms";
 import { loadCompanies, loadContacts, loadOwners, loadSuppliers, loadWarehouses } from "../entities/options.server";
 import type { Option } from "../filters/types";
 import { PORTAL_BASE } from "../nav";
 import { FlowError } from "./audit";
+import { canAction, canImport, canWrite, ROLE_LABEL, type Role } from "../auth/permissions";
+import { getPersona, PERSONA_COOKIE, listPersonas } from "../auth/persona.server";
+import { allow, LIMITS } from "../lib/rateLimit";
 import { getDetail } from "./detail";
 import type { RecordDetail } from "./detail-types";
 import { bulkUpdate, convertLead, saveRecord, type BulkAction, type ConvertLeadInput, type MutationResult } from "./mutate";
@@ -24,6 +29,35 @@ const failed = (err: unknown): MutationResult => {
   return { ok: false, message: "Something went wrong — the demo database may be unavailable." };
 };
 const refresh = () => revalidatePath(PORTAL_BASE, "layout");
+
+async function clientKey() {
+  try {
+    const { headers } = await import("next/headers");
+    const h = await headers();
+    return h.get("x-forwarded-for")?.split(",")[0].trim() || h.get("x-real-ip") || "local";
+  } catch {
+    return "local";
+  }
+}
+
+/** Permission check for the current persona, then a per-client rate limit. Returns an error message or null. */
+async function guard(allowed: (role: Role) => boolean, bucket: keyof typeof LIMITS): Promise<string | null> {
+  const p = await getPersona();
+  if (!p || !allowed(p.role)) return `${p ? ROLE_LABEL[p.role] : "This persona"} can't do that — switch persona in the top bar.`;
+  if (!allow(`${bucket}:${await clientKey()}`, LIMITS[bucket])) return "That's a lot of changes in a short time — please wait a minute and try again.";
+  return null;
+}
+
+/** Switch the demo persona (cookie). */
+export async function setPersonaAction(id: unknown): Promise<{ ok: boolean }> {
+  if (!isId(id)) return { ok: false };
+  const personas = await listPersonas();
+  if (!personas.some((p) => p.id === id)) return { ok: false };
+  const { cookies } = await import("next/headers");
+  (await cookies()).set(PERSONA_COOKIE, String(id), { httpOnly: true, sameSite: "lax", path: "/", maxAge: 60 * 60 * 24 * 30, secure: process.env.NODE_ENV === "production" });
+  refresh();
+  return { ok: true };
+}
 
 export async function fetchDetailAction(entity: unknown, id: unknown): Promise<RecordDetail | null> {
   if (!isEntity(entity) || !isId(id)) return null;
@@ -46,6 +80,8 @@ export async function fetchFormOptionsAction(entity: unknown): Promise<Record<st
 
 export async function saveRecordAction(entity: unknown, id: unknown, values: unknown): Promise<MutationResult> {
   if (!isEntity(entity) || !(id === null || isId(id)) || !isPlain(values)) return { ok: false, message: "Invalid request" };
+  const denied = await guard((r) => canWrite(r, entity), "write");
+  if (denied) return { ok: false, message: denied };
   try {
     const res = await saveRecord(entity, id, values);
     if (res.ok) refresh();
@@ -63,6 +99,8 @@ export async function bulkAction(entity: unknown, ids: unknown, action: unknown)
     (a.kind === "enum" && typeof a.field === "string" && typeof a.value === "string" && (a.lostReason === undefined || typeof a.lostReason === "string")) ||
     (a.kind === "tag" && typeof a.tag === "string" && (a.mode === "add" || a.mode === "remove"));
   if (!valid) return { ok: false, message: "Invalid request" };
+  const denied = await guard((r) => canWrite(r, entity), "write");
+  if (denied) return { ok: false, message: denied };
   try {
     const res = await bulkUpdate(entity, ids, a);
     if (res.ok) refresh();
@@ -75,6 +113,8 @@ export async function bulkAction(entity: unknown, ids: unknown, action: unknown)
 export async function convertLeadAction(id: unknown, input: unknown) {
   if (!isId(id) || !isPlain(input)) return { ok: false as const, message: "Invalid request" };
   const i = input as unknown as ConvertLeadInput;
+  const denied = await guard((r) => canAction(r, "leads", "convert"), "write");
+  if (denied) return { ok: false as const, message: denied };
   try {
     const res = await convertLead(id, { industry: String(i.industry ?? ""), size: String(i.size ?? ""), createDeal: i.createDeal === true, dealTitle: typeof i.dealTitle === "string" ? i.dealTitle : undefined, dealValue: typeof i.dealValue === "string" || typeof i.dealValue === "number" ? i.dealValue : undefined });
     if (res.ok) refresh();
@@ -91,6 +131,8 @@ export type ActionResult = { ok: true; message: string; goto?: { entity: string;
 export async function runRecordAction(entity: unknown, id: unknown, key: unknown, input: unknown = {}): Promise<ActionResult> {
   if (typeof entity !== "string" || !isId(id) || typeof key !== "string" || !isPlain(input ?? {})) return { ok: false, message: "Invalid request" };
   const i = (input ?? {}) as Record<string, unknown>;
+  const denied = await guard((r) => canAction(r, entity, key), "write");
+  if (denied) return { ok: false, message: denied };
   const flows = await import("./erp");
   try {
     const res = await flows.runFlow(async (tx, actor): Promise<{ message: string; goto?: { entity: string; id: number } }> => {
@@ -160,6 +202,8 @@ export async function editLinesAction(entity: unknown, id: unknown, op: unknown)
           ? { op: "remove" as const, lineId: n(o.lineId) }
           : null;
   if (!lineOp || Object.values(lineOp).some((v) => typeof v === "number" && !Number.isFinite(v))) return { ok: false, message: "Invalid request" };
+  const denied = await guard((r) => canWrite(r, entity), "write");
+  if (denied) return { ok: false, message: denied };
   const flows = await import("./erp");
   try {
     const res = await flows.runFlow((tx, actor) => flows.editLines(tx, entity === "sales-orders" ? "so" : "po", id, lineOp, actor));
@@ -194,6 +238,11 @@ async function importAction(datasetId: unknown, csv: unknown, mapping: unknown, 
   if (!isId(datasetId) || typeof csv !== "string" || !isMapping(mapping)) return { ok: false, message: "Invalid request" };
   const { CSV_LIMITS } = await import("../lib/csv");
   if (csv.length > CSV_LIMITS.bytes) return { ok: false, message: "File is larger than 1 MB" };
+  const db = await getDb();
+  const [ds] = await db.select({ target: datasets.targetEntity }).from(datasets).where(eq(datasets.id, datasetId));
+  if (!ds) return { ok: false, message: "Dataset not found" };
+  const denied = await guard((r) => canImport(r, ds.target), "import");
+  if (denied) return { ok: false, message: denied };
   try {
     const { runImport } = await import("./importer");
     const res = await runImport(datasetId, csv, mapping, { dryRun, fileName });
