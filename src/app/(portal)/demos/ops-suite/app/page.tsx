@@ -79,6 +79,34 @@ export default async function DashboardPage() {
         <section className="ops-card">
           <BarList title="Top customers" note="Orders in the last 12 months" points={d.topCustomers} valueLabel="Orders (₹)" />
         </section>
+        <section className="ops-card ops-signals ops-dash-wide" aria-labelledby="signals-title">
+          <h2 id="signals-title" className="viz-title">
+            Signals <span>forecast and anomalies, computed by the Python insights job</span>
+          </h2>
+          {d.signals.length ? (
+            <ul>
+              {d.signals.map((sg) => (
+                <li key={sg.id} className={`is-sev-${sg.severity}`}>
+                  <span className="ops-signal-sev" aria-label={["", "Info", "Watch", "Act"][sg.severity]}>
+                    {["", "Info", "Watch", "Act"][sg.severity]}
+                  </span>
+                  <div>
+                    {sg.href ? <Link href={sg.href}>{sg.title}</Link> : <strong>{sg.title}</strong>}
+                    <p>{sg.detail}</p>
+                    <p className="ops-feed-meta">
+                      {sg.method} · computed {ago(sg.computedAt, now)}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="aq-empty">
+              No signals yet. They come from <code>ops-ai</code> (pandas + statsmodels): <code>cd ops-ai &amp;&amp; python -m ops_ai.insights</code> — and nightly
+              in CI after the demo reset.
+            </p>
+          )}
+        </section>
         <section className="ops-card ops-feed" aria-labelledby="feed-title">
           <h2 id="feed-title" className="viz-title">
             Activity

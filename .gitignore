@@ -46,3 +46,8 @@ next-env.d.ts
 /Baby-Boomer-free.zip
 /azad_kumar_jha.png
 
+
+# ops-ai Python virtualenv and caches
+/ops-ai/.venv/
+__pycache__/
+.pytest_cache/

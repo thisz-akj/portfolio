@@ -15,6 +15,7 @@ export interface Limit {
 export const LIMITS = {
   write: { max: 40, windowMs: 60_000 }, // edits, actions, bulk changes
   import: { max: 8, windowMs: 10 * 60_000 }, // CSV previews + imports
+  ai: { max: 12, windowMs: 10 * 60_000 }, // "Ask Ops Suite" questions (each one is a paid model call)
 } satisfies Record<string, Limit>;
 
 /** Records a hit; returns false (and records nothing) when the key is over its limit. */

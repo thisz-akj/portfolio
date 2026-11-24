@@ -734,14 +734,16 @@ export function generate(opts: GenerateOptions = {}): SeedData {
       const daily = (demand.get(k) ?? 0) / 90;
       const reorderLevel = p.active ? Math.max(5, Math.ceil(daily * 21)) : 0;
       const roll = f.number.float();
-      const qtyOnHand = !p.active
+      // target *available* stock (on hand minus reservations); on hand always covers confirmed orders
+      const available = !p.active
         ? int(0, 10)
         : roll < 0.03
           ? 0
           : roll < 0.13
             ? int(0, Math.max(0, Math.floor(reorderLevel * 0.9)))
             : Math.ceil(reorderLevel * float(1.2, 4));
-      invRowsStock.push({ productId: p.id, warehouseId: w.id, qtyOnHand, qtyReserved: reserved.get(k) ?? 0, reorderLevel, updatedAt: at(int(0, 10)) });
+      const qtyReserved = reserved.get(k) ?? 0;
+      invRowsStock.push({ productId: p.id, warehouseId: w.id, qtyOnHand: qtyReserved + available, qtyReserved, reorderLevel, updatedAt: at(int(0, 10)) });
     }
   }
 

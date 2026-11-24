@@ -8,6 +8,7 @@ import "@/features/demos/ops-suite/ui/portal.css";
 import "@/features/demos/ops-suite/ui/table/table.css";
 import "@/features/demos/ops-suite/ui/record/record.css";
 import "@/features/demos/ops-suite/ui/dashboard/dashboard.css";
+import "@/features/demos/ops-suite/ui/ai/ai.css";
 
 export const metadata: Metadata = {
   title: "Ops Suite — CRM, ERP & data portal demo",

@@ -78,3 +78,14 @@ a.viz-bar-row:focus-visible { outline: 2px solid var(--live); outline-offset: 1p
   .viz-col-label { font-size: 0.55rem; }
   .viz-col:nth-child(odd) .viz-col-label { visibility: hidden; }
 }
+
+/* signals */
+.ops-signals ul { list-style: none; display: grid; grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr)); gap: 0.6rem; margin-top: 0.8rem; }
+.ops-signals li { display: grid; grid-template-columns: auto 1fr; gap: 0.7rem; padding: 0.7rem 0.8rem; border: 1px solid var(--line); border-radius: 10px; background: #101010; font-size: 0.78rem; }
+.ops-signals li p { color: var(--mid); margin-top: 0.15rem; }
+.ops-signals a { color: var(--white); font-weight: 500; text-decoration: none; }
+.ops-signals a:hover { text-decoration: underline; text-underline-offset: 3px; }
+.ops-signal-sev { align-self: start; padding: 0.1rem 0.45rem; border-radius: 999px; font-family: var(--f-mono); font-size: 0.62rem; border: 1px solid var(--line-2); color: var(--mid); }
+.is-sev-2 .ops-signal-sev { color: #fbbf24; border-color: #fbbf2455; }
+.is-sev-3 .ops-signal-sev { color: #f87171; border-color: #f8717155; }
+.aq-empty code { display: inline; padding: 0.05rem 0.35rem; margin: 0; }

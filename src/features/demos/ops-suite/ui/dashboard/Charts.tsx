@@ -11,6 +11,12 @@ import { formatINR } from "../../lib/format";
  * per bar, every bar a link to the filtered list, and a data-table toggle for screen readers and exact values.
  */
 
+export type ValueUnit = "inr" | "count" | "pct";
+const nf = new Intl.NumberFormat("en-IN");
+/** Formats a value for its unit; `compact` for axes and bar ends. */
+export const fmtValue = (v: number, unit: ValueUnit = "inr", compact = false) =>
+  unit === "pct" ? `${(v * 100).toFixed(compact ? 0 : 1)}%` : unit === "count" ? nf.format(Math.round(v * 100) / 100) : formatINR(v, compact ? { compact: true } : {});
+
 /** A "nice" axis maximum and tick step for 4 gridlines. */
 export function niceScale(max: number, ticks = 4) {
   if (max <= 0) return { max: 1, step: 0.25 };
@@ -20,7 +26,7 @@ export function niceScale(max: number, ticks = 4) {
   return { max: step * ticks, step };
 }
 
-function DataTable({ id, title, points, valueLabel }: { id: string; title: string; points: Point[]; valueLabel: string }) {
+function DataTable({ id, title, points, valueLabel, unit }: { id: string; title: string; points: Point[]; valueLabel: string; unit: ValueUnit }) {
   return (
     <details className="viz-table">
       <summary>Show data table</summary>
@@ -39,7 +45,7 @@ function DataTable({ id, title, points, valueLabel }: { id: string; title: strin
           {points.map((p) => (
             <tr key={p.label}>
               <th scope="row">{p.label}</th>
-              <td className="is-end">{formatINR(p.value)}</td>
+              <td className="is-end">{fmtValue(p.value, unit)}</td>
               <td>{p.detail ?? ""}</td>
             </tr>
           ))}
@@ -50,7 +56,7 @@ function DataTable({ id, title, points, valueLabel }: { id: string; title: strin
 }
 
 /** Vertical bars over time, e.g. monthly revenue. */
-export function ColumnChart({ title, note, points, valueLabel = "Value" }: { title: string; note?: string; points: Point[]; valueLabel?: string }) {
+export function ColumnChart({ title, note, points, valueLabel = "Value", unit = "inr" }: { title: string; note?: string; points: Point[]; valueLabel?: string; unit?: ValueUnit }) {
   const id = useId();
   const [active, setActive] = useState<number | null>(null);
   const { max, step } = niceScale(Math.max(...points.map((p) => p.value)));
@@ -65,7 +71,7 @@ export function ColumnChart({ title, note, points, valueLabel = "Value" }: { tit
         <div className="viz-grid" aria-hidden="true">
           {ticks.map((t) => (
             <span key={t} style={{ bottom: `${(t / max) * 100}%` }}>
-              <em>{formatINR(t, { compact: true })}</em>
+              <em>{fmtValue(t, unit, true)}</em>
             </span>
           ))}
         </div>
@@ -77,7 +83,7 @@ export function ColumnChart({ title, note, points, valueLabel = "Value" }: { tit
           return (
             <div key={p.label} role="listitem" className={`viz-col${active === i ? " is-active" : ""}`} onPointerEnter={() => setActive(i)}>
               {p.href ? (
-                <Link href={p.href} className="viz-hit" aria-label={`${p.label}: ${formatINR(p.value)}${p.detail ? `, ${p.detail}` : ""}`} onFocus={() => setActive(i)} onBlur={() => setActive(null)}>
+                <Link href={p.href} className="viz-hit" aria-label={`${p.label}: ${fmtValue(p.value, unit)}${p.detail ? `, ${p.detail}` : ""}`} onFocus={() => setActive(i)} onBlur={() => setActive(null)}>
                   {bar}
                 </Link>
               ) : (
@@ -85,7 +91,7 @@ export function ColumnChart({ title, note, points, valueLabel = "Value" }: { tit
               )}
               {active === i && (
                 <span className="viz-tip" role="tooltip" style={{ bottom: `calc(${Math.min(h, 88)}% + 0.5rem)` }}>
-                  <strong>{formatINR(p.value)}</strong>
+                  <strong>{fmtValue(p.value, unit)}</strong>
                   <span>
                     {p.label.replace("*", "")}
                     {p.detail ? ` · ${p.detail}` : ""}
@@ -99,15 +105,15 @@ export function ColumnChart({ title, note, points, valueLabel = "Value" }: { tit
           );
         })}
       </div>
-      <DataTable id={id} title={title} points={points} valueLabel={valueLabel} />
+      <DataTable id={id} title={title} points={points} valueLabel={valueLabel} unit={unit} />
     </figure>
   );
 }
 
 /** Horizontal bars for ranked or ordered categories (funnel, aging, top customers), value labelled at the end. */
-export function BarList({ title, note, points, valueLabel = "Value" }: { title: string; note?: string; points: Point[]; valueLabel?: string }) {
+export function BarList({ title, note, points, valueLabel = "Value", unit = "inr" }: { title: string; note?: string; points: Point[]; valueLabel?: string; unit?: ValueUnit }) {
   const id = useId();
-  const max = Math.max(...points.map((p) => p.value), 1);
+  const max = Math.max(...points.map((p) => p.value), unit === "pct" ? 0.0001 : 1);
   return (
     <figure className="viz" aria-labelledby={id}>
       <figcaption id={id} className="viz-title">
@@ -123,7 +129,7 @@ export function BarList({ title, note, points, valueLabel = "Value" }: { title: 
                 <span className="viz-bar" style={{ width: `${Math.max((p.value / max) * 100, p.value > 0 ? 0.8 : 0)}%` }} />
               </span>
               <span className="viz-bar-value">
-                {formatINR(p.value, { compact: true })}
+                {fmtValue(p.value, unit, true)}
                 {p.detail && <em>{p.detail}</em>}
               </span>
             </>
@@ -131,7 +137,7 @@ export function BarList({ title, note, points, valueLabel = "Value" }: { title: 
           return (
             <li key={p.label}>
               {p.href ? (
-                <Link href={p.href} className="viz-bar-row" title={`${p.label}: ${formatINR(p.value)}${p.detail ? ` · ${p.detail}` : ""}`}>
+                <Link href={p.href} className="viz-bar-row" title={`${p.label}: ${fmtValue(p.value, unit)}${p.detail ? ` · ${p.detail}` : ""}`}>
                   {body}
                 </Link>
               ) : (
@@ -141,7 +147,7 @@ export function BarList({ title, note, points, valueLabel = "Value" }: { title: 
           );
         })}
       </ul>
-      <DataTable id={id} title={title} points={points} valueLabel={valueLabel} />
+      <DataTable id={id} title={title} points={points} valueLabel={valueLabel} unit={unit} />
     </figure>
   );
 }

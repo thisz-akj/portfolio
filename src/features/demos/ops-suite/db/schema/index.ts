@@ -6,4 +6,5 @@ export * from "./core";
 export * from "./crm";
 export * from "./erp";
 export * from "./portal";
+export * from "./ai";
 export * from "./relations";

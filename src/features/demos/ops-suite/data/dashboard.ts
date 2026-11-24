@@ -1,6 +1,6 @@
 import { and, desc, eq, gte, inArray, lt, sql } from "drizzle-orm";
 import { getDb } from "../db/client";
-import { auditLog, companies, deals, inventory, invoices, salesOrders, users } from "../db/schema";
+import { aiInsights, auditLog, companies, deals, inventory, invoices, salesOrders, users } from "../db/schema";
 import { DEAL_STAGE } from "../entities/crm-options";
 import { addDaysISO, presetRange, todayIST } from "../filters/dates";
 import { serializeFilter } from "../filters/parse";
@@ -32,6 +32,16 @@ export interface FeedItem {
   action: string;
   href?: string;
 }
+export interface Signal {
+  id: number;
+  kind: string;
+  severity: number;
+  title: string;
+  detail: string;
+  method: string;
+  computedAt: string;
+  href?: string;
+}
 export interface Dashboard {
   kpis: Kpi[];
   revenue: Point[];
@@ -39,6 +49,7 @@ export interface Dashboard {
   aging: Point[];
   topCustomers: Point[];
   feed: FeedItem[];
+  signals: Signal[];
 }
 
 const list = (entity: string, conditions: Condition[], extra = "") =>
@@ -107,6 +118,12 @@ export async function loadDashboard(now = new Date()): Promise<Dashboard> {
       .limit(6),
     db.select({ l: auditLog, actor: users.name }).from(auditLog).leftJoin(users, eq(users.id, auditLog.actorId)).orderBy(desc(auditLog.at), desc(auditLog.id)).limit(14),
   ]);
+  const signalRows = await db
+    .select()
+    .from(aiInsights)
+    .orderBy(sql`case when ${aiInsights.kind} = 'forecast' then 0 else 1 end`, desc(aiInsights.severity), desc(aiInsights.value))
+    .limit(7)
+    .catch(() => []);
 
   const winRate = n(closed.won) + n(closed.lost) ? n(closed.won) / (n(closed.won) + n(closed.lost)) : 0;
   const prev = n(prevMtd.s);
@@ -197,6 +214,16 @@ export async function loadDashboard(now = new Date()): Promise<Dashboard> {
       };
     }),
     topCustomers: top.map((t) => ({ label: t.name, value: n(t.s), href: `${PORTAL_BASE}/companies/${t.id}` })),
+    signals: signalRows.map((r) => ({
+      id: r.id,
+      kind: r.kind,
+      severity: r.severity,
+      title: r.title,
+      detail: r.detail,
+      method: r.method,
+      computedAt: r.computedAt.toISOString(),
+      href: r.entity && r.entityId && LINKABLE.has(r.entity) ? `${PORTAL_BASE}/${r.entity}/${r.entityId}` : undefined,
+    })),
     feed: feedRows.map(({ l, actor }) => {
       const slug = SLUG[l.entity] ?? l.entity;
       return { id: l.id, at: l.at.toISOString(), summary: l.summary ?? l.action, actor, action: l.action, href: LINKABLE.has(slug) ? `${PORTAL_BASE}/${slug}/${l.entityId}` : undefined };

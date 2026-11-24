@@ -13,9 +13,11 @@
     "db:migrate": "tsx src/features/demos/ops-suite/db/scripts.ts migrate",
     "db:seed": "tsx src/features/demos/ops-suite/db/scripts.ts seed",
     "db:reset": "tsx src/features/demos/ops-suite/db/scripts.ts reset",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "ai:contract": "tsx src/features/demos/ops-suite/ai/export-contract.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.13.0",
     "@electric-sql/pglite": "^0.6.0",
     "@faker-js/faker": "^9.9.0",
     "drizzle-orm": "^0.45.4",

@@ -19,6 +19,7 @@ Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/n
 - `src/lib/` motion (gsap/loader events), sound (Web Audio synth — no audio files), fonts, bento grid maths, contact validation, curve maths.
 - Styles: `src/app/globals.css` (tokens, base, sections) + `src/styles/hired.css` (bento, previews, drawer, lanes, portrait). Both are large — edit targeted sections, don't re-read whole files.
 - `src/features/demos/registry.ts` — register interactive demos here (all demos are "coming-soon"; never mark Live without real model execution).
+- Ops Suite AI: TS `src/features/demos/ops-suite/ai/` (Ask Ops Suite) + Python `ops-ai/` (evals, insights; run with `env -u PYTHONPATH ops-ai/.venv/bin/python -m …` because ROS is sourced). After changing the AI prompt/schema/golden set run `npm run ai:contract`.
 - Ops Suite demo (CRM + ERP + data portal, Drizzle + Postgres 16 locally via `DATABASE_URL` in `.env.local`, PGlite only in tests): `src/features/demos/ops-suite/`, portal at `/demos/ops-suite/app`. Plan, phases & DB commands (`npm run db:*`): `docs/demos/ops-suite.md`.
 - Docs: `docs/architecture/overview.md` (motion + sound tables), `docs/development/adding-a-demo.md`, `docs/credits.md`.
 

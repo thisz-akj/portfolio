@@ -19,6 +19,7 @@ const item = (label: string, path: string, ready = false): NavItem => ({
 
 export const portalNav: NavGroup[] = [
   { label: "Overview", items: [item("Dashboard", "", true)] },
+  { label: "AI", items: [item("Ask Ops Suite", "ask", true), item("AI quality", "ai-quality", true)] },
   {
     label: "CRM",
     items: [item("Companies", "companies", true), item("Contacts", "contacts", true), item("Leads", "leads", true), item("Deals", "deals", true)],

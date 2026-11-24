@@ -1,0 +1,1291 @@
+{
+  "promptVersion": "v1",
+  "defaults": {
+    "model": "claude-opus-5-5",
+    "effort": "low"
+  },
+  "request": {
+    "max_tokens": 16000,
+    "betas": [
+      "server-side-fallback-2026-07-01"
+    ],
+    "fallbacks": "default"
+  },
+  "system": "You turn business questions about \"Ops Suite\" — the CRM, ERP and data portal of an Indian B2B industrial-supplies distributor (amounts in ₹, GST-inclusive unless stated; India time; financial year April–March, FY quarters Q1 = Apr–Jun) — into a query plan. You never write SQL and never invent metrics, dimensions, fields or values: use only the catalogue below. The server validates your plan and runs it read-only.\n\nChoose exactly one kind:\n- \"metric\" — a number, ranking, breakdown, trend or comparison. Pick the metric that matches the question, groupBy for \"by X\" / \"which X\" / \"top X\" (month for trends), filters for constraints, a period, and compare = previous_period for \"vs last …\", \"change\", \"drop\", \"grew\". For \"top N\" set limit N (default 10) and sort desc; for \"lowest\"/\"biggest drop\" sort asc. Snapshot metrics (outstanding, overdue, pipeline, stock) always use period all_time.\n- \"list\" — when the user wants to see, find or open records (\"show\", \"which invoices\", \"list deals that…\"). Give the entity and a compact filter: a JSON array of conditions [field, op, value?] that are ANDed, or {\"or\":[…]} for alternatives. Values: enum → array of values; relation → array of numeric ids; money/number → number (5 lakh = 500000, 1 crore = 10000000); date preset → one preset name; is_empty/is_not_empty/is_true/is_false take no value. Sort is \"field\" or \"-field\" (descending), or null.\n- \"unsupported\" — forecasts or predictions (point the user to the Signals panel on the dashboard), anything that would change data, questions outside this business data, or anything the catalogue can't express. Explain briefly in \"explanation\" and set metric and list to null.\n\nRules: fill \"title\" with a short heading and \"explanation\" with one or two sentences on how you read the question, including any assumption (e.g. which period \"recently\" means). Prefer the simplest plan that answers the question. Map words to catalogue values (e.g. \"Mumbai warehouse\" → BHW-01, \"marketplace\" → indiamart, \"South India\" → south). For people, use the exact full name from the relation list.\n\n## Metrics (metric plans)\n- orders_value: Orders booked (₹) — Total value of sales orders incl. GST by order date, excluding cancelled. Use for sales/revenue/bookings questions.\n- orders_count: Number of orders — Count of sales orders by order date, excluding cancelled.\n- units_sold: Units sold — Quantity sold on order lines (excluding cancelled orders) by order date.\n- sales_ex_gst: Line sales ex-GST (₹) — Order line value before GST, after discount. Use for product/category sales questions.\n- invoiced_value: Invoiced (₹) — Total of issued invoices (not void) by issue date.\n- outstanding: Outstanding receivables (₹) — Unpaid balance on sent and part-paid invoices right now (snapshot). (snapshot: use period all_time)\n- overdue: Overdue receivables (₹) — Unpaid balance on invoices past their due date right now (snapshot). (snapshot: use period all_time)\n- payments_received: Payments received (₹) — Money received against invoices, by payment date.\n- pipeline_value: Open pipeline (₹) — Value of open deals (new, qualified, proposal, negotiation) right now (snapshot). (snapshot: use period all_time)\n- deals_won_value: Deals won (₹) — Value of deals marked won, by close date.\n- deals_won_count: Deals won — Number of deals won, by close date.\n- deals_lost_count: Deals lost — Number of deals lost, by close date.\n- win_rate: Win rate — Won ÷ (won + lost) for deals closed in the period.\n- new_leads: New leads — Leads created, by creation date.\n- stock_value: Stock value (₹) — On-hand quantity × unit cost right now (snapshot). (snapshot: use period all_time)\n- low_stock_items: Stock rows below reorder — Product × warehouse rows whose available stock is below the reorder level right now (snapshot). (snapshot: use period all_time)\n\n## Dimensions (group by or filter)\n- month: Month — Calendar month of the metric's date (YYYY-MM). Use for trends.. Available on: orders, order_lines, invoices, deals, leads, payments.\n- region: Region. Available on: orders, order_lines, invoices, deals, payments. values: north (North), south (South), east (East), west (West), central (Central), north_east (North East)\n- state: State. Available on: orders, invoices, deals, leads. values: Andhra Pradesh, Assam, Bihar, Chhattisgarh, Delhi, Gujarat, Haryana, Jharkhand, Karnataka, Kerala, Madhya Pradesh, Maharashtra, Odisha, Punjab, Rajasthan, Tamil Nadu, Telangana, Uttar Pradesh, West Bengal\n- industry: Industry. Available on: orders, order_lines, invoices, deals, payments. values: manufacturing (Manufacturing), construction (Construction), automotive (Automotive), pharma (Pharma), food_processing (Food processing), textiles (Textiles), logistics (Logistics), retail (Retail), hospitality (Hospitality), healthcare (Healthcare), education (Education), energy (Energy)\n- size: Company size. Available on: orders, invoices, deals. values: micro (Micro (< ₹5 Cr)), small (Small (₹5–50 Cr)), medium (Medium (₹50–250 Cr)), large (Large (₹250–1,000 Cr)), enterprise (Enterprise (₹1,000 Cr+))\n- lifecycle: Company lifecycle. Available on: orders, invoices, deals. values: customer (Customer), prospect (Prospect), churned (Churned)\n- company: Company — Company name (free text, matched case-insensitively).. Available on: orders, order_lines, invoices, deals, payments.\n- owner: Owner (sales rep) — Sales rep's full name, e.g. 'Riya Mehta'. For invoices this is the account owner.. Available on: orders, invoices, deals, leads.\n- warehouse: Warehouse. Available on: orders, order_lines, stock. values: CHN-01 (Chennai DC (Sriperumbudur)), BHW-01 (Mumbai DC (Bhiwandi)), GGN-01 (Delhi NCR DC (Gurugram)), KOL-01 (Kolkata DC (Dankuni))\n- category: Product category. Available on: order_lines, stock. values: fasteners (Fasteners), bearings (Bearings), electrical (Electrical), hydraulics (Hydraulics), safety (Safety gear), packaging (Packaging), tools (Tools), pipes_fittings (Pipes & fittings), lubricants (Lubricants), adhesives (Adhesives & sealants)\n- product: Product — Product SKU (e.g. FAS-0003) or exact name.. Available on: order_lines, stock.\n- order_status: Order status. Available on: orders. values: draft (Draft), confirmed (Confirmed), fulfilled (Fulfilled)\n- invoice_status: Invoice status. Available on: invoices. values: draft (Draft), sent (Sent), partially_paid (Part paid), paid (Paid)\n- stage: Deal stage. Available on: deals. values: new (New), qualified (Qualified), proposal (Proposal), negotiation (Negotiation), won (Won), lost (Lost)\n- source: Source. Available on: deals, leads. values: indiamart (Marketplace), website (Website), referral (Referral), trade_show (Trade show), linkedin (LinkedIn), cold_call (Cold call), partner (Partner)\n- lead_status: Lead status. Available on: leads. values: new (New), contacted (Contacted), qualified (Qualified), converted (Converted), unqualified (Unqualified)\n- method: Payment method. Available on: payments. values: neft (NEFT), rtgs (RTGS), upi (UPI), cheque (Cheque), card (Card)\n- aging: Aging bucket. Available on: invoices. values: not_due (Not yet due), 1_30 (1–30 days overdue), 31_60 (31–60 days overdue), 61_90 (61–90 days overdue), 90_plus (90+ days overdue)\n\n## Facts — metrics and the dimensions they allow\n- orders: orders_value, orders_count · dimensions: month, region, state, industry, size, lifecycle, company, owner, warehouse, order_status\n- order_lines: units_sold, sales_ex_gst · dimensions: month, region, industry, company, warehouse, category, product\n- invoices: invoiced_value, outstanding, overdue · dimensions: month, region, state, industry, size, lifecycle, company, owner, invoice_status, aging\n- payments: payments_received · dimensions: month, region, industry, company, method\n- deals: pipeline_value, deals_won_value, deals_won_count, deals_lost_count, win_rate · dimensions: month, region, state, industry, size, lifecycle, company, owner, stage, source\n- leads: new_leads · dimensions: month, state, owner, source, lead_status\n- stock: stock_value, low_stock_items · dimensions: warehouse, category, product\n\n## Periods\ntoday (today), yesterday (yesterday), last_7_days (last 7 days), last_30_days (last 30 days), last_90_days (last 90 days), this_month (this month), last_month (last month), this_quarter (this quarter (FY)), last_quarter (last quarter (FY)), this_fy (this financial year), last_fy (last financial year), past (the past), last_12_months, all_time\n\n## Lists (list plans) — entity: field:type[enum values]\n- companies (Companies): name:text; lifecycle:enum [customer|prospect|churned]; industry:enum [manufacturing|construction|automotive|pharma|food_processing|textiles|logistics|retail|hospitality|healthcare|education|energy]; size:enum [micro|small|medium|large|enterprise]; owner:relation (numeric ids); city:text; state:enum [Andhra Pradesh|Assam|Bihar|Chhattisgarh|Delhi|Gujarat|Haryana|Jharkhand|Karnataka|Kerala|Madhya Pradesh|Maharashtra|Odisha|Punjab|Rajasthan|Tamil Nadu|Telangana|Uttar Pradesh|West Bengal]; region:enum [north|south|east|west|central|north_east]; tags:tags; revenue12m:money (rupees); outstanding:money (rupees); openDeals:number; pipeline:money (rupees); lastOrder:date; annualRevenue:money (rupees); paymentTermsDays:number (days); gstin:text; phone:text; website:text; createdAt:date; updatedAt:date\n- contacts (Contacts): name:text; title:text; company:relation (numeric ids); companyLifecycle:enum [customer|prospect|churned]; email:text; phone:text; isPrimary:boolean; city:text; owner:relation (numeric ids); openDeals:number; lastActivity:date; createdAt:date\n- leads (Leads): name:text; companyName:text; status:enum [new|contacted|qualified|converted|unqualified]; score:number; source:enum [indiamart|website|referral|trade_show|linkedin|cold_call|partner]; owner:relation (numeric ids); city:text; state:enum [Andhra Pradesh|Assam|Bihar|Chhattisgarh|Delhi|Gujarat|Haryana|Jharkhand|Karnataka|Kerala|Madhya Pradesh|Maharashtra|Odisha|Punjab|Rajasthan|Tamil Nadu|Telangana|Uttar Pradesh|West Bengal]; email:text; phone:text; convertedCompany:relation (numeric ids); ageDays:number (days); createdAt:date; updatedAt:date\n- deals (Deals): title:text; company:relation (numeric ids); stage:enum [new|qualified|proposal|negotiation|won|lost]; value:money (rupees); probability:number (%); weighted:money (rupees); owner:relation (numeric ids); expectedClose:date; slipped:boolean; closedAt:date; source:enum [indiamart|website|referral|trade_show|linkedin|cold_call|partner]; contactName:text; tags:tags; lostReason:text; ageDays:number (days); createdAt:date\n- products (Products): name:text; sku:text; category:enum [fasteners|bearings|electrical|hydraulics|safety|packaging|tools|pipes_fittings|lubricants|adhesives]; price:money (rupees); cost:money (rupees); margin:number (%); gstRate:enum [5|12|18|28]; unit:enum [pcs|box|kg|litre|metre|set|roll]; onHand:number; available:number; lowLocations:number (DCs); sold90d:number; revenue90d:money (rupees); hsnCode:text; active:boolean; createdAt:date\n- inventory (Inventory): productName:text; sku:text; warehouse:relation (numeric ids); category:enum [fasteners|bearings|electrical|hydraulics|safety|packaging|tools|pipes_fittings|lubricants|adhesives]; status:enum [ok|low|out]; qtyOnHand:number; qtyReserved:number; available:number; reorderLevel:number; cover:number (× reorder); onOrder:number; stockValue:money (rupees); updatedAt:date\n- sales-orders (Sales orders): number:text; company:relation (numeric ids); status:enum [draft|confirmed|fulfilled|cancelled]; invoice:enum [none|draft|sent|partially_paid|paid|void]; orderDate:date; total:money (rupees); subtotal:money (rupees); lines:number; warehouse:relation (numeric ids); owner:relation (numeric ids); deal:text; fulfilledAt:date\n- purchase-orders (Purchase orders): number:text; supplier:relation (numeric ids); status:enum [draft|sent|partially_received|received|cancelled]; warehouse:relation (numeric ids); orderDate:date; expectedDate:date; late:boolean; total:money (rupees); lines:number; receivedAt:date; createdBy:relation (numeric ids)\n- invoices (Invoices): number:text; company:relation (numeric ids); status:enum [draft|sent|partially_paid|paid|void]; aging:enum [not_due|1_30|31_60|61_90|90_plus]; issueDate:date; dueDate:date; daysOverdue:number; total:money (rupees); balance:money (rupees); amountPaid:money (rupees); owner:relation (numeric ids); order:text\n- payments (Payments): invoice:text; company:relation (numeric ids); amount:money (rupees); method:enum [neft|rtgs|upi|cheque|card]; reference:text; paidAt:date; daysToPay:number\n\n## Filter operators by field type\ntext: contains, not_contains, eq, neq, starts_with, is_empty, is_not_empty\nenum: in, not_in, is_empty, is_not_empty\nnumber: eq, neq, gt, gte, lt, lte, between, is_empty, is_not_empty\nmoney: eq, neq, gt, gte, lt, lte, between, is_empty, is_not_empty\ndate: preset, older_than, within_last, on, before, after, between, is_empty, is_not_empty\nboolean: is_true, is_false\nrelation: in, not_in, is_empty, is_not_empty\ntags: has_any, has_all, has_none\n\n## Relation ids\nowner / createdBy / actor (users): 1=Demo Admin (admin), 2=Riya Mehta (sales), 3=Arjun Nair (sales), 4=Rahul Verma (sales), 5=Sneha Kulkarni (sales), 6=Imran Shaikh (sales), 7=Divya Reddy (sales), 8=Kavya Iyer (warehouse), 9=Manoj Yadav (warehouse)\nwarehouse: 1=CHN-01 Chennai DC (Sriperumbudur), 2=BHW-01 Mumbai DC (Bhiwandi), 3=GGN-01 Delhi NCR DC (Gurugram), 4=KOL-01 Kolkata DC (Dankuni)\n\nPrompt version v1.",
+  "userTemplate": "Today (India time): {today}. Asked by: {persona}.\n\nQuestion: {question}",
+  "schema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+      "kind",
+      "title",
+      "explanation",
+      "metric",
+      "list"
+    ],
+    "properties": {
+      "kind": {
+        "type": "string",
+        "enum": [
+          "metric",
+          "list",
+          "unsupported"
+        ]
+      },
+      "title": {
+        "type": "string",
+        "description": "Short heading for the answer, e.g. 'Orders by region, last month vs previous'"
+      },
+      "explanation": {
+        "type": "string",
+        "description": "One or two sentences: how the question was read and any assumptions"
+      },
+      "metric": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "metric",
+              "groupBy",
+              "filters",
+              "period",
+              "compare",
+              "sort",
+              "limit"
+            ],
+            "properties": {
+              "metric": {
+                "type": "string",
+                "enum": [
+                  "orders_value",
+                  "orders_count",
+                  "units_sold",
+                  "sales_ex_gst",
+                  "invoiced_value",
+                  "outstanding",
+                  "overdue",
+                  "payments_received",
+                  "pipeline_value",
+                  "deals_won_value",
+                  "deals_won_count",
+                  "deals_lost_count",
+                  "win_rate",
+                  "new_leads",
+                  "stock_value",
+                  "low_stock_items"
+                ]
+              },
+              "groupBy": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "month",
+                      "region",
+                      "state",
+                      "industry",
+                      "size",
+                      "lifecycle",
+                      "company",
+                      "owner",
+                      "warehouse",
+                      "category",
+                      "product",
+                      "order_status",
+                      "invoice_status",
+                      "stage",
+                      "source",
+                      "lead_status",
+                      "method",
+                      "aging"
+                    ]
+                  }
+                ]
+              },
+              "filters": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "dimension",
+                    "values"
+                  ],
+                  "properties": {
+                    "dimension": {
+                      "type": "string",
+                      "enum": [
+                        "month",
+                        "region",
+                        "state",
+                        "industry",
+                        "size",
+                        "lifecycle",
+                        "company",
+                        "owner",
+                        "warehouse",
+                        "category",
+                        "product",
+                        "order_status",
+                        "invoice_status",
+                        "stage",
+                        "source",
+                        "lead_status",
+                        "method",
+                        "aging"
+                      ]
+                    },
+                    "values": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "period": {
+                "type": "string",
+                "enum": [
+                  "today",
+                  "yesterday",
+                  "last_7_days",
+                  "last_30_days",
+                  "last_90_days",
+                  "this_month",
+                  "last_month",
+                  "this_quarter",
+                  "last_quarter",
+                  "this_fy",
+                  "last_fy",
+                  "past",
+                  "last_12_months",
+                  "all_time"
+                ]
+              },
+              "compare": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "previous_period"
+                ]
+              },
+              "sort": {
+                "type": "string",
+                "enum": [
+                  "desc",
+                  "asc"
+                ]
+              },
+              "limit": {
+                "type": "integer"
+              }
+            }
+          }
+        ]
+      },
+      "list": {
+        "anyOf": [
+          {
+            "type": "null"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "entity",
+              "filter",
+              "sort"
+            ],
+            "properties": {
+              "entity": {
+                "type": "string",
+                "enum": [
+                  "companies",
+                  "contacts",
+                  "leads",
+                  "deals",
+                  "products",
+                  "inventory",
+                  "sales-orders",
+                  "purchase-orders",
+                  "invoices",
+                  "payments"
+                ]
+              },
+              "filter": {
+                "type": "string",
+                "description": "Compact filter JSON, e.g. [[\"stage\",\"in\",[\"won\"]],[\"value\",\"gte\",500000]]"
+              },
+              "sort": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string"
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  },
+  "pricing": {
+    "claude-opus-5-5": {
+      "input": 4,
+      "output": 20,
+      "cacheRead": 0.2,
+      "cacheWrite": 5
+    },
+    "claude-opus-5": {
+      "input": 5,
+      "output": 25,
+      "cacheRead": 0.5,
+      "cacheWrite": 6.25
+    },
+    "claude-opus-4-8": {
+      "input": 5,
+      "output": 25,
+      "cacheRead": 0.5,
+      "cacheWrite": 6.25
+    },
+    "claude-sonnet-5-5": {
+      "input": 2,
+      "output": 10,
+      "cacheRead": 0.1,
+      "cacheWrite": 2.5
+    },
+    "claude-haiku-5-5": {
+      "input": 0.1,
+      "output": 0.5,
+      "cacheRead": 0.01,
+      "cacheWrite": 0.125
+    }
+  },
+  "semantic": {
+    "metrics": [
+      {
+        "key": "orders_value",
+        "fact": "orders",
+        "timed": true
+      },
+      {
+        "key": "orders_count",
+        "fact": "orders",
+        "timed": true
+      },
+      {
+        "key": "units_sold",
+        "fact": "order_lines",
+        "timed": true
+      },
+      {
+        "key": "sales_ex_gst",
+        "fact": "order_lines",
+        "timed": true
+      },
+      {
+        "key": "invoiced_value",
+        "fact": "invoices",
+        "timed": true
+      },
+      {
+        "key": "outstanding",
+        "fact": "invoices",
+        "timed": false
+      },
+      {
+        "key": "overdue",
+        "fact": "invoices",
+        "timed": false
+      },
+      {
+        "key": "payments_received",
+        "fact": "payments",
+        "timed": true
+      },
+      {
+        "key": "pipeline_value",
+        "fact": "deals",
+        "timed": false
+      },
+      {
+        "key": "deals_won_value",
+        "fact": "deals",
+        "timed": true
+      },
+      {
+        "key": "deals_won_count",
+        "fact": "deals",
+        "timed": true
+      },
+      {
+        "key": "deals_lost_count",
+        "fact": "deals",
+        "timed": true
+      },
+      {
+        "key": "win_rate",
+        "fact": "deals",
+        "timed": true
+      },
+      {
+        "key": "new_leads",
+        "fact": "leads",
+        "timed": true
+      },
+      {
+        "key": "stock_value",
+        "fact": "stock",
+        "timed": false
+      },
+      {
+        "key": "low_stock_items",
+        "fact": "stock",
+        "timed": false
+      }
+    ],
+    "dimensions": [
+      {
+        "key": "month",
+        "facts": [
+          "orders",
+          "order_lines",
+          "invoices",
+          "deals",
+          "leads",
+          "payments"
+        ],
+        "values": null
+      },
+      {
+        "key": "region",
+        "facts": [
+          "orders",
+          "order_lines",
+          "invoices",
+          "deals",
+          "payments"
+        ],
+        "values": [
+          "north",
+          "south",
+          "east",
+          "west",
+          "central",
+          "north_east"
+        ]
+      },
+      {
+        "key": "state",
+        "facts": [
+          "orders",
+          "invoices",
+          "deals",
+          "leads"
+        ],
+        "values": [
+          "Andhra Pradesh",
+          "Assam",
+          "Bihar",
+          "Chhattisgarh",
+          "Delhi",
+          "Gujarat",
+          "Haryana",
+          "Jharkhand",
+          "Karnataka",
+          "Kerala",
+          "Madhya Pradesh",
+          "Maharashtra",
+          "Odisha",
+          "Punjab",
+          "Rajasthan",
+          "Tamil Nadu",
+          "Telangana",
+          "Uttar Pradesh",
+          "West Bengal"
+        ]
+      },
+      {
+        "key": "industry",
+        "facts": [
+          "orders",
+          "order_lines",
+          "invoices",
+          "deals",
+          "payments"
+        ],
+        "values": [
+          "manufacturing",
+          "construction",
+          "automotive",
+          "pharma",
+          "food_processing",
+          "textiles",
+          "logistics",
+          "retail",
+          "hospitality",
+          "healthcare",
+          "education",
+          "energy"
+        ]
+      },
+      {
+        "key": "size",
+        "facts": [
+          "orders",
+          "invoices",
+          "deals"
+        ],
+        "values": [
+          "micro",
+          "small",
+          "medium",
+          "large",
+          "enterprise"
+        ]
+      },
+      {
+        "key": "lifecycle",
+        "facts": [
+          "orders",
+          "invoices",
+          "deals"
+        ],
+        "values": [
+          "customer",
+          "prospect",
+          "churned"
+        ]
+      },
+      {
+        "key": "company",
+        "facts": [
+          "orders",
+          "order_lines",
+          "invoices",
+          "deals",
+          "payments"
+        ],
+        "values": null
+      },
+      {
+        "key": "owner",
+        "facts": [
+          "orders",
+          "invoices",
+          "deals",
+          "leads"
+        ],
+        "values": null
+      },
+      {
+        "key": "warehouse",
+        "facts": [
+          "orders",
+          "order_lines",
+          "stock"
+        ],
+        "values": [
+          "CHN-01",
+          "BHW-01",
+          "GGN-01",
+          "KOL-01"
+        ]
+      },
+      {
+        "key": "category",
+        "facts": [
+          "order_lines",
+          "stock"
+        ],
+        "values": [
+          "fasteners",
+          "bearings",
+          "electrical",
+          "hydraulics",
+          "safety",
+          "packaging",
+          "tools",
+          "pipes_fittings",
+          "lubricants",
+          "adhesives"
+        ]
+      },
+      {
+        "key": "product",
+        "facts": [
+          "order_lines",
+          "stock"
+        ],
+        "values": null
+      },
+      {
+        "key": "order_status",
+        "facts": [
+          "orders"
+        ],
+        "values": [
+          "draft",
+          "confirmed",
+          "fulfilled"
+        ]
+      },
+      {
+        "key": "invoice_status",
+        "facts": [
+          "invoices"
+        ],
+        "values": [
+          "draft",
+          "sent",
+          "partially_paid",
+          "paid"
+        ]
+      },
+      {
+        "key": "stage",
+        "facts": [
+          "deals"
+        ],
+        "values": [
+          "new",
+          "qualified",
+          "proposal",
+          "negotiation",
+          "won",
+          "lost"
+        ]
+      },
+      {
+        "key": "source",
+        "facts": [
+          "deals",
+          "leads"
+        ],
+        "values": [
+          "indiamart",
+          "website",
+          "referral",
+          "trade_show",
+          "linkedin",
+          "cold_call",
+          "partner"
+        ]
+      },
+      {
+        "key": "lead_status",
+        "facts": [
+          "leads"
+        ],
+        "values": [
+          "new",
+          "contacted",
+          "qualified",
+          "converted",
+          "unqualified"
+        ]
+      },
+      {
+        "key": "method",
+        "facts": [
+          "payments"
+        ],
+        "values": [
+          "neft",
+          "rtgs",
+          "upi",
+          "cheque",
+          "card"
+        ]
+      },
+      {
+        "key": "aging",
+        "facts": [
+          "invoices"
+        ],
+        "values": [
+          "not_due",
+          "1_30",
+          "31_60",
+          "61_90",
+          "90_plus"
+        ]
+      }
+    ]
+  },
+  "golden": [
+    {
+      "id": "orders-last-month",
+      "question": "What were total orders booked last month?",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_value",
+        "groupBy": null,
+        "period": "last_month",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "simple"
+      ]
+    },
+    {
+      "id": "orders-count-month",
+      "question": "How many orders have we received this month?",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_count",
+        "groupBy": null,
+        "period": "this_month",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "simple"
+      ]
+    },
+    {
+      "id": "region-drop",
+      "question": "Which region's orders dropped the most last month compared with the month before?",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_value",
+        "groupBy": "region",
+        "period": "last_month",
+        "compare": "previous_period",
+        "filters": []
+      },
+      "example": true,
+      "tags": [
+        "metric",
+        "compare"
+      ]
+    },
+    {
+      "id": "trend-12m",
+      "question": "Show the monthly bookings trend for the last 12 months",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_value",
+        "groupBy": "month",
+        "period": "last_12_months",
+        "compare": "none",
+        "filters": []
+      },
+      "example": true,
+      "tags": [
+        "metric",
+        "trend"
+      ]
+    },
+    {
+      "id": "top-customers-fy",
+      "question": "Top 5 customers by orders this financial year",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_value",
+        "groupBy": "company",
+        "period": "this_fy",
+        "compare": "none",
+        "filters": []
+      },
+      "example": true,
+      "tags": [
+        "metric",
+        "ranking",
+        "fy"
+      ]
+    },
+    {
+      "id": "category-sales",
+      "question": "Sales by product category in the last 90 days, before GST",
+      "expected": {
+        "kind": "metric",
+        "metric": "sales_ex_gst",
+        "groupBy": "category",
+        "period": "last_90_days",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "owed-now",
+      "question": "How much do customers owe us right now?",
+      "expected": {
+        "kind": "metric",
+        "metric": "outstanding",
+        "groupBy": null,
+        "period": "all_time",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "snapshot"
+      ]
+    },
+    {
+      "id": "overdue-by-owner",
+      "question": "Overdue receivables by account owner",
+      "expected": {
+        "kind": "metric",
+        "metric": "overdue",
+        "groupBy": "owner",
+        "period": "all_time",
+        "compare": "none",
+        "filters": []
+      },
+      "example": true,
+      "tags": [
+        "metric",
+        "snapshot",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "aging",
+      "question": "Break down what customers owe by how late it is",
+      "expected": {
+        "kind": "metric",
+        "metric": "outstanding",
+        "groupBy": "aging",
+        "period": "all_time",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "snapshot",
+        "paraphrase"
+      ]
+    },
+    {
+      "id": "win-rate-q",
+      "question": "What's our win rate this quarter?",
+      "expected": {
+        "kind": "metric",
+        "metric": "win_rate",
+        "groupBy": null,
+        "period": "this_quarter",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "ratio",
+        "fy"
+      ]
+    },
+    {
+      "id": "win-rate-rep",
+      "question": "Win rate by sales rep over the last 90 days",
+      "expected": {
+        "kind": "metric",
+        "metric": "win_rate",
+        "groupBy": "owner",
+        "period": "last_90_days",
+        "compare": "none",
+        "filters": []
+      },
+      "example": true,
+      "tags": [
+        "metric",
+        "ratio",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "pipeline-stage",
+      "question": "Open pipeline by stage",
+      "expected": {
+        "kind": "metric",
+        "metric": "pipeline_value",
+        "groupBy": "stage",
+        "period": "all_time",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "snapshot"
+      ]
+    },
+    {
+      "id": "pipeline-auto",
+      "question": "How big is the open pipeline with automotive customers?",
+      "expected": {
+        "kind": "metric",
+        "metric": "pipeline_value",
+        "groupBy": null,
+        "period": "all_time",
+        "compare": "none",
+        "filters": [
+          [
+            "industry",
+            [
+              "automotive"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "filter"
+      ]
+    },
+    {
+      "id": "marketplace-leads",
+      "question": "How many leads came in from the marketplace this month?",
+      "expected": {
+        "kind": "metric",
+        "metric": "new_leads",
+        "groupBy": null,
+        "period": "this_month",
+        "compare": "none",
+        "filters": [
+          [
+            "source",
+            [
+              "indiamart"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "filter",
+        "synonym"
+      ]
+    },
+    {
+      "id": "leads-by-source",
+      "question": "Leads by source last month",
+      "expected": {
+        "kind": "metric",
+        "metric": "new_leads",
+        "groupBy": "source",
+        "period": "last_month",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "payments-method",
+      "question": "Payments received this month, split by payment method",
+      "expected": {
+        "kind": "metric",
+        "metric": "payments_received",
+        "groupBy": "method",
+        "period": "this_month",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "stock-mumbai",
+      "question": "How much stock value is sitting in the Mumbai warehouse?",
+      "expected": {
+        "kind": "metric",
+        "metric": "stock_value",
+        "groupBy": null,
+        "period": "all_time",
+        "compare": "none",
+        "filters": [
+          [
+            "warehouse",
+            [
+              "BHW-01"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "snapshot",
+        "synonym"
+      ]
+    },
+    {
+      "id": "low-stock-category",
+      "question": "Which product categories have the most items below reorder level?",
+      "expected": {
+        "kind": "metric",
+        "metric": "low_stock_items",
+        "groupBy": "category",
+        "period": "all_time",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "snapshot",
+        "ranking"
+      ]
+    },
+    {
+      "id": "bearings-units",
+      "question": "Units of bearings sold last month by warehouse",
+      "expected": {
+        "kind": "metric",
+        "metric": "units_sold",
+        "groupBy": "warehouse",
+        "period": "last_month",
+        "compare": "none",
+        "filters": [
+          [
+            "category",
+            [
+              "bearings"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "filter",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "south-fy-compare",
+      "question": "Orders booked in South India this financial year versus the same time last year",
+      "expected": {
+        "kind": "metric",
+        "metric": "orders_value",
+        "groupBy": null,
+        "period": "this_fy",
+        "compare": "previous_period",
+        "filters": [
+          [
+            "region",
+            [
+              "south"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "compare",
+        "synonym",
+        "fy"
+      ]
+    },
+    {
+      "id": "riya-won",
+      "question": "Value of deals won by Riya Mehta last quarter",
+      "expected": {
+        "kind": "metric",
+        "metric": "deals_won_value",
+        "groupBy": null,
+        "period": "last_quarter",
+        "compare": "none",
+        "filters": [
+          [
+            "owner",
+            [
+              "Riya Mehta"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "metric",
+        "person",
+        "fy"
+      ]
+    },
+    {
+      "id": "invoiced-industry",
+      "question": "Invoiced amount by industry this quarter",
+      "expected": {
+        "kind": "metric",
+        "metric": "invoiced_value",
+        "groupBy": "industry",
+        "period": "this_quarter",
+        "compare": "none",
+        "filters": []
+      },
+      "tags": [
+        "metric",
+        "breakdown"
+      ]
+    },
+    {
+      "id": "overdue-big",
+      "question": "Show me overdue invoices over 5 lakh",
+      "expected": {
+        "kind": "list",
+        "entity": "invoices",
+        "conditions": [
+          [
+            "daysOverdue",
+            "gt",
+            0
+          ],
+          [
+            "balance",
+            "gt",
+            500000
+          ]
+        ]
+      },
+      "alternatives": [
+        {
+          "kind": "list",
+          "entity": "invoices",
+          "conditions": [
+            [
+              "aging",
+              "in",
+              [
+                "1_30",
+                "31_60",
+                "61_90",
+                "90_plus"
+              ]
+            ],
+            [
+              "balance",
+              "gt",
+              500000
+            ]
+          ]
+        }
+      ],
+      "example": true,
+      "tags": [
+        "list",
+        "money",
+        "lakh"
+      ]
+    },
+    {
+      "id": "closing-month",
+      "question": "Open deals closing this month",
+      "expected": {
+        "kind": "list",
+        "entity": "deals",
+        "conditions": [
+          [
+            "stage",
+            "in",
+            [
+              "new",
+              "qualified",
+              "proposal",
+              "negotiation"
+            ]
+          ],
+          [
+            "expectedClose",
+            "preset",
+            "this_month"
+          ]
+        ]
+      },
+      "example": true,
+      "tags": [
+        "list",
+        "date"
+      ]
+    },
+    {
+      "id": "unassigned-leads",
+      "question": "List new leads that nobody owns yet",
+      "expected": {
+        "kind": "list",
+        "entity": "leads",
+        "conditions": [
+          [
+            "owner",
+            "is_empty"
+          ],
+          [
+            "status",
+            "in",
+            [
+              "new"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "empty"
+      ]
+    },
+    {
+      "id": "gujarat-customers",
+      "question": "Companies in Gujarat that are customers",
+      "expected": {
+        "kind": "list",
+        "entity": "companies",
+        "conditions": [
+          [
+            "state",
+            "in",
+            [
+              "Gujarat"
+            ]
+          ],
+          [
+            "lifecycle",
+            "in",
+            [
+              "customer"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "enum"
+      ]
+    },
+    {
+      "id": "chennai-out",
+      "question": "Which products are out of stock at the Chennai warehouse?",
+      "expected": {
+        "kind": "list",
+        "entity": "inventory",
+        "conditions": [
+          [
+            "status",
+            "in",
+            [
+              "out"
+            ]
+          ],
+          [
+            "warehouse",
+            "in",
+            [
+              1
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "relation",
+        "synonym"
+      ]
+    },
+    {
+      "id": "late-pos",
+      "question": "Purchase orders that are running late",
+      "expected": {
+        "kind": "list",
+        "entity": "purchase-orders",
+        "conditions": [
+          [
+            "late",
+            "is_true"
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "boolean"
+      ]
+    },
+    {
+      "id": "to-fulfil",
+      "question": "Sales orders waiting to be fulfilled",
+      "expected": {
+        "kind": "list",
+        "entity": "sales-orders",
+        "conditions": [
+          [
+            "status",
+            "in",
+            [
+              "confirmed"
+            ]
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "enum"
+      ]
+    },
+    {
+      "id": "slipped",
+      "question": "Deals that slipped past their expected close date",
+      "expected": {
+        "kind": "list",
+        "entity": "deals",
+        "conditions": [
+          [
+            "slipped",
+            "is_true"
+          ]
+        ]
+      },
+      "tags": [
+        "list",
+        "boolean"
+      ]
+    },
+    {
+      "id": "forecast",
+      "question": "What will our revenue be next quarter?",
+      "expected": {
+        "kind": "unsupported"
+      },
+      "tags": [
+        "unsupported",
+        "forecast"
+      ]
+    },
+    {
+      "id": "write",
+      "question": "Delete all cancelled sales orders",
+      "expected": {
+        "kind": "unsupported"
+      },
+      "tags": [
+        "unsupported",
+        "write"
+      ]
+    },
+    {
+      "id": "offtopic",
+      "question": "Write a short poem about invoices",
+      "expected": {
+        "kind": "unsupported"
+      },
+      "tags": [
+        "unsupported",
+        "off-topic"
+      ]
+    }
+  ]
+}

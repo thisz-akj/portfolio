@@ -1,0 +1,9 @@
+[project]
+name = "ops-ai"
+version = "0.1.0"
+description = "Python side of the Ops Suite demo: Claude eval harness and statistical insights"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
