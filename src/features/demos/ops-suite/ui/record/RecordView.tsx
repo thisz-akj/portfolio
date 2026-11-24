@@ -1,12 +1,16 @@
 "use client";
 
+import { useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowRightLeft, CircleDot, ExternalLink, Mail, Pencil, Phone, SquareCheck, StickyNote, Users } from "lucide-react";
-import type { RecordDetail, TimelineItem } from "../../data/detail-types";
+import { runRecordAction } from "../../data/actions";
+import type { RecordAction, RecordDetail, TimelineItem } from "../../data/detail-types";
 import { getEntityMeta } from "../../entities";
 import { formatDate } from "../../lib/format";
 import { PORTAL_BASE } from "../../nav";
 import { Cell, Pill } from "../table/Cell";
+import { ActionForm } from "./ActionForms";
+import { Lines } from "./Lines";
 
 const KIND_ICON = { call: Phone, email: Mail, meeting: Users, note: StickyNote, task: SquareCheck, audit: CircleDot } as const;
 const dateTime = new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "short", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
@@ -17,6 +21,7 @@ export function RecordView({
   onEdit,
   onConvert,
   onNavigate,
+  onChanged,
   showOpenLink = true,
 }: {
   detail: RecordDetail;
@@ -24,10 +29,26 @@ export function RecordView({
   onConvert?: () => void;
   /** open a related record (drawer); falls back to normal navigation */
   onNavigate?: (entity: string, id: number) => void;
+  /** called after a successful action; `goto` asks the host to open another record */
+  onChanged: (goto?: { entity: string; id: number }) => void;
   showOpenLink?: boolean;
 }) {
   const meta = getEntityMeta(detail.entity)!;
-  const statusField = meta.fields.find((f) => f.key === meta.bulk?.enums?.[0]);
+  const [pending, start] = useTransition();
+  const [active, setActive] = useState<RecordAction | null>(null);
+  const [confirming, setConfirming] = useState<string | null>(null);
+  const [notice, setNotice] = useState<{ text: string; ok: boolean } | null>(null);
+  const run = (a: RecordAction, input: Record<string, unknown> = {}) =>
+    start(async () => {
+      const res = await runRecordAction(detail.entity, detail.id, a.key, input);
+      setNotice({ text: res.message, ok: res.ok });
+      setConfirming(null);
+      if (res.ok) {
+        setActive(null);
+        onChanged(res.goto);
+      }
+    });
+  const statusField = meta.fields.find((f) => f.key === (meta.statusField ?? meta.bulk?.enums?.[0]));
   const statusValue = statusField ? String(detail.row[statusField.key]) : null;
   const fields = meta.fields.filter((f) => !f.primary && f.key !== statusField?.key && f.type !== "tags");
   const tagsField = meta.fields.find((f) => f.type === "tags");
@@ -43,9 +64,35 @@ export function RecordView({
           {tags.length > 0 && tagsField && <Cell field={tagsField} row={detail.row} options={detail.options[tagsField.key]} />}
         </div>
         <div className="ops-record-actions">
-          <button type="button" className="ops-btn" onClick={onEdit}>
-            <Pencil size={14} /> Edit
-          </button>
+          {detail.actions.map((a) =>
+            confirming === a.key ? (
+              <span key={a.key} className="ops-confirm" role="group" aria-label={a.confirm}>
+                {a.confirm}
+                <button type="button" className={`ops-btn${a.tone === "danger" ? " is-danger" : " is-primary"}`} disabled={pending} onClick={() => run(a)}>
+                  Yes
+                </button>
+                <button type="button" className="ops-btn is-ghost" onClick={() => setConfirming(null)}>
+                  No
+                </button>
+              </span>
+            ) : (
+              <button
+                key={a.key}
+                type="button"
+                className={`ops-btn${a.tone === "primary" ? " is-primary" : a.tone === "danger" ? " is-danger" : ""}`}
+                disabled={pending}
+                aria-expanded={a.input ? active?.key === a.key : undefined}
+                onClick={() => (a.input ? setActive(active?.key === a.key ? null : a) : a.confirm ? setConfirming(a.key) : run(a))}
+              >
+                {pending && !a.input ? "Working…" : a.label}
+              </button>
+            ),
+          )}
+          {detail.editable && (
+            <button type="button" className="ops-btn" onClick={onEdit}>
+              <Pencil size={14} /> Edit
+            </button>
+          )}
           {onConvert && (
             <button type="button" className="ops-btn" onClick={onConvert}>
               <ArrowRightLeft size={14} /> Convert lead
@@ -59,6 +106,13 @@ export function RecordView({
         </div>
       </header>
 
+      {notice && (
+        <p className={notice.ok ? "ops-notice" : "ops-error"} role="status">
+          {notice.text}
+        </p>
+      )}
+      {active && <ActionForm action={active} context={detail.context} lines={detail.lines} pending={pending} onSubmit={(input) => run(active, input)} onCancel={() => setActive(null)} />}
+
       <dl className="ops-fields">
         {fields.map((f) => (
           <div key={f.key} title={f.description}>
@@ -69,6 +123,19 @@ export function RecordView({
           </div>
         ))}
       </dl>
+
+      {detail.lines && (
+        <Lines
+          key={`${detail.id}-${detail.lines.rows.map((r) => `${r.id}:${r.qty}:${r.discountPct}`).join(",")}`}
+          entity={detail.entity}
+          id={detail.id}
+          block={detail.lines}
+          onChanged={(text, ok) => {
+            setNotice({ text, ok });
+            if (ok) onChanged();
+          }}
+        />
+      )}
 
       {detail.sections.map((s) => (
         <section key={s.key} className="ops-related" aria-labelledby={`rel-${s.key}`}>

@@ -8,7 +8,7 @@ One Postgres database shared by a CRM, an ERP and a data portal, browsed through
 - [x] 1 Full schema (22 tables) + deterministic seed (~16k rows)
 - [x] 2 Filter engine + DataTable (Companies)
 - [x] 3 CRM: companies, contacts, leads, deals (+ Kanban), record drawer & pages, forms, bulk actions, lead conversion, audit
-- [ ] 4 ERP + cross-module flows · [ ] 5 Data portal + dashboard
+- [x] 4 ERP: products, inventory, sales/purchase orders, invoices, payments + order-to-cash and procure-to-stock flows · [ ] 5 Data portal + dashboard
 - [ ] 6 Hardening (rate limit, nightly reset, roles) · [ ] 7 Portfolio integration · [ ] 8 AI "ask your data"
 
 ## Database
@@ -99,6 +99,26 @@ Relative date ops `older_than` / `within_last` take a number of days (e.g. "no o
   moving to Lost asks for a reason; optimistic with rollback on failure.
 - Actor: the first admin user for now (`currentActor`); the Phase 6 role switcher replaces it. Writes are not rate-limited
   yet — Phase 6 adds that before any public deploy.
+
+## ERP flows (`data/erp.ts`)
+Every flow runs in one transaction with row locks (`select … for update`), writes audit rows, and fails with a readable
+`FlowError` instead of partial changes.
+
+| Trigger | Effect |
+|---|---|
+| Deal → **won** (form, bulk, Kanban) | Draft sales order (once per deal) at the warehouse serving the customer's region; lines suggested from the customer's order history (else best sellers), sized to the deal value |
+| SO **confirm** | Needs ≥ 1 line; reserves stock (`qty_reserved`) |
+| SO **fulfil** | Blocks with a list of short SKUs if on-hand is insufficient; deducts stock and reservation; issues `INV-…` due after the customer's payment terms; prospect/churned company → customer; auto-reorder |
+| SO **cancel** | Draft/confirmed only; releases reservations |
+| **Auto-reorder** | If available + on order < reorder level: top up to 2× reorder level on a draft PO from the product's usual supplier (else best-rated), reusing an open draft for that supplier + warehouse |
+| PO **send / receive / cancel** | Receive per line (partial allowed, no over-receipt) adds stock; fully received stamps `receivedAt`; cancel only before any receipt |
+| Invoice **send / record payment** | Payment ≤ balance, dated between issue date and today; status → partially paid / paid |
+| Inventory **adjust** | Stock count with reason; then auto-reorder |
+
+Draft SO/PO lines are editable in the record drawer (add product, qty, discount ≤ 50 %, remove); totals are recomputed
+server-side. Products get a stock row per warehouse on creation. Record detail payloads carry state-dependent
+`actions`, an editable `lines` block and `context` for action forms (`data/detail.ts` → `workflow()`); server actions
+`runRecordAction` / `editLinesAction` dispatch them. Audit entity names are table names (`data/audit.ts` maps URL slugs).
 
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)

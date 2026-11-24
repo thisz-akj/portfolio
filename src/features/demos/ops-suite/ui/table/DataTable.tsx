@@ -27,6 +27,7 @@ import { getEntityMeta } from "../../entities";
 import { countConditions, parseListQuery, serializeListQuery } from "../../filters/parse";
 import { PAGE_SIZES, defaultQuery, fieldOf, visibleColumns, type EntityMeta, type ListQuery, type Option, type SortKey } from "../../filters/types";
 import { PORTAL_BASE } from "../../nav";
+import { forms } from "../../entities/forms";
 import { RecordDrawer, type DrawerTarget } from "../record/RecordDrawer";
 import { BulkBar } from "./BulkBar";
 import { Cell } from "./Cell";
@@ -260,9 +261,11 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
         </Popover>
 
         <div className="ops-toolbar-end">
-          <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
-            <Plus size={14} /> New {meta.singular}
-          </button>
+          {forms[entity] && (
+            <button type="button" className="ops-btn is-primary" onClick={() => setDrawer({ entity, id: "new" })}>
+              <Plus size={14} /> New {meta.singular}
+            </button>
+          )}
           <Popover
             open={colsOpen}
             onOpenChange={setColsOpen}

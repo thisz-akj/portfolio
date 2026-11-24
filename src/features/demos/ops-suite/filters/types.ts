@@ -164,6 +164,8 @@ export interface EntityMeta {
   views: SavedView[];
   /** bulk actions offered on selected rows */
   bulk?: { owner?: boolean; enums?: string[]; tags?: boolean };
+  /** enum shown as the status pill in record headers (defaults to the first bulk enum) */
+  statusField?: string;
   /** Kanban board grouped by an enum field, summing a money field */
   board?: { field: string; sum: string; closed?: string[] };
 }

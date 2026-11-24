@@ -26,12 +26,12 @@ export const portalNav: NavGroup[] = [
   {
     label: "ERP",
     items: [
-      item("Products", "products"),
-      item("Inventory", "inventory"),
-      item("Sales orders", "sales-orders"),
-      item("Purchase orders", "purchase-orders"),
-      item("Invoices", "invoices"),
-      item("Payments", "payments"),
+      item("Products", "products", true),
+      item("Inventory", "inventory", true),
+      item("Sales orders", "sales-orders", true),
+      item("Purchase orders", "purchase-orders", true),
+      item("Invoices", "invoices", true),
+      item("Payments", "payments", true),
     ],
   },
   { label: "Data portal", items: [item("Datasets", "datasets"), item("Imports", "imports")] },

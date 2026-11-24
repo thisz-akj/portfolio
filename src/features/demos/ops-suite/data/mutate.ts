@@ -1,35 +1,30 @@
 import { and, eq, getTableName, inArray, ne } from "drizzle-orm";
 import type { PgTable } from "drizzle-orm/pg-core";
-import { getDb, type Db } from "../db/client";
-import { auditLog, companies, contacts, deals, entityTags, leads, tags, users } from "../db/schema";
+import { getDb } from "../db/client";
+import { companies, contacts, deals, entityTags, inventory, leads, products, purchaseOrders, salesOrders, tags, users, warehouses } from "../db/schema";
 import { CITIES } from "../db/seed/reference";
 import { addDaysISO, todayIST } from "../filters/dates";
 import { entityMetas } from "../entities";
 import { forms, validateForm, type FormField } from "../entities/forms";
 import { STAGE_PROBABILITY } from "../entities/crm-options";
 import { formatINR } from "../lib/format";
+import { currentActor, writeAudit, type Actor, type Tx } from "./audit";
+import { createOrderFromDeal, newPurchaseOrder, newSalesOrder } from "./erp";
 
 /**
  * All CRM writes go through here: validation (shared form rules), entity rules, one transaction per request,
  * and an audit_log row per changed record with a before/after diff of the changed fields only.
  */
 
-type Tx = Parameters<Parameters<Db["transaction"]>[0]>[0];
 type Values = Record<string, unknown>;
 export type MutationResult = { ok: true; id: number; ids?: number[] } | { ok: false; errors?: Record<string, string>; message?: string };
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TABLES: Record<string, PgTable & { id: any }> = { companies, contacts, leads, deals };
+const TABLES: Record<string, PgTable & { id: any }> = { companies, contacts, leads, deals, products, "sales-orders": salesOrders, "purchase-orders": purchaseOrders };
 const MAX_BULK = 500;
 
 const titleOf = (entity: string, r: Values) =>
-  entity === "contacts" ? `${r.firstName} ${r.lastName}` : entity === "deals" ? String(r.title) : String(r.name);
-
-/** The acting user. Phase 6 swaps this for the persona chosen in the role switcher. */
-export async function currentActor(db: Db | Tx): Promise<{ id: number; name: string } | null> {
-  const [u] = await db.select({ id: users.id, name: users.name }).from(users).where(eq(users.role, "admin")).orderBy(users.id).limit(1);
-  return u ?? null;
-}
+  entity === "contacts" ? `${r.firstName} ${r.lastName}` : entity === "deals" ? String(r.title) : entity === "sales-orders" || entity === "purchase-orders" ? String(r.number) : String(r.name);
 
 // ── diff + audit ────────────────────────────────────────────────────────────
 const norm = (v: unknown) => (v instanceof Date ? v.toISOString() : v === undefined ? null : v);
@@ -69,12 +64,9 @@ async function describeChange(tx: Tx, entity: string, changed: string[], before:
     .join(", ");
 }
 
-async function writeAudit(tx: Tx, actor: { id: number; name: string } | null, entity: string, id: number, action: string, summary: string, before: Values | null, after: Values | null) {
-  await tx.insert(auditLog).values({ actorId: actor?.id ?? null, action, entity, entityId: String(id), summary, before, after });
-}
-
 // ── entity rules ────────────────────────────────────────────────────────────
 async function applyRules(tx: Tx, entity: string, values: Values, before: Values | null): Promise<Record<string, string>> {
+  if ((entity === "sales-orders" || entity === "purchase-orders") && before && before.status !== "draft") return { _: "Only draft orders can be edited" };
   if (entity === "deals") {
     const stage = (values.stage ?? before?.stage) as string;
     const stageChanged = !before || (values.stage !== undefined && values.stage !== before.stage);
@@ -100,7 +92,13 @@ async function applyRules(tx: Tx, entity: string, values: Values, before: Values
   return {};
 }
 
-async function afterWrite(tx: Tx, entity: string, row: Values) {
+/** Side effects after a write, in the same transaction. `before` is null for creates. */
+async function afterWrite(tx: Tx, entity: string, row: Values, before: Values | null, actor: Actor) {
+  if (entity === "deals" && row.stage === "won" && before?.stage !== "won") await createOrderFromDeal(tx, row.id as number, actor);
+  if (entity === "products" && !before) {
+    const whs = await tx.select({ id: warehouses.id }).from(warehouses);
+    if (whs.length) await tx.insert(inventory).values(whs.map((w) => ({ productId: row.id as number, warehouseId: w.id, qtyOnHand: 0, qtyReserved: 0, reorderLevel: 10 }))).onConflictDoNothing();
+  }
   if (entity === "contacts" && row.isPrimary) {
     await tx
       .update(contacts)
@@ -134,10 +132,14 @@ export async function saveRecord(entity: string, id: number | null, raw: Values)
       }
       const values = { ...v.values };
       const ruleErrors = await applyRules(tx, entity, values, before);
+      if (ruleErrors._) return { ok: false, message: ruleErrors._ };
       if (Object.keys(ruleErrors).length) return { ok: false, errors: ruleErrors };
 
-      const [row] = (before ? await tx.update(table).set(values).where(eq(table.id, id!)).returning() : await tx.insert(table).values(values).returning()) as Values[];
-      await afterWrite(tx, entity, row);
+      let row: Values;
+      if (!before && entity === "sales-orders") row = await newSalesOrder(tx, values as { companyId: number; warehouseId: number; ownerId: number | null });
+      else if (!before && entity === "purchase-orders") row = await newPurchaseOrder(tx, { ...(values as { supplierId: number; warehouseId: number; expectedDate: string | null }), createdBy: actor?.id ?? null });
+      else [row] = (before ? await tx.update(table).set(values).where(eq(table.id, id!)).returning() : await tx.insert(table).values(values).returning()) as Values[];
+      await afterWrite(tx, entity, row, before, actor);
       const d = diff(before, row, Object.keys(values));
       const singular = entityMetas[entity].singular;
       if (!before) {
@@ -151,6 +153,7 @@ export async function saveRecord(entity: string, id: number | null, raw: Values)
   } catch (err) {
     const u = uniqueViolation(err);
     if (u?.includes("gstin")) return { ok: false, errors: { gstin: "Another company already has this GSTIN" } };
+    if (u?.includes("sku")) return { ok: false, errors: { sku: "Another product already has this SKU" } };
     throw err;
   }
 }
@@ -194,6 +197,7 @@ export async function bulkUpdate(entity: string, rawIds: unknown, action: BulkAc
       const errs = await applyRules(tx, entity, values, before);
       if (Object.keys(errs).length) throw new BulkError(Object.values(errs)[0]);
       const [row] = (await tx.update(table).set(values).where(eq(table.id, before.id as number)).returning()) as Values[];
+      await afterWrite(tx, entity, row, before, actor);
       const d = diff(before, row, Object.keys(values));
       if (!d.changed.length) continue;
       changedCount++;

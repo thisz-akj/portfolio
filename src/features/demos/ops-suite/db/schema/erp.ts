@@ -69,6 +69,8 @@ export const warehouses = pgTable("warehouses", {
 export const inventory = pgTable(
   "inventory",
   {
+    /** surrogate id for list/detail views; the natural key is (product, warehouse) */
+    id: serial("id").notNull().unique(),
     productId: integer("product_id")
       .notNull()
       .references(() => products.id, { onDelete: "cascade" }),

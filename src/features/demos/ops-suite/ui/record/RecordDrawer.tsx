@@ -32,8 +32,8 @@ export function RecordDrawer({ target, onClose, onChanged }: { target: DrawerTar
     return () => (opener.current as HTMLElement | null)?.focus?.();
   }, []);
 
-  const load = useCallback(async (t: DrawerTarget) => {
-    setState("loading");
+  const load = useCallback(async (t: DrawerTarget, quiet = false) => {
+    if (!quiet) setState("loading");
     try {
       if (t.id === "new") {
         setDetail(null);
@@ -99,9 +99,14 @@ export function RecordDrawer({ target, onClose, onChanged }: { target: DrawerTar
             onEdit={startEdit}
             onConvert={detail.entity === "leads" && detail.row.status !== "converted" ? () => setMode("convert") : undefined}
             onNavigate={(entity, id) => setCur({ entity, id })}
+            onChanged={(goto) => {
+              onChanged();
+              if (goto) setCur(goto);
+              else void load(cur, true);
+            }}
           />
         )}
-        {state === "ready" && mode === "edit" && formOptions && (
+        {state === "ready" && mode === "edit" && formOptions && (cur.id === "new" || detail) && (
           <>
             <h2 tabIndex={-1} className="ops-drawer-title">
               {title}

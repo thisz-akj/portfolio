@@ -3,6 +3,7 @@ import { parseAmount } from "../lib/format";
 import type { Option } from "../filters/types";
 import { INDUSTRY, LIFECYCLE, REGION, SIZE, STATES } from "./companies";
 import { DEAL_STAGE, LEAD_SOURCE, LEAD_STATUS, LOST_REASONS } from "./crm-options";
+import { CATEGORY, GST_RATE, UNIT } from "./erp-options";
 
 /**
  * Create/edit forms, shared by the client (instant feedback) and the server (authoritative validation).
@@ -17,7 +18,7 @@ export interface FormField {
   input: InputKind;
   required?: boolean;
   options?: Option[]; // select
-  optionsKey?: "owner" | "company" | "contact"; // relation (loaded by the server)
+  optionsKey?: "owner" | "company" | "contact" | "warehouse" | "supplier"; // relation (loaded by the server)
   /** relation: only show options whose `group` equals this field's value (e.g. contacts of the chosen company) */
   dependsOn?: string;
   min?: number;
@@ -101,6 +102,34 @@ export const forms: Record<string, EntityForm> = {
     ],
     check: (v): Record<string, string> => (v.stage === "lost" && !v.lostReason ? { lostReason: "Required when a deal is lost" } : {}),
   },
+  products: {
+    fields: [
+      { key: "name", label: "Product name", input: "text", required: true, maxLength: 140 },
+      { key: "sku", label: "SKU", input: "text", required: true, maxLength: 20, pattern: { re: /^[A-Z]{3}-\d{4}$/, message: "Format ABC-1234" }, half: true },
+      { key: "category", label: "Category", input: "select", options: CATEGORY, required: true, half: true },
+      { key: "price", label: "List price (₹, ex-GST)", input: "money", min: 1, required: true, half: true },
+      { key: "cost", label: "Unit cost (₹)", input: "money", min: 0, required: true, half: true },
+      { key: "gstRate", label: "GST rate", input: "select", options: GST_RATE, required: true, half: true },
+      { key: "unit", label: "Unit", input: "select", options: UNIT, required: true, half: true },
+      { key: "hsnCode", label: "HSN code", input: "text", required: true, maxLength: 8, pattern: { re: /^\d{4,8}$/, message: "4–8 digits" }, half: true },
+      { key: "active", label: "Active (can be sold)", input: "checkbox" },
+    ],
+    check: (v): Record<string, string> => (typeof v.price === "number" && typeof v.cost === "number" && v.cost > v.price ? { cost: "Cost is higher than the list price" } : {}),
+  },
+  "sales-orders": {
+    fields: [
+      { key: "companyId", label: "Customer", input: "relation", optionsKey: "company", required: true },
+      { key: "warehouseId", label: "Ship from", input: "relation", optionsKey: "warehouse", required: true, half: true },
+      { key: "ownerId", label: "Owner", input: "relation", optionsKey: "owner", half: true },
+    ],
+  },
+  "purchase-orders": {
+    fields: [
+      { key: "supplierId", label: "Supplier", input: "relation", optionsKey: "supplier", required: true },
+      { key: "warehouseId", label: "Deliver to", input: "relation", optionsKey: "warehouse", required: true, half: true },
+      { key: "expectedDate", label: "Expected delivery", input: "date", half: true },
+    ],
+  },
 };
 
 const email = z.email();
@@ -118,8 +147,8 @@ function parseField(f: FormField, raw: unknown): { value: unknown } | { error: s
     case "tel": {
       const str = String(s);
       if (f.maxLength && str.length > f.maxLength) return { error: `At most ${f.maxLength} characters` };
-      if (f.pattern && !f.pattern.re.test(f.key === "gstin" ? str.toUpperCase() : str)) return { error: f.pattern.message };
-      return { value: f.key === "gstin" ? str.toUpperCase() : str };
+      if (f.pattern && !f.pattern.re.test(f.key === "gstin" || f.key === "sku" ? str.toUpperCase() : str)) return { error: f.pattern.message };
+      return { value: f.key === "gstin" || f.key === "sku" ? str.toUpperCase() : str };
     }
     case "email":
       return email.safeParse(String(s).toLowerCase()).success ? { value: String(s).toLowerCase() } : { error: "Enter a valid email" };
@@ -144,7 +173,8 @@ function parseField(f: FormField, raw: unknown): { value: unknown } | { error: s
     case "date":
       return /^\d{4}-\d{2}-\d{2}$/.test(String(s)) && !Number.isNaN(Date.parse(String(s))) ? { value: String(s) } : { error: "Enter a date" };
     case "select":
-      return f.options?.some((o) => o.value === String(s)) ? { value: String(s) } : { error: "Choose an option" };
+      if (!f.options?.some((o) => o.value === String(s))) return { error: "Choose an option" };
+      return { value: f.key === "gstRate" ? Number(s) : String(s) };
     case "relation": {
       const n = typeof s === "number" ? s : Number(s);
       return Number.isInteger(n) && n > 0 ? { value: n } : { error: "Choose an option" };

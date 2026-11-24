@@ -23,7 +23,7 @@ export function RecordPage({ detail }: { detail: RecordDetail }) {
         <EntityForm
           entity={detail.entity}
           id={detail.id}
-          initial={detail.formValues}
+          initial={detail.formValues ?? {}}
           options={options}
           onCancel={() => setMode("view")}
           onSaved={() => {
@@ -52,6 +52,7 @@ export function RecordPage({ detail }: { detail: RecordDetail }) {
           setMode("edit");
         }}
         onConvert={detail.entity === "leads" && detail.row.status !== "converted" ? () => setMode("convert") : undefined}
+        onChanged={(goto) => (goto ? router.push(`${PORTAL_BASE}/${goto.entity}/${goto.id}`) : router.refresh())}
       />
     </div>
   );
