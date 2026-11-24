@@ -164,6 +164,10 @@ export interface EntityMeta {
   views: SavedView[];
   /** bulk actions offered on selected rows */
   bulk?: { owner?: boolean; enums?: string[]; tags?: boolean };
+  /** rows link here instead of opening the record drawer (e.g. audit entries → the record they describe) */
+  rowHref?: (row: Record<string, unknown>) => string | null;
+  /** fields always selected even when their columns are hidden (e.g. keys rowHref needs) */
+  alwaysSelect?: string[];
   /** enum shown as the status pill in record headers (defaults to the first bulk enum) */
   statusField?: string;
   /** Kanban board grouped by an enum field, summing a money field */

@@ -21,7 +21,7 @@ export interface ListResult {
 export async function listEntity(ent: EntityServer, query: ListQuery, now = new Date()): Promise<ListResult> {
   const db = await getDb();
   const where = whereFor(ent, query, now);
-  const cols = visibleColumns(ent.meta, query.cols);
+  const cols = [...new Set([...visibleColumns(ent.meta, query.cols), ...(ent.meta.alwaysSelect ?? [])])];
 
   const [[{ n: total }], facets, options] = await Promise.all([
     db.select({ n: count() }).from(ent.table).where(where),

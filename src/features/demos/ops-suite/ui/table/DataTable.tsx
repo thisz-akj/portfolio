@@ -411,7 +411,15 @@ export function DataTable({ entity, query: serverQuery, rows, total, facets, opt
                 </td>
                 {fields.map((f) => (
                   <td key={f.key} className={f.align === "end" ? "is-end" : undefined}>
-                    {f.primary ? (
+                    {f.primary && meta.rowHref ? (
+                      meta.rowHref(r) ? (
+                        <Link href={meta.rowHref(r)!} className="ops-row-link">
+                          <Cell field={f} row={r} options={options[f.key]} />
+                        </Link>
+                      ) : (
+                        <Cell field={f} row={r} options={options[f.key]} />
+                      )
+                    ) : f.primary ? (
                       <Link
                         href={`${PORTAL_BASE}/${entity}/${r.id}`}
                         className="ops-row-link"

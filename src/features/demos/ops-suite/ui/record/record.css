@@ -143,3 +143,17 @@
   .ops-line-add { grid-template-columns: 1fr 4.5rem auto; }
   .ops-line-add input[type="search"] { grid-column: 1 / -1; }
 }
+
+/* Import wizard */
+.ops-import-file { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem; }
+.ops-import-file label.ops-btn { cursor: pointer; }
+.ops-import-file label.ops-btn:focus-within { outline: 2px solid var(--live); outline-offset: 2px; }
+.ops-mapping { border: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+.ops-mapping legend { font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.4rem; }
+.ops-mapping-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; align-items: center; }
+.ops-mapping-row label { font-size: 0.8rem; }
+.ops-mapping-row label span { color: var(--live); }
+.ops-mapping-row label em { display: block; font-style: normal; font-family: var(--f-mono); font-size: 0.66rem; color: var(--dim); }
+.ops-mapping-row select { width: 100%; }
+.ops-preview { display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.8rem; }
+.ops-preview td { max-width: 14rem; overflow: hidden; text-overflow: ellipsis; }

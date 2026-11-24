@@ -10,6 +10,7 @@ import { formatDate } from "../../lib/format";
 import { PORTAL_BASE } from "../../nav";
 import { Cell, Pill } from "../table/Cell";
 import { ActionForm } from "./ActionForms";
+import { ImportWizard } from "./ImportWizard";
 import { Lines } from "./Lines";
 
 const KIND_ICON = { call: Phone, email: Mail, meeting: Users, note: StickyNote, task: SquareCheck, audit: CircleDot } as const;
@@ -111,7 +112,21 @@ export function RecordView({
           {notice.text}
         </p>
       )}
-      {active && <ActionForm action={active} context={detail.context} lines={detail.lines} pending={pending} onSubmit={(input) => run(active, input)} onCancel={() => setActive(null)} />}
+      {active?.input === "import" && detail.context ? (
+        <ImportWizard
+          datasetId={Number(detail.context.datasetId)}
+          schema={JSON.parse(String(detail.context.schema))}
+          sampleHref={String(detail.context.sample)}
+          onCancel={() => setActive(null)}
+          onDone={(jobId, text) => {
+            setActive(null);
+            setNotice({ text, ok: true });
+            onChanged({ entity: "imports", id: jobId });
+          }}
+        />
+      ) : (
+        active && <ActionForm action={active} context={detail.context} lines={detail.lines} pending={pending} onSubmit={(input) => run(active, input)} onCancel={() => setActive(null)} />
+      )}
 
       <dl className="ops-fields">
         {fields.map((f) => (

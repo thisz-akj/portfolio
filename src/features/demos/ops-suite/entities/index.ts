@@ -4,6 +4,7 @@ import { contactsMeta } from "./contacts";
 import { dealsMeta } from "./deals";
 import { inventoryMeta, invoicesMeta, paymentsMeta, productsMeta, purchaseOrdersMeta, salesOrdersMeta } from "./erp";
 import { leadsMeta } from "./leads";
+import { auditMeta, datasetsMeta, importsMeta } from "./portal";
 
 /** Client-safe registry of list entities. Add an entity here and in ./server.ts, then flip it `ready` in nav.ts. */
 export const entityMetas: Record<string, EntityMeta> = {
@@ -17,6 +18,9 @@ export const entityMetas: Record<string, EntityMeta> = {
   "purchase-orders": purchaseOrdersMeta,
   invoices: invoicesMeta,
   payments: paymentsMeta,
+  datasets: datasetsMeta,
+  imports: importsMeta,
+  "audit-log": auditMeta,
 };
 
 export const getEntityMeta = (key: string): EntityMeta | undefined => (Object.hasOwn(entityMetas, key) ? entityMetas[key] : undefined);

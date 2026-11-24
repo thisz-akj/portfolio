@@ -35,7 +35,7 @@ export interface RecordAction {
   key: string;
   label: string;
   tone?: "primary" | "danger";
-  input?: "payment" | "receive" | "adjust";
+  input?: "payment" | "receive" | "adjust" | "import";
   confirm?: string;
 }
 

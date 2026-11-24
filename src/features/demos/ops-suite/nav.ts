@@ -34,6 +34,6 @@ export const portalNav: NavGroup[] = [
       item("Payments", "payments", true),
     ],
   },
-  { label: "Data portal", items: [item("Datasets", "datasets"), item("Imports", "imports")] },
-  { label: "System", items: [item("Audit log", "audit-log")] },
+  { label: "Data portal", items: [item("Datasets", "datasets", true), item("Imports", "imports", true)] },
+  { label: "System", items: [item("Audit log", "audit-log", true)] },
 ];

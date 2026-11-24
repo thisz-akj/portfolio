@@ -120,6 +120,33 @@ server-side. Products get a stock row per warehouse on creation. Record detail p
 `actions`, an editable `lines` block and `context` for action forms (`data/detail.ts` → `workflow()`); server actions
 `runRecordAction` / `editLinesAction` dispatch them. Audit entity names are table names (`data/audit.ts` maps URL slugs).
 
+## Dashboard (`data/dashboard.ts`, `ui/dashboard/`)
+Six KPI tiles (orders booked month-to-date vs the same days last month, open pipeline + weighted, overdue receivables,
+90-day win rate, orders to fulfil, stock below reorder) and four single-series charts (orders by month, pipeline by
+stage, receivables by age, top customers) plus the latest audit events. **Every tile, bar and feed item links to the
+filtered list or record behind it.** Charts are plain HTML/CSS bars (no library): one series colour `--viz-1 #3987e5`,
+validated for the dark surface with the dataviz palette validator; hover/focus tooltips; a "Show data table" toggle on
+every chart.
+
+## Data portal (`data/importer.ts`, `ui/record/ImportWizard.tsx`)
+Datasets map source columns onto a target. Open a dataset → **Import CSV**: choose a file (≤ 1 MB, ≤ 5,000 rows) or
+download a **sample built from live data** (`/api/demos/ops-suite/datasets/<slug>/sample`, includes a few bad rows) →
+columns auto-map from headers → **Preview** (the real import inside a rolled-back transaction, so duplicates and running
+balances preview exactly) → **Import**. Each row runs in its own savepoint; rejected rows are stored on the run with reasons.
+
+| Target | Row rules |
+|---|---|
+| leads | lead form validation, known city (sets state), 10-digit phone, de-duplicated by email (incl. within the file); unassigned, status new |
+| products | existing SKU, positive price, GST 5/12/18/28, HSN 4–8 digits → updates price/GST/HSN (and name) |
+| inventory | existing SKU + warehouse code, non-negative count → sets on-hand, then auto-reorder |
+| invoices | existing invoice, YYYY-MM-DD date, amount ≤ balance → `recordPayment` (same rules as the UI) |
+
+The CSV parser (`lib/csv.ts`) is RFC 4180 with BOM/CRLF/`;`/tab handling and size limits; the server always re-parses.
+Server-action body limit is raised to 2 MB in `next.config.ts` for uploads.
+
+## Audit log
+`/audit-log` lists every audit event with the usual filters; rows link to the record they describe (`meta.rowHref`).
+
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)
 - `src/features/demos/ops-suite/lib/format.ts` — `formatINR` (₹12,40,000 / ₹12.4L / ₹1.25Cr)

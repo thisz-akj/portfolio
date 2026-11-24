@@ -1,6 +1,8 @@
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb, type Db } from "../db/client";
-import { activities, auditLog, companies, contacts, deals, inventory, invoices, leads, payments, products, purchaseOrderLines, purchaseOrders, salesOrderLines, salesOrders, suppliers, users, warehouses } from "../db/schema";
+import { activities, auditLog, companies, contacts, datasets, deals, importJobs, importRejectedRows, inventory, invoices, leads, payments, products, purchaseOrderLines, purchaseOrders, salesOrderLines, salesOrders, suppliers, users, warehouses } from "../db/schema";
+import { IMPORT_STATUS } from "../entities/portal";
+import { SUPPORTED_TARGETS } from "./importer";
 import { getEntityServer } from "../entities/server";
 import { entityMetas } from "../entities";
 import { forms } from "../entities/forms";
@@ -238,6 +240,48 @@ async function sections(db: Db, entity: string, id: number, row: Record<string, 
         },
       ];
     }
+    case "datasets": {
+      const [ds] = await db.select().from(datasets).where(eq(datasets.id, id));
+      const jobs = await db.select().from(importJobs).where(eq(importJobs.datasetId, id)).orderBy(desc(importJobs.startedAt)).limit(8);
+      return [
+        {
+          key: "mapping",
+          title: "Column mapping",
+          total: ds.schema.columns.length,
+          items: ds.schema.columns.map((c, i) => ({ id: i + 1, title: c.source, meta: `→ ${c.target}`, badge: c.required ? { label: "Required", color: "#fbbf24" } : { label: "Optional" } })),
+        },
+        {
+          key: "jobs",
+          title: "Recent runs",
+          total: jobs.length,
+          viewAll: listHref("imports", "dataset", id),
+          items: jobs.map((j) => ({ id: j.id, title: j.fileName ?? `Run #${j.id}`, meta: `${j.rowsOk}/${j.rowsTotal} rows${j.startedAt ? ` · ${formatDate(j.startedAt)}` : ""}`, badge: badge(IMPORT_STATUS, j.status), href: href("imports", j.id) })),
+          empty: "Never imported",
+        },
+      ];
+    }
+    case "imports": {
+      const [job] = await db.select().from(importJobs).where(eq(importJobs.id, id));
+      const [[ds], rejected] = await Promise.all([db.select().from(datasets).where(eq(datasets.id, job.datasetId)), db.select().from(importRejectedRows).where(eq(importRejectedRows.jobId, id)).orderBy(importRejectedRows.rowNumber).limit(50)]);
+      return [
+        { key: "dataset", title: "Dataset", total: 1, items: ds ? [{ id: ds.id, title: ds.name, subtitle: ds.description ?? undefined, href: href("datasets", ds.id) }] : [] },
+        {
+          key: "rejected",
+          title: "Rejected rows",
+          total: job.rowsFailed,
+          items: rejected.map((r) => ({
+            id: r.id,
+            title: `Row ${r.rowNumber}: ${r.errors.join("; ")}`,
+            subtitle: Object.entries(r.raw)
+              .map(([k, v]) => `${k}=${v === "" ? "∅" : v}`)
+              .join(" · ")
+              .slice(0, 160),
+            badge: { label: "Rejected", color: "#f87171" },
+          })),
+          empty: job.status === "failed" ? (job.error ?? "The run failed") : "Every row was imported",
+        },
+      ];
+    }
     case "payments": {
       const [p] = await db.select().from(payments).where(eq(payments.id, id));
       const [inv] = await db.select().from(invoices).where(eq(invoices.id, p.invoiceId));
@@ -326,7 +370,17 @@ async function workflow(db: Db, entity: string, id: number): Promise<{ actions: 
       const [inv] = await db.select().from(inventory).where(eq(inventory.id, id));
       return { editable: false, actions: [{ key: "adjust", label: "Adjust stock", input: "adjust" }], context: { qtyOnHand: inv.qtyOnHand } };
     }
+    case "datasets": {
+      const [ds] = await db.select().from(datasets).where(eq(datasets.id, id));
+      const importable = SUPPORTED_TARGETS.includes(ds.targetEntity);
+      return {
+        editable: false,
+        actions: importable ? [{ key: "import", label: "Import CSV", tone: "primary", input: "import" }] : [],
+        context: { datasetId: id, slug: ds.slug, schema: JSON.stringify(ds.schema.columns), sample: `/api/demos/ops-suite/datasets/${ds.slug}/sample` },
+      };
+    }
     case "payments":
+    case "imports":
       return { editable: false, actions: [] };
     default:
       return { editable: true, actions: [] };
@@ -369,7 +423,7 @@ async function timeline(db: Db, entity: string, id: number): Promise<TimelineIte
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const TABLE_FOR: Record<string, any> = { companies, contacts, leads, deals, products, inventory, "sales-orders": salesOrders, "purchase-orders": purchaseOrders, invoices, payments };
+const TABLE_FOR: Record<string, any> = { companies, contacts, leads, deals, products, inventory, "sales-orders": salesOrders, "purchase-orders": purchaseOrders, invoices, payments, datasets, imports: importJobs };
 
 export async function getDetail(entity: string, id: number): Promise<RecordDetail | null> {
   const ent = getEntityServer(entity);

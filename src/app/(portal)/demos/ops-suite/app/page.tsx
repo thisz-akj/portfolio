@@ -1,68 +1,104 @@
-import { count } from "drizzle-orm";
-import type { PgTable } from "drizzle-orm/pg-core";
-import { getHandle } from "@/features/demos/ops-suite/db/client";
-import * as s from "@/features/demos/ops-suite/db/schema";
+import Link from "next/link";
+import { ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { loadDashboard, type Dashboard, type Kpi } from "@/features/demos/ops-suite/data/dashboard";
+import { formatINR } from "@/features/demos/ops-suite/lib/format";
+import { BarList, ColumnChart } from "@/features/demos/ops-suite/ui/dashboard/Charts";
+import { PORTAL_BASE } from "@/features/demos/ops-suite/nav";
 
 export const dynamic = "force-dynamic";
 
-const modules: { label: string; tables: [string, PgTable][] }[] = [
-  { label: "CRM", tables: [["Companies", s.companies], ["Contacts", s.contacts], ["Leads", s.leads], ["Deals", s.deals], ["Activities", s.activities]] },
-  { label: "ERP", tables: [["Products", s.products], ["Sales orders", s.salesOrders], ["Purchase orders", s.purchaseOrders], ["Invoices", s.invoices], ["Payments", s.payments]] },
-  { label: "Data portal", tables: [["Datasets", s.datasets], ["Import jobs", s.importJobs], ["Audit events", s.auditLog]] },
-];
-
-async function dbStatus() {
-  try {
-    const { db, driver } = await getHandle();
-    const counts = await Promise.all(
-      modules.map(async (m) => ({
-        label: m.label,
-        rows: await Promise.all(m.tables.map(async ([name, t]) => ({ name, n: (await db.select({ n: count() }).from(t))[0].n }))),
-      })),
-    );
-    return { ok: true as const, driver, counts };
-  } catch (err) {
-    console.error("[ops-suite] database unavailable:", err);
-    return { ok: false as const };
-  }
+const rel = new Intl.RelativeTimeFormat("en-IN", { numeric: "auto" });
+function ago(iso: string, now: number) {
+  const s = Math.round((Date.parse(iso) - now) / 1000);
+  const abs = Math.abs(s);
+  if (abs < 60) return rel.format(s, "second");
+  if (abs < 3600) return rel.format(Math.round(s / 60), "minute");
+  if (abs < 86_400) return rel.format(Math.round(s / 3600), "hour");
+  return rel.format(Math.round(s / 86_400), "day");
 }
 
-const fmt = new Intl.NumberFormat("en-IN");
+function KpiTile({ k }: { k: Kpi }) {
+  const value = k.format === "inr" ? formatINR(k.value, { compact: true }) : k.format === "pct" ? `${Math.round(k.value * 100)}%` : k.value.toLocaleString("en-IN");
+  const up = (k.delta?.value ?? 0) >= 0;
+  return (
+    <Link href={k.href} className="ops-kpi">
+      <span className="ops-kpi-label">{k.label}</span>
+      <strong className="ops-kpi-value" title={k.format === "inr" ? formatINR(k.value) : undefined}>
+        {value}
+      </strong>
+      {k.delta && (
+        <span className={`ops-kpi-delta ${up ? "is-up" : "is-down"}`}>
+          {up ? <ArrowUpRight size={13} aria-hidden="true" /> : <ArrowDownRight size={13} aria-hidden="true" />}
+          {up ? "+" : "−"}
+          {Math.abs(Math.round(k.delta.value * 100))}% <em>{k.delta.label}</em>
+        </span>
+      )}
+      {k.sub && <span className="ops-kpi-sub">{k.sub}</span>}
+    </Link>
+  );
+}
 
-export default async function Dashboard() {
-  const st = await dbStatus();
+export default async function DashboardPage() {
+  let d: Dashboard;
+  try {
+    d = await loadDashboard();
+  } catch (err) {
+    console.error("[ops-suite] dashboard failed:", err);
+    return (
+      <section className="ops-card" role="alert">
+        <p>
+          <span className="ops-dot is-down" aria-hidden="true" /> The demo database is unavailable right now.
+        </p>
+      </section>
+    );
+  }
+  const now = Date.now();
   return (
     <>
       <div className="ops-head">
         <h1>Dashboard</h1>
-        <p>CRM, ERP and data portal on one Postgres database. KPIs and charts land in phase 5.</p>
+        <p>One database behind the CRM, ERP and data portal. Every number links to the records behind it.</p>
       </div>
-      {st.ok ? (
-        <>
-          <p className="ops-conn">
-            <span className="ops-dot is-ok" aria-hidden="true" /> Connected to {st.driver}
-          </p>
-          {st.counts.map((m) => (
-            <section key={m.label} className="ops-card ops-status">
-              <h2>{m.label}</h2>
-              <dl>
-                {m.rows.map((r) => (
-                  <div key={r.name}>
-                    <dt>{r.name}</dt>
-                    <dd>{fmt.format(r.n)}</dd>
-                  </div>
-                ))}
-              </dl>
-            </section>
-          ))}
-        </>
-      ) : (
-        <section className="ops-card ops-status" aria-live="polite">
-          <p>
-            <span className="ops-dot is-down" aria-hidden="true" /> The demo database is unavailable right now.
-          </p>
+
+      <section className="ops-kpis" aria-label="Key figures">
+        {d.kpis.map((k) => (
+          <KpiTile key={k.key} k={k} />
+        ))}
+      </section>
+
+      <div className="ops-dash">
+        <section className="ops-card ops-dash-wide">
+          <ColumnChart title="Orders booked by month" note="₹ incl. GST, excluding cancelled · * month to date" points={d.revenue} valueLabel="Orders (₹)" />
         </section>
-      )}
+        <section className="ops-card">
+          <BarList title="Open pipeline by stage" note="Deal value" points={d.funnel} valueLabel="Value (₹)" />
+        </section>
+        <section className="ops-card">
+          <BarList title="Receivables by age" note="Unpaid balance, days past due" points={d.aging} valueLabel="Balance (₹)" />
+        </section>
+        <section className="ops-card">
+          <BarList title="Top customers" note="Orders in the last 12 months" points={d.topCustomers} valueLabel="Orders (₹)" />
+        </section>
+        <section className="ops-card ops-feed" aria-labelledby="feed-title">
+          <h2 id="feed-title" className="viz-title">
+            Activity
+            <Link href={`${PORTAL_BASE}/audit-log`} className="ops-link">
+              Audit log
+            </Link>
+          </h2>
+          <ol>
+            {d.feed.map((f) => (
+              <li key={f.id}>
+                {f.href ? <Link href={f.href}>{f.summary}</Link> : <span>{f.summary}</span>}
+                <span className="ops-feed-meta">
+                  <time dateTime={f.at}>{ago(f.at, now)}</time>
+                  {f.actor && ` · ${f.actor}`}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      </div>
     </>
   );
 }

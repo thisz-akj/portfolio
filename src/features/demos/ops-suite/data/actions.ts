@@ -172,3 +172,37 @@ export async function editLinesAction(entity: unknown, id: unknown, op: unknown)
   }
 }
 
+
+// ── data portal imports ─────────────────────────────────────────────────────
+export type ImportActionResult =
+  | { ok: true; total: number; imported: number; rejected: number; sample: { row: number; ok: boolean; errors: string[]; values: Record<string, string> }[]; jobId?: number }
+  | { ok: false; message: string };
+
+const isMapping = (m: unknown): m is Record<string, string> => isPlain(m) && Object.values(m).every((v) => typeof v === "string" && v.length <= 200);
+
+/** Validates a CSV against a dataset without saving anything (the import runs and is rolled back). */
+export async function previewImportAction(datasetId: unknown, csv: unknown, mapping: unknown): Promise<ImportActionResult> {
+  return importAction(datasetId, csv, mapping, true);
+}
+
+/** Imports a CSV: good rows are applied, bad rows are stored with reasons on the import job. */
+export async function runImportAction(datasetId: unknown, csv: unknown, mapping: unknown, fileName: unknown): Promise<ImportActionResult> {
+  return importAction(datasetId, csv, mapping, false, typeof fileName === "string" ? fileName.replace(/[^\w.\- ]/g, "_") : undefined);
+}
+
+async function importAction(datasetId: unknown, csv: unknown, mapping: unknown, dryRun: boolean, fileName?: string): Promise<ImportActionResult> {
+  if (!isId(datasetId) || typeof csv !== "string" || !isMapping(mapping)) return { ok: false, message: "Invalid request" };
+  const { CSV_LIMITS } = await import("../lib/csv");
+  if (csv.length > CSV_LIMITS.bytes) return { ok: false, message: "File is larger than 1 MB" };
+  try {
+    const { runImport } = await import("./importer");
+    const res = await runImport(datasetId, csv, mapping, { dryRun, fileName });
+    if (!res.ok) return res;
+    if (!dryRun) refresh();
+    const o = res.outcome;
+    return { ok: true, total: o.total, imported: o.ok, rejected: o.failed, sample: o.sample, jobId: o.jobId };
+  } catch (err) {
+    console.error("[ops-suite] import failed:", err);
+    return { ok: false, message: "Something went wrong — the demo database may be unavailable." };
+  }
+}
