@@ -8,6 +8,13 @@
       "when": 1795455210047,
       "tag": "0000_core",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1795482596337,
+      "tag": "0001_crm_erp_portal",
+      "breakpoints": true
     }
   ]
 }

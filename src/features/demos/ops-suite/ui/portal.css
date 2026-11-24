@@ -68,3 +68,4 @@ a.ops-nav-link:hover { background: #161616; color: var(--white); }
   .ops-back { margin-left: auto; }
   .ops-top, .ops-content { padding-left: 1rem; padding-right: 1rem; }
 }
+.ops-conn { display: flex; align-items: center; gap: 0.45rem; font-family: var(--f-mono); font-size: 0.75rem; color: var(--mid); }
