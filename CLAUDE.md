@@ -11,7 +11,7 @@ Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/n
 
 ## Where things live
 - `src/content/*.ts` — **all copy & data** (site/contact info, 7 solutions + side-panel stories/showcases, demos, projects, clients, hero tiles). Edit here first; components never hard-code content. Types in `src/types/content.ts`.
-- `src/app/` — routes: `/`, `/solutions`, `/demos`, `/demos/[slug]`, `/work`, `/work/[slug]`, `/about`, `/contact`, `/api/contact`.
+- `src/app/` — root layout is bare (html/body/fonts). `(site)/` group (layout = `SiteChrome`: header, footer, cursor, Lenis, sound) holds `/`, `/solutions`, `/demos`, `/demos/[slug]`, `/work`, `/work/[slug]`, `/about`, `/contact`; `not-found.tsx` wraps itself in `SiteChrome`. `(portal)/` group holds app-style demo UIs without that chrome. `/api/contact`.
 - `src/components/layout/` header (section progress, SoundToggle), footer (particle/glitch name), cursor, Lenis, SoundProvider.
 - `src/components/home/` Loader (typed name + iris), Hero (tiles, gathering choreography), HeroMesh (canvas), starAssembly (glints), Clients (ticker lane).
 - `src/components/hired/` "Things I keep getting hired for" bento, mock-UI Previews, SolutionDrawer (right half-panel), Showcase (scripted demo).
@@ -19,6 +19,7 @@ Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/n
 - `src/lib/` motion (gsap/loader events), sound (Web Audio synth — no audio files), fonts, bento grid maths, contact validation, curve maths.
 - Styles: `src/app/globals.css` (tokens, base, sections) + `src/styles/hired.css` (bento, previews, drawer, lanes, portrait). Both are large — edit targeted sections, don't re-read whole files.
 - `src/features/demos/registry.ts` — register interactive demos here (all demos are "coming-soon"; never mark Live without real model execution).
+- Ops Suite demo (CRM + ERP + data portal, Drizzle + Postgres 16 locally via `DATABASE_URL` in `.env.local`, PGlite only in tests): `src/features/demos/ops-suite/`, portal at `/demos/ops-suite/app`. Plan, phases & DB commands (`npm run db:*`): `docs/demos/ops-suite.md`.
 - Docs: `docs/architecture/overview.md` (motion + sound tables), `docs/development/adding-a-demo.md`, `docs/credits.md`.
 
 ## Design rules (keep consistent)

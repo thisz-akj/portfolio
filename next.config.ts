@@ -8,6 +8,8 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  // PGlite ships WASM + data files; load it from node_modules instead of bundling it.
+  serverExternalPackages: ["@electric-sql/pglite"],
   images: { formats: ["image/avif", "image/webp"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
