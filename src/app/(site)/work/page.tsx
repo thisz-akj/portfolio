@@ -6,7 +6,7 @@ import { SectionHeading } from "@/components/shared/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "Selected engineering projects and case studies: visual SLAM, camera–LiDAR calibration, quantization studies.",
+  description: "Selected projects and case studies: an AI-automated CRM/ERP/data portal, visual SLAM, camera–LiDAR calibration, quantization studies.",
 };
 
 export default function WorkPage() {

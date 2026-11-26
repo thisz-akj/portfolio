@@ -1,19 +1,25 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ArrowUpRight, Check, ChevronLeft, ChevronRight, X } from "lucide-react";
-import type { Solution } from "@/types/content";
+import { ArrowDown, ArrowUpRight, Check, ChevronLeft, ChevronRight, X } from "lucide-react";
+import type { Project, Solution } from "@/types/content";
 import { getDemo, statusLabel } from "@/content/demos";
+import { getProject } from "@/content/projects";
+import { lazyShowcases } from "@/features/demos/lazyShowcase";
 import { solutionIcons } from "@/components/ui/Icons";
 import { Preview } from "./Preview";
 import { Showcase } from "./Showcase";
+import { VisionStory } from "./VisionStory";
+import { AutomationStory } from "./AutomationStory";
 import { LoopVideo } from "@/components/shared/LoopVideo";
 
 /**
- * Panel that slides in from the right and covers half the screen:
- * a note from me about the solution, how I build it, then a demo showcase.
+ * Full-screen story for a solution card: an article (problem, what it does, how industries use it, why it's
+ * different, proof from case studies, screens, a note from me) followed by the same demo showcase as
+ * /demos/<slug>, so a visitor can read and then try it without leaving the page.
  */
 export function SolutionDrawer({
   solution,
@@ -75,9 +81,28 @@ export function SolutionDrawer({
 
   const s = solution;
   const demo = s?.demoSlug ? getDemo(s.demoSlug) : undefined;
+  const Live = demo && demo.status !== "coming-soon" ? lazyShowcases[demo.slug] : undefined;
+  const projects = (s?.projects ?? []).map(getProject).filter((p): p is Project => !!p);
+  const shots = s ? [...new Set(s.shots ?? projects.flatMap((p) => p.gallery))].slice(0, 7) : [];
+  const shotAlt = (src: string, i: number) => {
+    const p = projects.find((x) => x.gallery.includes(src));
+    return `${p?.title ?? s?.title ?? "Screenshot"} (screenshot ${i + 1})`;
+  };
+  const ready = !!demo && demo.status !== "coming-soon";
+  const tryHref = s?.demoHref ?? (ready ? `/demos/${demo!.slug}` : projects[0] ? `/work/${projects[0].slug}` : "/contact");
+  const tryLabel = s?.demoLabel ?? (ready ? `Try ${demo!.name}` : projects[0] ? "Read the case studies" : "Talk about it");
   const Icon = s ? solutionIcons[s.icon] : null;
   let k = 0;
   const kk = () => ({ ["--k" as string]: k++ }) as React.CSSProperties;
+  const go = (id: string) => scroller.current?.querySelector(`#${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const toc = [
+    ["sd-problem", "The problem"],
+    ["sd-does", "What it does"],
+    ["sd-industry", "How it's used"],
+    ["sd-usp", "Why it's different"],
+    ["sd-proof", "Proof"],
+    ["sd-try", "Try it"],
+  ] as const;
 
   if (!mounted) return null;
   // Portal to <body> so the panel sits above the fixed header, outside section stacking contexts.
@@ -86,11 +111,12 @@ export function SolutionDrawer({
       <div className={`drawer-backdrop ${open ? "open" : ""}`} onClick={onClose} aria-hidden="true" />
       <aside
         ref={panel}
-        className={`drawer ${open ? "open" : ""}`}
-        role="dialog"
-        aria-modal="true"
+        className={`drawer drawer--story ${open ? "open" : ""}`}
+        role={open ? "dialog" : undefined}
+        aria-modal={open ? true : undefined}
         aria-hidden={!open}
-        aria-label={s ? `${s.title} — details` : "Details"}
+        inert={!open}
+        aria-label={s ? `${s.title}: the full story` : "Details"}
         data-lenis-prevent
       >
         {s && (
@@ -106,108 +132,162 @@ export function SolutionDrawer({
                 <button type="button" className="drawer-btn" onClick={() => onStep(1)} aria-label="Next solution">
                   <ChevronRight size={17} />
                 </button>
-                <button type="button" className="drawer-btn close" onClick={onClose} aria-label="Close panel">
+                <button type="button" className="drawer-btn close" onClick={onClose} aria-label="Close">
                   <X size={17} />
                 </button>
               </div>
             </div>
 
-            <div className="drawer-scroll" ref={scroller} key={s.slug}>
-              <div style={kk()}>
+            {s.layout === "chapters" ? (
+              <div className="drawer-scroll vision" ref={scroller} key={s.slug}>
+                <VisionStory s={s} open={open} onClose={onClose} />
+              </div>
+            ) : s.layout === "pitch" && s.article ? (
+              <div className="drawer-scroll vision" ref={scroller} key={s.slug}>
+                <AutomationStory s={s} open={open} onClose={onClose} />
+              </div>
+            ) : (
+            <div className="drawer-scroll story" ref={scroller} key={s.slug}>
+              <header className="story-head" style={kk()}>
                 <h2 className="drawer-title">{s.title}</h2>
                 <p className="drawer-hook">{s.hook}</p>
-              </div>
-
-              <div className="drawer-hero" style={kk()}>
-                <div className="rent-art" style={{ backgroundImage: `url(${s.art})` }}>
-                  {s.video && open && <LoopVideo src={`/video/${s.video}.mp4`} poster={`/video/${s.video}.webp`} className="art-video" />}
+                {demo && <p className="story-lede">{demo.summary}</p>}
+                <div className="story-cta">
+                  <Link href={tryHref} className="btn-pill" onClick={onClose}>
+                    {tryLabel} <ArrowUpRight size={16} />
+                  </Link>
+                  <button type="button" className="btn-ghost" onClick={() => go("sd-try")}>
+                    {ready ? "See the demo here" : "See a walkthrough"} <ArrowDown size={13} />
+                  </button>
                 </div>
-                <Preview kind={s.preview} />
-              </div>
+              </header>
 
-              <section className="drawer-sec" style={kk()}>
-                <p className="drawer-label">A word from me</p>
-                <p className="drawer-word">{s.story}</p>
-                <p className="drawer-sign">— Azad</p>
-              </section>
-
-              <section className="drawer-sec drawer-cols" style={kk()}>
-                <div>
-                  <p className="drawer-label">What it does</p>
-                  <ul className="drawer-list">
-                    {s.capabilities.map((c) => (
-                      <li key={c}>
-                        <Check size={15} /> {c}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <p className="drawer-label">Who it&apos;s for</p>
-                  <div className="chips">
-                    {s.customers.map((c) => (
-                      <span className="chip" key={c}>
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                  <p className="drawer-label" style={{ marginTop: "2rem" }}>
-                    Toolbox
-                  </p>
-                  <div className="chips">
-                    {s.stack.map((c) => (
-                      <span className="chip" key={c}>
-                        {c}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </section>
-
-              <section className="drawer-sec" style={kk()}>
-                <p className="drawer-label">How I build it</p>
-                <ol className="drawer-steps">
-                  {s.build.map((b) => (
-                    <li key={b}>{b}</li>
-                  ))}
-                </ol>
-              </section>
-
-              <section className="drawer-sec" style={kk()}>
-                <p className="drawer-label">In the wild</p>
-                {s.media ? (
-                  <div className="media-slot filled">
-                    {s.media.type === "video" ? (
-                      <video src={s.media.src} muted loop playsInline autoPlay aria-label={s.media.alt} />
-                    ) : (
-                      // eslint-disable-next-line @next/next/no-img-element -- owner-supplied media of unknown size
-                      <img src={s.media.src} alt={s.media.alt} />
-                    )}
-                  </div>
+              <figure className="story-hero" style={kk()}>
+                {s.clip ? (
+                  <LoopVideo src={s.clip} poster={s.clip.replace(/\.mp4$/, ".webp")} className="story-clip" paused={!open} />
+                ) : shots[0] ? (
+                  <Image src={shots[0]} alt={shotAlt(shots[0], 0)} width={1600} height={1000} sizes="(max-width: 900px) 100vw, 1100px" priority />
                 ) : (
-                  <div className="media-slot">
-                    Product screenshots / video go here
-                    <br />
-                    <span style={{ color: "#444" }}>set `media` in src/content/solutions.ts</span>
+                  <div className="drawer-hero">
+                    <div className="rent-art" style={{ backgroundImage: `url(${s.art})` }}>
+                      {s.video && open && <LoopVideo src={`/video/${s.video}.mp4`} poster={`/video/${s.video}.webp`} className="art-video" />}
+                    </div>
+                    <Preview kind={s.preview} />
                   </div>
                 )}
-              </section>
+              </figure>
 
-              <section className="drawer-sec" style={kk()}>
-                <p className="drawer-label">Try it</p>
-                <Showcase data={s.showcase} resetKey={s.slug} />
-                <div className="drawer-foot">
-                  {demo && (
-                    <Link href={`/demos/${demo.slug}`} className="btn-ghost" onClick={onClose}>
-                      Full demo · {statusLabel[demo.status]} <ArrowUpRight size={13} />
-                    </Link>
+              <div className="story-body" style={kk()}>
+                <nav className="story-toc" aria-label="On this page">
+                  {toc.map(([id, label], i) => (
+                    <button key={id} type="button" onClick={() => go(id)}>
+                      <span>0{i + 1}</span> {label}
+                    </button>
+                  ))}
+                </nav>
+
+                <article className="story-article">
+                  <section id="sd-problem" className="story-sec">
+                    <p className="drawer-label">01 · The problem</p>
+                    <p className="story-big">{s.problem}</p>
+                    {demo && <p>{demo.problem}</p>}
+                  </section>
+
+                  <section id="sd-does" className="story-sec">
+                    <p className="drawer-label">02 · What it does</p>
+                    <ul className="drawer-list">
+                      {s.capabilities.map((c) => (
+                        <li key={c}>
+                          <Check size={15} /> {c}
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
+
+                  <section id="sd-industry" className="story-sec">
+                    <p className="drawer-label">03 · How it&apos;s used</p>
+                    <div className="story-industries">
+                      {s.industries.map((x) => (
+                        <div key={x.name}>
+                          <h3>{x.name}</h3>
+                          <p>{x.use}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="chips" style={{ marginTop: "1.2rem" }}>
+                      {(demo?.applications ?? s.customers).map((c) => (
+                        <span className="chip" key={c}>
+                          {c}
+                        </span>
+                      ))}
+                    </div>
+                  </section>
+
+                  <section id="sd-usp" className="story-sec">
+                    <p className="drawer-label">04 · Why it&apos;s different</p>
+                    <ol className="story-usp">
+                      {s.usp.map((u) => (
+                        <li key={u}>{u}</li>
+                      ))}
+                    </ol>
+                  </section>
+
+                  <section id="sd-proof" className="story-sec">
+                    <p className="drawer-label">05 · Proof</p>
+                    {demo?.evaluation && <p>{demo.evaluation}</p>}
+                    {projects.map((p) => (
+                      <div key={p.slug} className="story-proof">
+                        <Link href={`/work/${p.slug}`} onClick={onClose} className="story-proof-title">
+                          {p.title} <ArrowUpRight size={13} />
+                        </Link>
+                        {p.results.length > 0 && (
+                          <dl>
+                            {p.results.slice(0, 4).map((r) => (
+                              <div key={r.label}>
+                                <dt>{r.value}</dt>
+                                <dd>{r.label}</dd>
+                              </div>
+                            ))}
+                          </dl>
+                        )}
+                      </div>
+                    ))}
+                    {!demo?.evaluation && projects.length === 0 && <p>Try it below: every answer shows its topic, route and sources.</p>}
+                  </section>
+
+                  {shots.length > 1 && (
+                    <section className="story-sec">
+                      <p className="drawer-label">Screens</p>
+                      <div className="story-gallery">
+                        {shots.slice(1).map((src, i) => (
+                          <Image key={src} src={src} alt={shotAlt(src, i + 1)} width={1600} height={1000} sizes="(max-width: 900px) 100vw, 540px" />
+                        ))}
+                      </div>
+                    </section>
                   )}
+
+                  <section className="story-sec">
+                    <p className="drawer-label">A word from me</p>
+                    <p className="drawer-word">{s.story}</p>
+                    <p className="drawer-sign">— Azad</p>
+                  </section>
+                </article>
+              </div>
+
+              <section id="sd-try" className="story-demo" style={kk()}>
+                <p className="drawer-label">06 · Try it</p>
+                {Live && open ? <Live /> : <Showcase data={s.showcase} resetKey={s.slug} />}
+                <div className="drawer-foot">
+                  <Link href={ready || !demo ? tryHref : `/demos/${demo.slug}`} className="btn-ghost" onClick={onClose}>
+                    {ready ? tryLabel : demo ? `Demo · ${statusLabel[demo.status]}` : tryLabel} <ArrowUpRight size={13} />
+                  </Link>
                   <Link href="/contact" className="btn-pill" onClick={onClose}>
                     Build this with me <ArrowUpRight size={16} />
                   </Link>
                 </div>
               </section>
             </div>
+            )}
           </>
         )}
       </aside>

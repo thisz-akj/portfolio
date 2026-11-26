@@ -10,4 +10,4 @@
 5. Change the status to `limited-preview` and then to `live` **only once real model execution works**. `tests/content.test.ts` fails if a demo is marked live without a registered component.
 6. Write `docs/demos/<slug>.md` covering behaviour, inputs, architecture and limitations.
 
-The demo page template (`src/app/demos/[slug]/page.tsx`) renders the 10-part structure automatically.
+The demo page template (`src/app/demos/[slug]/page.tsx`) renders the 9-part structure automatically. Public pages never show system architecture (owner rule) — keep it in `docs/` only.

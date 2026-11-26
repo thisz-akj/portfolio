@@ -55,6 +55,7 @@ export function Clients({ clients }: { clients: Client[] }) {
   return (
     <section className="clients-section" id="clients" ref={root} aria-label="Some of my clients">
       <div className="clients-head">
+        <p className="eyebrow">04 · Trusted by</p>
         <div style={{ position: "relative" }} className="ink-wrap">
           <Poster lines={["Some of my", "clients."]} />
           {/* Hand-drawn ink: arrow + scribble, drawn via stroke-dashoffset */}

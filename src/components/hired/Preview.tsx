@@ -41,7 +41,7 @@ const TITLES: Record<PreviewKind, string> = {
   voice: "front-desk · call",
   data: "ask your data",
   eval: "eval · run #42",
-  cv: "cam-03 · aisle B",
+  cv: "amr-02 · front camera",
 };
 
 const BODIES: Record<PreviewKind, React.ReactNode> = {
@@ -171,16 +171,20 @@ const BODIES: Record<PreviewKind, React.ReactNode> = {
     </div>
   ),
   cv: (
+    // A rendered AMR front-camera frame; box positions come from the renderer's own 3D object extents
+    // (scripts/render-vision-media.py --frontcam), so every box sits on what its label says.
     <div className="cv">
+      {/* eslint-disable-next-line @next/next/no-img-element -- decorative frame inside a scaled mock UI */}
+      <img className="cv-frame" src="/art/amr-front-camera.webp" alt="" width={1280} height={696} loading="lazy" decoding="async" />
       <div className="scan" />
-      <div className="box ok" style={{ left: "10%", top: "22%", width: "18%", height: "62%", ["--i" as string]: 0 }}>
-        <em>person · ppe ✓</em>
+      <div className="box ok" style={{ left: "28.6%", top: "9.4%", width: "13.1%", height: "65%", ["--i" as string]: 0 }}>
+        <em>person · 3.1 m</em>
       </div>
-      <div className="box ok" style={{ left: "38%", top: "30%", width: "26%", height: "48%", ["--i" as string]: 1 }}>
-        <em>forklift</em>
+      <div className="box ok" style={{ left: "37.2%", top: "31.6%", width: "36.6%", height: "45.6%", ["--i" as string]: 1 }}>
+        <em>trolley · 10 kp</em>
       </div>
-      <div className="box bad" style={{ left: "72%", top: "18%", width: "17%", height: "66%", ["--i" as string]: 2 }}>
-        <em>no hard hat</em>
+      <div className="box bad inside" style={{ left: "75.6%", top: "1.5%", width: "23.4%", height: "97%", ["--i" as string]: 2 }}>
+        <em>too close · 0.8 m</em>
       </div>
     </div>
   ),

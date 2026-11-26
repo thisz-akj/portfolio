@@ -1,5 +1,5 @@
 import localFont from "next/font/local";
-import { Ballet, Barlow_Condensed, Instrument_Serif, JetBrains_Mono, Patrick_Hand_SC } from "next/font/google";
+import { Ballet, Barlow_Condensed, Instrument_Serif, JetBrains_Mono, Mrs_Saint_Delafield, Patrick_Hand_SC } from "next/font/google";
 
 /**
  * Font slots, each exposed as a CSS variable consumed in globals.css.
@@ -47,6 +47,7 @@ export const poster = Barlow_Condensed({
   weight: ["700", "800"],
   variable: "--font-poster",
   display: "swap",
+  preload: false, // only used below the fold; don't compete with the hero on first load
 });
 
 export const hand = Patrick_Hand_SC({
@@ -54,6 +55,7 @@ export const hand = Patrick_Hand_SC({
   weight: "400",
   variable: "--font-hand",
   display: "swap",
+  preload: false, // only used below the fold; don't compete with the hero on first load
 });
 
 // Calligraphic script — the "hello" over the About portrait
@@ -62,6 +64,24 @@ export const script = Ballet({
   weight: "400",
   variable: "--font-script",
   display: "swap",
+  preload: false, // only used below the fold; don't compete with the hero on first load
 });
 
-export const fontVariables = [display.variable, heading.variable, mono.variable, poster.variable, hand.variable, script.variable].join(" ");
+// Pen signature — the footer sign-off ("Azad Kumar Jha"). OFL, Google Fonts.
+export const signature = Mrs_Saint_Delafield({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-signature",
+  display: "swap",
+  preload: false, // footer only
+});
+
+export const fontVariables = [
+  display.variable,
+  heading.variable,
+  mono.variable,
+  poster.variable,
+  hand.variable,
+  script.variable,
+  signature.variable,
+].join(" ");

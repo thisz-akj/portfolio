@@ -14,7 +14,17 @@
     "db:seed": "tsx src/features/demos/ops-suite/db/scripts.ts seed",
     "db:reset": "tsx src/features/demos/ops-suite/db/scripts.ts reset",
     "db:studio": "drizzle-kit studio",
-    "ai:contract": "tsx src/features/demos/ops-suite/ai/export-contract.ts"
+    "ai:contract": "tsx src/features/demos/ops-suite/ai/export-contract.ts",
+    "shots": "tsx --tsconfig tsconfig.json scripts/ops-suite-shots.mts",
+    "shots:docdesk": "tsx --tsconfig tsconfig.json scripts/docdesk-shots.mts",
+    "shots:voice": "tsx --tsconfig tsconfig.json scripts/voice-shots.mts",
+    "shots:autopilot": "tsx --tsconfig tsconfig.json scripts/autopilot-shots.mts",
+    "assistant:corpus": "tsx src/features/assistant/export-corpus.ts",
+    "assistant:dev": "cd assistant && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8001 --reload",
+    "docintel:dev": "cd docintel && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8002 --reload",
+    "docintel:samples": "cd docintel && env -u PYTHONPATH .venv/bin/python -m scripts.build_samples",
+    "voice:dev": "cd voice && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8003 --reload",
+    "voice:agent": "cd voice && env -u PYTHONPATH .venv/bin/python -m agent.worker dev"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",
@@ -23,11 +33,14 @@
     "drizzle-orm": "^0.45.4",
     "gsap": "^3.15.1",
     "lenis": "^1.3.27",
+    "livekit-client": "^2.25.0",
+    "livekit-server-sdk": "^2.20.1",
     "lucide-react": "^1.77.0",
     "next": "15.5.29",
     "postgres": "^4.1.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
+    "simple-icons": "^16.38.1",
     "zod": "^4.6.7"
   },
   "devDependencies": {
@@ -38,6 +51,7 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9",
     "eslint-config-next": "15.5.29",
+    "playwright": "^1.65.1",
     "tsx": "^4.23.15",
     "typescript": "^5",
     "vitest": "^3.2.7"

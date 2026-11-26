@@ -23,7 +23,17 @@ export const solutionIcons: Record<SolutionIcon, React.ComponentType<LucideProps
   "audio-lines": AudioLines,
 };
 
-export const expertiseIcons = { brain: BrainCircuit, eye: Eye, gauge: Gauge, boxes: Boxes, workflow: Workflow };
+export const expertiseIcons = {
+  brain: BrainCircuit,
+  eye: Eye,
+  gauge: Gauge,
+  boxes: Boxes,
+  workflow: Workflow,
+  headset: Headset,
+  file: FileSearch,
+  chart: ChartLine,
+  scan: ScanEye,
+};
 
 /* lucide no longer ships brand marks — minimal inline versions */
 export function GitHubIcon({ size = 16 }: { size?: number }) {

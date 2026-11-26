@@ -52,15 +52,17 @@ export function SectionHeading({
 
   return (
     <Tag ref={ref} className={`section-heading ${className}`} aria-label={children}>
-      {Array.from(children).map((ch, i) =>
-        ch === " " ? (
-          <span key={i} className="sh-space" aria-hidden="true" />
-        ) : (
-          <span key={i} className="sh-letter" aria-hidden="true">
-            {ch}
-          </span>
-        ),
-      )}
+      {/* Letters are grouped per word so long headings wrap between words, never inside one. */}
+      {children.split(" ").map((word, w) => (
+        <span key={w} className="sh-word" aria-hidden="true">
+          {w > 0 && <span className="sh-space" />}
+          {Array.from(word).map((ch, i) => (
+            <span key={i} className="sh-letter">
+              {ch}
+            </span>
+          ))}
+        </span>
+      ))}
     </Tag>
   );
 }

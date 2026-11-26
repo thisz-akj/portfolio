@@ -214,7 +214,7 @@ export function WorkIndex({ projects }: { projects: Project[] }) {
       <canvas ref={canvasRef} className="preview-canvas" aria-hidden="true" />
       {projects.map((p, i) => (
         // eslint-disable-next-line @next/next/no-img-element -- cursor-following overlay, sized every frame
-        <img key={p.slug} ref={(el) => { imgRefs.current[i] = el; }} src={p.cover} alt="" className="preview-img" aria-hidden="true" />
+        <img key={p.slug} ref={(el) => { imgRefs.current[i] = el; }} src={p.cover} alt="" className="preview-img" aria-hidden="true" loading="lazy" decoding="async" />
       ))}
     </>
   );

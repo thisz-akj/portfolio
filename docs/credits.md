@@ -46,3 +46,26 @@ Clips from [Mixkit](https://mixkit.co), used under the **Mixkit Stock Video Free
 | `v-code-bw.mp4` (hero, black & white) | item 1728 |
 
 To replace a clip with your own product footage, drop an `.mp4` plus a `.webp` poster with the same name into `public/video/`, or set `media` on a solution to show your footage in its side panel.
+
+## Ops Suite screenshots
+`public/work/ops-suite-*.webp` — screenshots of the owner's own Ops Suite demo (synthetic data), captured with
+`npm run shots` (Playwright + sharp). No third-party assets.
+
+## DocDesk sample documents
+- `docintel/samples/pdf/*.pdf` — synthetic documents written for this site; all companies, people, GSTINs and amounts are fictional.
+- Fonts embedded in them: Noto Serif and Noto Sans (Google, SIL Open Font License 1.1), vendored in `docintel/samples/fonts/`.
+- `public/work/docdesk-*.webp`, `public/demos/docdesk/*.webp` — screenshots and page renders of the DocDesk demo (own work, synthetic documents).
+- `public/work/voice-*.webp` — screenshots of the Front Desk Voice demo (own work, fictional clinic; `npm run shots:voice`).
+- `public/work/autopilot-*.webp` — screenshots of the Autopilot demo (own work, fictional businesses; `npm run shots:autopilot`).
+
+## Computer vision & robotics illustrations (generated)
+- `public/work/cv-*.webp`, `public/video/cv-*.mp4` (+ `.webp` posters) — procedurally drawn illustrations of the owner's
+  projects (SurroundSense blind-spot monitor, edge trolley pose estimation, camera–LiDAR calibration, visual SLAM → navigation map, an unbranded Jetson-class edge AI module), made for this site
+  with `scripts/render-vision-media.py` (PIL + ffmpeg). Not recordings of real or customer systems; no third-party assets.
+- `public/art/amr-front-camera.webp` — rendered AMR front-camera frame for the Computer Vision card preview (`--frontcam`); the card's boxes use the renderer's object extents.
+
+- `public/video/hero-motion(-mobile).mp4/.webp` — owner's own motion film (provided by the owner), re-timed, graded and lightly sharpened; `hero-motion-ambient.webp` is its last frame with the figure painted out, blurred.
+- `public/art/hero/z07–z09(-mobile).webp` — owner's own stills (provided by the owner), graded to match the hero film (About portrait).
+
+## Tool logos (home About → "Tech I use")
+- Brand icons from [Simple Icons](https://simpleicons.org) (npm `simple-icons`, CC0). Logos are trademarks of their owners, shown only to name tools used. OpenAI and telephony use plain lucide icons (not in the set).

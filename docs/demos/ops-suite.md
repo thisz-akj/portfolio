@@ -190,6 +190,14 @@ grades plans by exact match; `python -m ops_ai.insights` computes dashboard **Si
 quiet, stock-out risk, weekly order anomaly). CI: `.github/workflows/ops-ai.yml`. AI tables are not touched by the
 nightly reset; insights are recomputed after it.
 
+## Portfolio wiring
+- `src/content/projects.ts` → `ops-suite` (index 01, `demoUrl` → "Open live demo" on the case study).
+- `src/content/demos.ts` → one `flagship` entry `ops-suite` (status **limited-preview** until Claude runs live with an
+  API key and evals have results — then flip to `live`); `src/features/demos/registry.ts` renders `OpsSuiteDemo`.
+- `src/content/solutions.ts` → Workflow Automation, AI Data Analytics and AI Evaluation cards keep their own panels and
+  showcases; only their button deep-links (`demoHref`/`demoLabel`) to the board, Ask and AI quality screens.
+- Screenshots: `npm run shots` (server on :3000, seeded DB, Playwright Chromium) → `public/work/ops-suite-*.webp`.
+
 ## Layout
 - `src/features/demos/ops-suite/db/` — `schema/` (core, crm, erp, portal, relations), `client.ts` (`getDb()`/`getHandle()`, server-only), `seed/` (reference lists, generator, writer), `scripts.ts` (CLI)
 - `src/features/demos/ops-suite/lib/format.ts` — `formatINR` (₹12,40,000 / ₹12.4L / ₹1.25Cr)

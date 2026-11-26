@@ -11,9 +11,9 @@ import { LoopVideo } from "@/components/shared/LoopVideo";
 import { SolutionDrawer } from "./SolutionDrawer";
 import { bentoTracks, gridArea } from "@/lib/bento";
 
-/* Bento on a 6-col grid: [4×2][2][2] / [2][2][2] / [2][CTA 4].
-   Only the hero card is large; every other card keeps the same proportions. */
-const LAYOUT = ["w4 h2", "", "", "", "", "", ""];
+/* Bento on a 6-col grid: [3×2][3×2] / [2][2][2] / [2][2][CTA 2].
+   AI automation and computer vision share the first rows; the rest keep the same proportions. */
+const LAYOUT = ["w3 h2", "w3 h2", "", "", "", "", ""];
 const INITIAL = 6;
 
 function RentCard({
@@ -155,6 +155,7 @@ export function HiredBento({ solutions, showAll = false, withHeading = true }: {
     <>
       {withHeading && (
         <div className="rent-head">
+          <p className="eyebrow">03 · Hired for</p>
           <Poster lines={["Things I keep", "getting hired for."]} />
           <p className="rent-intro">
             I&apos;ve read enough AI case studies to know nobody finishes them. So here are bento boxes: the systems people pay me
@@ -193,7 +194,7 @@ export function HiredBento({ solutions, showAll = false, withHeading = true }: {
         ))}
         {expanded && (
           <article
-            className={`rent-card rent-cta w4 ${!showAll ? "revealing" : ""} ${hover === 7 ? "is-hover" : ""}`}
+            className={`rent-card rent-cta w2 ${!showAll ? "revealing" : ""} ${hover === 7 ? "is-hover" : ""}`}
             style={{ "--rd": "0.16s", "--gc": gridArea(7)?.column, "--gr": gridArea(7)?.row } as React.CSSProperties}
             onMouseEnter={() => hoverAt(7)}
             onFocus={() => hoverAt(7)}

@@ -5,7 +5,7 @@ import { projects } from "@/content/projects";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = site.url.replace(/\/$/, "");
-  const routes = ["", "/solutions", "/demos", "/work", "/about", "/contact"];
+  const routes = ["", "/solutions", "/demos", "/work", "/contact"];
   return [
     ...routes.map((r) => ({ url: `${base}${r}`, lastModified: new Date() })),
     ...demos.map((d) => ({ url: `${base}/demos/${d.slug}`, lastModified: new Date() })),

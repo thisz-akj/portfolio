@@ -102,7 +102,7 @@ export function Header() {
               const Icon = socialIcons[s.icon];
               return (
                 <a key={s.label} href={s.href} className="nav-icon" aria-label={s.label} target="_blank" rel="noreferrer">
-                  <Icon size={15} />
+                  <Icon size={19} />
                 </a>
               );
             })}

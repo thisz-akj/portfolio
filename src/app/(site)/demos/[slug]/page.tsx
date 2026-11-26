@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, ArrowUpRight, FlaskConical } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FlaskConical } from "lucide-react";
 import { demos, getDemo, statusLabel } from "@/content/demos";
 import { getSolution } from "@/content/solutions";
 import { demoComponents } from "@/features/demos/registry";
@@ -16,7 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return d ? { title: `${d.name} — Demo`, description: d.summary } : {};
 }
 
-/** Consistent 10-part structure for every demo page (see docs/development/adding-a-demo.md). */
+/** Consistent 7-part structure for every demo page (see docs/development/adding-a-demo.md). */
 export default async function DemoPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const demo = getDemo(slug);
@@ -74,26 +74,11 @@ export default async function DemoPage({ params }: { params: Promise<{ slug: str
             <ul>{demo.tryIt.map((t) => <li key={t}>{t}</li>)}</ul>
           </section>
           <section className="detail-block">
-            <h2><span>05</span>How it works</h2>
-            <ol>{demo.howItWorks.map((t) => <li key={t}>{t}</li>)}</ol>
-          </section>
-          <section className="detail-block">
-            <h2><span>06</span>Architecture</h2>
-            <div className="flow" aria-label="Data flow">
-              {demo.architecture.map((node, i) => (
-                <span key={node} style={{ display: "contents" }}>
-                  {i > 0 && <ArrowRight size={14} className="flow-arrow" aria-hidden="true" />}
-                  <span className="flow-node">{node}</span>
-                </span>
-              ))}
-            </div>
-          </section>
-          <section className="detail-block">
-            <h2><span>08</span>Evaluation</h2>
+            <h2><span>05</span>Evaluation</h2>
             <p>{demo.evaluation ?? "Not measured yet. Results will be published here once the demo is evaluated on a fixed dataset."}</p>
           </section>
           <section className="detail-block">
-            <h2><span>09</span>Limitations &amp; applications</h2>
+            <h2><span>06</span>Limitations &amp; applications</h2>
             <ul>{demo.limitations.map((t) => <li key={t}>{t}</li>)}</ul>
             <div className="chips" style={{ marginTop: "1.5rem" }}>
               {demo.applications.map((a) => <span className="chip" key={a}>{a}</span>)}
@@ -102,16 +87,12 @@ export default async function DemoPage({ params }: { params: Promise<{ slug: str
         </div>
 
         <aside className="detail-aside">
-          <div>
-            <p className="aside-label">07 · Technologies</p>
-            <div className="chips">{demo.stack.map((s) => <span className="chip" key={s}>{s}</span>)}</div>
-          </div>
           <p className="disclaimer">
             AI outputs can be wrong. Demos use sample or synthetic data; uploads, when enabled, are size-limited and not
             retained longer than needed.
           </p>
           <div>
-            <p className="aside-label">10 · Next step</p>
+            <p className="aside-label">07 · Next step</p>
             <Link href="/contact" className="btn-pill" style={{ minWidth: 0, width: "100%" }}>
               Build this with me <ArrowUpRight size={16} />
             </Link>

@@ -10,6 +10,7 @@ export const site = {
   role: "Independent Applied AI Engineer",
   roles: ["Automate", "Integrate", "Evaluate"],
   tagline: "I build AI systems that survive contact with real users.",
+  taglineHighlight: "survive contact",
   description:
     "Independent applied AI engineer building AI automation for founders and product teams: workflow agents, document intelligence, support copilots, voice agents and the evaluation that keeps them honest.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
@@ -28,8 +29,8 @@ export const site = {
 
 export const nav = [
   { label: "Intro", href: "/#intro", section: "intro" },
-  { label: "Work", href: "/#work", section: "work" },
   { label: "About", href: "/#about", section: "about" },
+  { label: "Work", href: "/#work", section: "work" },
   { label: "Contact", href: "/#contact", section: "contact" },
 ];
 
@@ -37,51 +38,61 @@ export const pages = [
   { label: "Solutions", href: "/solutions" },
   { label: "Demos", href: "/demos" },
   { label: "Work", href: "/work" },
-  { label: "About", href: "/about" },
+  { label: "About", href: "/#about" },
   { label: "Contact", href: "/contact" },
 ];
 
 export const philosophy =
-  "I build AI that earns its place in a product: grounded in real data, measured against honest baselines, and engineered to keep working when the inputs get messy. Research is the starting point. Shipping is the job.";
+  "I enjoy working with startups and businesses that want to move beyond experimentation and build AI solutions that deliver measurable value.";
 
+/** Words in `philosophy` set in the italic serif on the home page. */
+export const philosophyHighlight = ["beyond", "measurable"];
+
+/** "What I build": the kinds of projects customers hire me for. */
 export const expertise = [
   {
-    icon: "brain" as const,
-    title: "Applied AI",
-    items: ["LLM & RAG systems", "Document intelligence", "Support & voice agents", "Computer vision"],
-  },
-  {
     icon: "workflow" as const,
-    title: "Automation",
-    items: ["Workflow agents", "CRM & inbox integrations", "Human-in-the-loop review", "Audit logs & rollback"],
+    title: "AI Automation",
+    items: ["Workflow automation", "AI agents", "Business process automation", "Intelligent integrations"],
   },
   {
-    icon: "gauge" as const,
-    title: "Evaluation",
-    items: ["Benchmarks & baselines", "Quantization studies", "Failure analysis", "Latency & cost"],
+    icon: "brain" as const,
+    title: "AI Applications",
+    items: ["Custom AI tools", "LLM-powered applications", "Chatbots", "RAG systems"],
+  },
+  {
+    icon: "scan" as const,
+    title: "Computer Vision",
+    items: ["Object detection", "Segmentation", "Tracking", "OCR", "Visual intelligence systems"],
+  },
+  {
+    icon: "chart" as const,
+    title: "Machine Learning",
+    items: ["Custom model development", "Data pipelines", "Optimization", "Deployment"],
   },
   {
     icon: "boxes" as const,
-    title: "Shipping",
-    items: ["APIs & backends", "Desktop & web tools", "Docker & CI", "MLOps pipelines"],
+    title: "AI Product Engineering",
+    items: ["Backend development", "API integrations", "End-to-end AI product development"],
   },
 ];
 
 export const about = {
-  text: "I'm an applied AI engineer who builds automation for the unglamorous half of a business: the inbox nobody wants, the PDFs nobody reads, the report someone rebuilds every Friday. I like the parts most demos skip — the integrations, the edge cases, the evaluation harness that proves it works.\n\nI came to this from perception research: visual SLAM, sensor calibration, quantised models. That taught me one habit I bring to every client project. Every system starts with a baseline, gets measured honestly, and ships with its limitations written down. I'd rather show you a working demo than a slide about one.\n\nIf you have a product feature that needs AI — or AI that needs to start working reliably — let's talk.",
-  highlight: "measured honestly",
-  pullquote: "Show the demo. Then show the numbers.",
+  text: "I'm Azad, an Applied AI Engineer focused on building intelligent systems that solve real-world problems.\n\nI work with startups and businesses to turn ideas, manual processes, and complex requirements into practical AI-powered solutions. My work spans AI automation, custom AI applications, LLM-powered systems, machine learning, and computer vision.\n\nI've collaborated with different companies on AI automation and product development, helping translate business requirements into working technical solutions. Alongside this, my engineering experience includes developing robotics perception systems at Virya Autonomous Technologies and working on AI research at IIT Madras.\n\nThis combination of experience allows me to approach problems from both a business and engineering perspective — whether it's automating repetitive operations, integrating AI into an existing product, developing a custom computer vision model, or building an AI-powered application from scratch.\n\nI take projects end to end: understanding the problem, designing the architecture, developing the solution, integrating APIs and existing tools, testing, and deploying a working system.",
+  highlight: "end to end",
+  pullquote: "Have an idea, a process to automate, or an AI product to build? Let's make it happen.",
 };
 
-// TODO(owner): replace with approved roles. Shown with a placeholder badge until then.
 export const experience: Role[] = [
-  { company: "Independent", title: "Applied AI Engineer", period: "Now", placeholder: false },
-  { company: "Company name", title: "Your role", period: "Year – Year", placeholder: true },
+  { company: "Independent", title: "Applied AI Engineer", period: "Now" },
+  { company: "Virya Autonomous Technologies", title: "Robotics AI Engineer", period: "2026 – Now" },
+  { company: "IIT Madras · Centre for Responsible AI", title: "ML Research Intern", period: "2025" },
 ];
 
+/** Skills and sectors, shown as four lists under Experience. */
 export const skills = [
-  { title: "AI", items: ["LLMs & embeddings", "Agents & tool calling", "RAG & rerankers", "Speech (ASR / TTS)"] },
-  { title: "Integrations", items: ["CRMs & helpdesks", "Email & calendars", "Webhooks & queues", "Python · C++"] },
-  { title: "Product", items: ["Next.js · TypeScript", "FastAPI", "Docker", "DVC · MLflow"] },
-  { title: "Practice", items: ["Evaluation design", "Error analysis", "Docs that people read", "Honest reporting"] },
+  { title: "AI & automation", items: ["AI agents & assistants", "Voice & speech AI", "Document understanding", "Integrations & APIs"] },
+  { title: "Vision & robotics", items: ["Detection, tracking & pose", "3D perception & mapping", "Sensor calibration & fusion", "Edge AI deployment"] },
+  { title: "Business sectors", items: ["Clinics & healthcare", "Real estate", "Retail & e-commerce", "Finance, legal & CA firms", "Education", "Logistics & HR"] },
+  { title: "Industrial sectors", items: ["Robotics & AMRs", "Automotive & ADAS", "Warehousing", "Manufacturing & distribution"] },
 ];

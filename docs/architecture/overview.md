@@ -16,14 +16,13 @@ Single Next.js App Router application. There is no separate API service yet. Add
 
 ## Motion system
 - Lenis drives scrolling from the GSAP ticker, and ScrollTrigger updates on each Lenis scroll.
-- The loader dispatches `site:loaded`. The hero waits for it (`onLoaderDone`).
+- The hero dispatches `site:loaded` on mount (`markLoaderDone`); the assistant waits for it (`onLoaderDone`).
 - Every animated component cleans up on unmount (`gsap.context().revert()` or `ScrollTrigger.kill()`).
-- `prefers-reduced-motion` disables the loader, smooth scroll, scrubbed reveals and canvas effects.
+- `prefers-reduced-motion` disables the hero entrance, smooth scroll, scrubbed reveals and canvas effects.
 
 | Effect | Component |
 |---|---|
-| Typed intro (exactly on the title) + iris opening from the name | `home/Loader.tsx` |
-| Hero gathering: distance-ordered ripple, tiles develop from light, colour-matched glints | `home/Hero.tsx`, `home/starAssembly.ts` |
+| Hero: looping motion film settles out of a soft blur, title rises, rule table fades in; scroll parallax | `home/Hero.tsx` |
 | Dot/ring/"VIEW" cursor | `layout/Cursor.tsx` |
 | Section progress lines in the nav | `layout/Header.tsx` |
 | Mouse/tilt parallax image field and centre-out letter rise | `home/Hero.tsx` |
@@ -34,7 +33,7 @@ Single Next.js App Router application. There is no separate API service yet. Add
 | Particle-gather cursor preview | `home/WorkIndex.tsx` |
 | Staggered client tiles and ink note | `home/Clients.tsx` |
 | Layered poster titles | `shared/Poster.tsx` |
-| Barrel-roll links, particle/glitch footer name | `layout/BarrelLink.tsx`, `layout/FooterName.tsx` |
+| Barrel-roll links; footer pen signature (writes on, one warm light sweep) | `layout/BarrelLink.tsx`, `layout/FooterSignature.tsx` |
 
 ## Sound design
 All sound is synthesised live with the Web Audio API in `src/lib/sound.ts`. There are no audio files.
@@ -45,7 +44,6 @@ All sound is synthesised live with the Web Audio API in `src/lib/sound.ts`. Ther
 | Hover tick | Pointer enters cards, tiles, nav items and buttons | 120 ms sine blip at a different pitch per kind, throttled to at most one every 70 ms |
 | Tap | Clicking links and buttons | Two soft sine notes |
 | Cloth/paper rub | Pointer moving over the hero mesh or the contact wave field | Slowed pink noise, band-passed around 0.6–1.7 kHz; level follows pointer speed and fades out when the pointer stops |
-| Bulb flicker | The footer name glitches on hover | 100 Hz sawtooth hum through a band-pass, gated on and off at random intervals, with a filament click on each strike |
 
 - Sound is on by default. Browsers block audio until the visitor interacts, so `SoundProvider` unlocks it on the first `pointerdown` or `keydown`. The intro has no gate; it just signs the name and enters the site.
 - `SoundToggle` sits in the header (it's an icon only on mobile). The choice is remembered in localStorage.
