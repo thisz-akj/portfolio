@@ -18,7 +18,7 @@ export const assistantCopy = {
   footnote: "Answers come from this site's content and can be wrong.",
   modes: {
     live: "Live",
-    offline: "Offline",
+    offline: "Quick answers",
     limit: "Offline",
   },
   errors: {
