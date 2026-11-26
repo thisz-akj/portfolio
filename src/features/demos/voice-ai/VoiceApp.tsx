@@ -10,6 +10,7 @@ import { voiceCopy as c } from "./copy";
 import quality from "./quality.json";
 import { SAMPLES, useSamplePlayer } from "./useSamplePlayer";
 import { useVoiceCall, type Line, type Phase, type TurnTiming } from "./useVoiceCall";
+import { HomeLink } from "@/components/shared/HomeLink";
 
 const secs = (ms: number) => `${(ms / 1000).toFixed(1)} s`;
 const msOrS = (ms: number) => (ms < 1000 ? `${Math.max(1, Math.round(ms))} ms` : secs(ms));
@@ -142,8 +143,9 @@ export function VoiceApp() {
   return (
     <div className="vx">
       <header className="vx-top">
+        <HomeLink />
         <Link href="/demos/voice-ai" className="vx-back">
-          <ArrowLeft size={14} /> Back to portfolio
+          <ArrowLeft size={14} /> About this demo
         </Link>
         <span className="vx-brand">
           <span className="vx-brand-mark" aria-hidden="true" />

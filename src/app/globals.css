@@ -808,3 +808,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .spin { animation: spin 0.9s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .btn-pill:disabled { opacity: 0.6; cursor: default; transform: none; }
+
+/* Home pill (components/shared/HomeLink): site header off the home page + demo apps */
+.header-left { display: flex; align-items: center; gap: 1rem; }
+.home-pill {
+  display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.38rem 0.75rem 0.38rem 0.62rem;
+  border: 1px solid #2c2c2a; border-radius: 999px; background: rgba(18, 18, 18, 0.6);
+  color: #cfcdc8; text-decoration: none; white-space: nowrap;
+  font-family: var(--f-mono, monospace); font-size: 0.6rem; letter-spacing: 0.16em; text-transform: uppercase;
+  transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+.home-pill:hover, .home-pill:focus-visible { color: #0a0a0a; background: #f2f0eb; border-color: #f2f0eb; }
+.app-exits { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; }
+@media (prefers-reduced-motion: reduce) { .home-pill { transition: none; } }

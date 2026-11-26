@@ -27,6 +27,7 @@ import { runScenario } from "./api";
 import { SCENARIOS, TOOL_LABEL, getScenario } from "./scenarios";
 import { elapsedLabel, stamp } from "./time";
 import type { Card, Choice, Pending, RunEvent, RunResult, ScenarioId, Tool } from "./types";
+import { HomeLink } from "@/components/shared/HomeLink";
 
 const ICONS: Record<Tool, LucideIcon> = {
   whatsapp: MessageCircle,
@@ -133,6 +134,7 @@ export function AutopilotApp({ initial }: { initial?: ScenarioId }) {
   return (
     <div className="ap">
       <header className="ap-top">
+        <HomeLink />
         <Link href="/demos/autopilot" className="ap-back">
           <ArrowLeft size={14} /> Autopilot
         </Link>

@@ -4,6 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import { Sidebar } from "@/features/demos/document-intelligence/ui/Sidebar";
 import { DOCDESK_BASE } from "@/features/demos/document-intelligence/nav";
 import "@/features/demos/document-intelligence/ui/docdesk.css";
+import { HomeLink } from "@/components/shared/HomeLink";
 
 export const metadata: Metadata = {
   title: "DocDesk — document intelligence demo",
@@ -20,9 +21,12 @@ export default function DocDeskLayout({ children }: { children: React.ReactNode 
           DocDesk
         </Link>
         <Sidebar />
-        <Link href="/demos/document-intelligence" className="dd-back">
-          <ArrowLeft size={14} /> Back to portfolio
-        </Link>
+        <div className="app-exits">
+          <HomeLink />
+          <Link href="/demos/document-intelligence" className="dd-back">
+            <ArrowLeft size={14} /> About DocDesk
+          </Link>
+        </div>
       </aside>
       <div className="dd-main">
         <header className="dd-top">

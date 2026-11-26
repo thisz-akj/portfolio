@@ -9,6 +9,7 @@ import "@/features/demos/ops-suite/ui/table/table.css";
 import "@/features/demos/ops-suite/ui/record/record.css";
 import "@/features/demos/ops-suite/ui/dashboard/dashboard.css";
 import "@/features/demos/ops-suite/ui/ai/ai.css";
+import { HomeLink } from "@/components/shared/HomeLink";
 
 export const metadata: Metadata = {
   title: "Ops Suite — CRM, ERP & data portal demo",
@@ -33,9 +34,12 @@ export default async function PortalLayout({ children }: { children: React.React
             Ops Suite
           </Link>
           <Sidebar />
-          <Link href="/demos" className="ops-back">
-            <ArrowLeft size={14} /> Back to portfolio
-          </Link>
+          <div className="app-exits">
+            <HomeLink />
+            <Link href="/demos" className="ops-back">
+              <ArrowLeft size={14} /> All demos
+            </Link>
+          </div>
         </aside>
         <div className="ops-main">
           <header className="ops-top">

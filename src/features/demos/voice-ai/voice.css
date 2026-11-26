@@ -262,3 +262,9 @@
 .vx-quality dt { font: italic 1.25rem var(--f-display); color: var(--white); }
 .vx-quality dd { margin: 0; font-size: 0.76rem; color: var(--mid); line-height: 1.4; }
 .vx-quality .vx-fine { margin-top: 0.8rem; }
+
+/* Phones: the Home pill is the way out; keep the brand on one line */
+@media (max-width: 560px) {
+  .vx-top .vx-back { display: none; }
+  .vx-brand { white-space: nowrap; }
+}

@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react";
 import { nav, pages, site } from "@/content/site";
 import { socialIcons } from "@/components/ui/Icons";
 import { SoundToggle } from "./SoundToggle";
+import { HomeLink } from "@/components/shared/HomeLink";
 
 export function Header() {
   const pathname = usePathname();
@@ -77,9 +78,12 @@ export function Header() {
   return (
     <>
       <header className="site-header">
-        <Link href="/" className="logo" aria-label={`${site.name} — home`}>
-          {site.name}
-        </Link>
+        <div className="header-left">
+          <Link href="/" className="logo" aria-label={`${site.name} — home`}>
+            {site.name}
+          </Link>
+          {!isHome && <HomeLink />}
+        </div>
 
         <nav className="site-nav" aria-label="Primary">
           {nav.map((item, i) => (

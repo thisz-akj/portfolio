@@ -64,7 +64,7 @@ a.ops-nav-link:hover { background: #161616; color: var(--white); }
   .ops-nav-group { flex-shrink: 0; }
   .ops-nav ul { display: flex; gap: 0.25rem; }
   .ops-nav-link { white-space: nowrap; gap: 0.35rem; }
-  .ops-back { margin-left: auto; }
+  .ops-side .app-exits { margin-left: auto; }
   .ops-top, .ops-content { padding-left: 1rem; padding-right: 1rem; }
 }
 .ops-conn { display: flex; align-items: center; gap: 0.45rem; font-family: var(--f-mono); font-size: 0.75rem; color: var(--mid); }
