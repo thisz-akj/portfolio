@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, CalendarCheck, Mic, MicOff, Phone, PhoneOff, Play, Send, Square } from "lucide-react";
 import { AiLimitDialog } from "@/components/shared/AiLimitDialog";
+import { openLiveDemo } from "@/lib/liveDemo";
 import { VOICE_API, type SlotView } from "./api";
 import { voiceCopy as c } from "./copy";
 import quality from "./quality.json";
@@ -189,13 +190,13 @@ export function VoiceApp() {
               <PhoneOff size={16} /> {c.end}
             </button>
           ) : (
-            <button className="vx-call" onClick={() => void call.start()} disabled={offline && line === "clinic"}>
+            <button className="vx-call" onClick={() => (offline ? openLiveDemo("Front Desk Voice") : void call.start())}>
               <Phone size={16} /> {call.phase === "ended" ? c.again : copy.start}
             </button>
           )}
 
           <Delay timings={call.timings} />
-          {offline && line === "clinic" && !live && <p className="vx-notice">{c.offline}</p>}
+          {offline && !live && <p className="vx-notice">{c.offline}</p>}
           {call.notice && !playing && <p className="vx-notice">{call.notice}</p>}
 
           {offered.length > 0 && (

@@ -10,6 +10,7 @@ import {
   type AssistantTrace,
 } from "@/features/assistant/protocol";
 import type { UiMessage } from "./AssistantMessage";
+import { openLiveDemo } from "@/lib/liveDemo";
 
 /** Give up on a reply when nothing has arrived for this long (the server itself gives up after ~15–20 s). */
 const STALL_MS = 30_000;
@@ -59,6 +60,7 @@ const markLimitReached = () => {
  * caller shows the AiLimitDialog via `limitOpen`.
  */
 export function useAssistantChat(storeKey: string) {
+  const liveDemoName = storeKey.startsWith("support-demo") ? "The AI Customer Support demo" : "The site assistant";
   const [messages, setMessages] = useState<UiMessage[]>([]);
   const [mode, setMode] = useState<AssistantMode | null>(null);
   const [busy, setBusy] = useState(false);
@@ -175,7 +177,10 @@ export function useAssistantChat(storeKey: string) {
             : res.status === 503
               ? copy.errors.unavailable
               : copy.errors.generic;
-        if (res.status === 503) setMode("offline");
+        if (res.status === 503) {
+          setMode("offline");
+          openLiveDemo(liveDemoName, { once: true });
+        }
         patch(botId, (m) => ({ ...m, content: msg, status: "error" }));
         return;
       }

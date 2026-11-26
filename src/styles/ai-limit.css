@@ -45,3 +45,29 @@
 }
 .ai-limit-dismiss:hover { color: #f2f0eb; }
 @media (prefers-reduced-motion: reduce) { .ai-limit-cta, .ai-limit-cta svg { transition: none; } }
+
+/* "Let's run it live" pop-up (components/shared/LiveDemoDialog): page-level, so fixed instead of absolute. */
+.ai-limit.live-demo { position: fixed; z-index: 1000; overflow-y: auto; }
+.live-demo .ai-limit-card { width: min(25rem, 100%); margin: auto; }
+.live-demo-form { display: grid; gap: 0.7rem; margin-top: 1.1rem; }
+.live-demo-form label { display: grid; gap: 0.3rem; }
+.live-demo-form label > span {
+  font-family: var(--f-mono, monospace); font-size: 0.56rem; letter-spacing: 0.14em; text-transform: uppercase; color: #8a8a86;
+}
+.live-demo-form input, .live-demo-form textarea {
+  width: 100%; padding: 0.62rem 0.8rem; border-radius: 10px; border: 1px solid #2a2a2a; background: #0d0d0d;
+  color: #f2f0eb; font: inherit; font-size: 0.88rem; resize: vertical; transition: border-color 0.3s;
+}
+.live-demo-form input:focus, .live-demo-form textarea:focus { outline: none; border-color: #6b6b6b; }
+.live-demo-form [aria-invalid="true"] { border-color: #b4544a; }
+.live-demo-form textarea::placeholder { color: #555; }
+.live-demo-form .field-error { font-size: 0.75rem; color: #e08a7f; }
+.live-demo-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.live-demo-form .ai-limit-actions { margin-top: 0.5rem; }
+.live-demo-form .ai-limit-cta { border: 0; cursor: pointer; }
+.live-demo-form .ai-limit-cta:disabled { opacity: 0.7; cursor: progress; }
+.live-demo-status { font-size: 0.8rem; color: #e08a7f; line-height: 1.5; }
+.live-demo-status a { color: #f2f0eb; }
+.live-demo .spin { animation: live-demo-spin 0.9s linear infinite; }
+@keyframes live-demo-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .live-demo .spin { animation: none; } }

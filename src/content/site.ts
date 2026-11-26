@@ -96,3 +96,18 @@ export const skills = [
   { title: "Business sectors", items: ["Clinics & healthcare", "Real estate", "Retail & e-commerce", "Finance, legal & CA firms", "Education", "Logistics & HR"] },
   { title: "Industrial sectors", items: ["Robotics & AMRs", "Automotive & ADAS", "Warehousing", "Manufacturing & distribution"] },
 ];
+
+/** "Let's run it live" pop-up (components/shared/LiveDemoDialog) — shown when a live demo feature is offline. */
+export const liveDemoCopy = {
+  eyebrow: "Live demo",
+  title: "Let's run it live",
+  body: (demo: string) =>
+    `${demo} runs live on request. Leave your details and I'll set up a short call to show it working, on your own example if you like.`,
+  fields: { name: "Your name", email: "Email", company: "Company (optional)", note: "Anything you'd like to see? (optional)" },
+  notePlaceholder: "e.g. our invoices, a clinic booking flow…",
+  submit: "Request a live demo",
+  sending: "Sending",
+  dismiss: "Keep exploring",
+  sent: { title: "Thanks, request received", body: "I'll email you within two working days to set up a time." },
+  error: "Couldn't send right now. Please email me instead:",
+};

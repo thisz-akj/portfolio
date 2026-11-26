@@ -6,6 +6,9 @@ export const PROJECT_TYPES = [
   "Something else",
 ] as const;
 
+/** Sent by the "let's run it live" pop-up (LiveDemoDialog); not offered in the contact page's dropdown. */
+export const LIVE_DEMO_TYPE = "Live demo request";
+
 export interface ContactInput {
   name: string;
   email: string;
@@ -38,7 +41,7 @@ export function validateContact(raw: unknown): { ok: true; data: ContactInput } 
   else if (data.name.length > LIMITS.name) errors.name = "That name is a bit long.";
   if (!EMAIL_RE.test(data.email) || data.email.length > LIMITS.email) errors.email = "Please enter a valid email address.";
   if ((data.company ?? "").length > LIMITS.company) errors.company = "Company name is too long.";
-  if (!PROJECT_TYPES.includes(data.type as (typeof PROJECT_TYPES)[number])) errors.type = "Please pick a project type.";
+  if (!PROJECT_TYPES.includes(data.type as (typeof PROJECT_TYPES)[number]) && data.type !== LIVE_DEMO_TYPE) errors.type = "Please pick a project type.";
   if (data.message.length < 20) errors.message = "A couple of sentences (20+ characters) helps me reply usefully.";
   else if (data.message.length > LIMITS.message) errors.message = "Please keep it under 5,000 characters.";
   return Object.keys(errors).length ? { ok: false, errors } : { ok: true, data };

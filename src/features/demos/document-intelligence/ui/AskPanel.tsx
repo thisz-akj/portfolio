@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef, useState } from "react";
 import { ArrowUp } from "lucide-react";
 import { AiLimitDialog } from "@/components/shared/AiLimitDialog";
+import { openLiveDemo } from "@/lib/liveDemo";
 import { ApiError, askDoc, type Quota } from "../api";
 import type { Answer, DocDetail, Rect } from "../types";
 
@@ -66,6 +67,7 @@ export function AskPanel({ doc, docType, onCite }: { doc: DocDetail; docType: st
         setMsgs((m) => m.slice(0, -1));
         setText(question);
       } else {
+        if (err.code === "offline") openLiveDemo("DocDesk");
         setMsgs((m) => [...m, { role: "error", text: err.message || "Something went wrong. Please try again." }]);
       }
     } finally {

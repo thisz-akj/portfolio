@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FileUp, Loader2, X } from "lucide-react";
 import { AiLimitDialog } from "@/components/shared/AiLimitDialog";
+import { openLiveDemo } from "@/lib/liveDemo";
 import { ApiError, forgetUpload, listDocs, pageSrc, rememberUpload, rememberedUploads, uploadDoc } from "../api";
 import { docHref } from "../nav";
 import type { DocSummary } from "../types";
@@ -136,6 +137,7 @@ function Uploader({ onUploaded }: { onUploaded: (d: DocSummary) => void }) {
       } catch (e) {
         const err = e instanceof ApiError ? e : null;
         if (err?.code === "quota") setLimitOpen(true);
+        else if (err?.code === "offline") openLiveDemo("DocDesk");
         else setError((err && ERRORS[err.code]) ?? err?.message ?? "Upload failed. Please try again.");
       } finally {
         setBusy(false);

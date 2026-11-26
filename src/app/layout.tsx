@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Analytics } from "@vercel/analytics/next";
+import { LiveDemoDialog } from "@/components/shared/LiveDemoDialog";
 import { fontVariables } from "@/lib/fonts";
 import { site } from "@/content/site";
 import "./globals.css";
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" className={fontVariables}>
       <body>
         {children}
+        <LiveDemoDialog />
         {/* Cookieless page-view counts; only reports when deployed on Vercel. */}
         <Analytics />
       </body>
