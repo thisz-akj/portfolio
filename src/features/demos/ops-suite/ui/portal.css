@@ -48,7 +48,7 @@ a.ops-nav-link:hover { background: #161616; color: var(--white); }
 .ops-head p { margin-top: 0.4rem; color: var(--mid); max-width: 60ch; }
 
 .ops-card { background: var(--ops-card); border: 1px solid var(--line); border-radius: 12px; padding: 1.1rem 1.25rem; }
-.ops-card h2 { font-family: var(--f-mono); font-weight: 400; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.8rem; }
+.ops-card > h2:not(.viz-title):not(.ops-drawer-title) { font-family: var(--f-mono); font-weight: 400; font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dim); margin-bottom: 0.8rem; }
 .ops-status dl { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: 1rem; }
 .ops-status dt { font-size: 0.75rem; color: var(--dim); }
 .ops-status dd { margin-top: 0.2rem; font-family: var(--f-mono); font-size: 0.95rem; display: flex; align-items: center; gap: 0.45rem; }

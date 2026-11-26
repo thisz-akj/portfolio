@@ -1,4 +1,3 @@
-import type { Plan } from "./plan";
 import type { Unit } from "./semantic";
 
 /** Client-safe shapes returned by "Ask Ops Suite". */
@@ -34,15 +33,9 @@ export interface ListAnswer {
   filter: string;
 }
 
+/** What the browser sees about a live answer. Model, tokens and cost stay server-side (traces only). */
 export interface AskUsage {
-  model: string;
-  servedBy: string;
-  effort: string;
   latencyMs: number;
-  inputTokens: number;
-  outputTokens: number;
-  cacheReadTokens: number;
-  costUsd: number;
 }
 
 export type AskResult =
@@ -51,10 +44,13 @@ export type AskResult =
       mode: "ai" | "example";
       traceId: number | null;
       question: string;
-      plan: Plan;
+      /** Title and explanation of the answer — the internal plan itself never leaves the server. */
+      title: string;
+      explanation: string;
       notes: string[];
-      query: string;
       answer: MetricAnswer | ListAnswer | { kind: "unsupported" };
       usage: AskUsage | null;
+      /** Free questions left today (null for examples, which are free). */
+      remaining: number | null;
     }
-  | { ok: false; reason: "no_key" | "limit" | "invalid" | "refused" | "error" | "denied"; message: string; traceId?: number | null };
+  | { ok: false; reason: "no_key" | "limit" | "quota" | "invalid" | "refused" | "error" | "denied"; message: string; traceId?: number | null };

@@ -8,7 +8,8 @@ export function toCsv(header: string[], rows: unknown[][]): string {
     if (v === null || v === undefined) return "";
     if (typeof v === "number") return Number.isFinite(v) ? String(v) : "";
     let s = v instanceof Date ? v.toISOString() : Array.isArray(v) ? v.join("; ") : String(v);
-    if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`;
+    // formula-injection guard; plain numbers like -4 or +91 98765 are data, not formulas
+    if (/^[=+\-@\t\r]/.test(s) && !/^[+-]?\d[\d\s.,]*$/.test(s)) s = `'${s}`;
     return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
   };
   return "﻿" + [header, ...rows].map((r) => r.map(cell).join(",")).join("\r\n") + "\r\n";

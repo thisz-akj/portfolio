@@ -21,9 +21,9 @@ export default async function EvalRunPage({ params }: { params: Promise<{ id: st
         <ArrowLeft size={14} /> AI quality
       </Link>
       <div className="ops-head">
-        <h1>{run.label}</h1>
+        <h1>Test run #{run.id}</h1>
         <p>
-          {run.passed}/{run.cases} correct · prompt {run.promptVersion} · {formatDate(run.startedAt)}
+          {run.passed}/{run.cases} correct · {formatDate(run.startedAt)}
           {run.costUsd !== null && ` · $${run.costUsd.toFixed(4)}`}
           {run.notes && ` · ${run.notes}`}
         </p>
@@ -35,8 +35,6 @@ export default async function EvalRunPage({ params }: { params: Promise<{ id: st
               <th>Result</th>
               <th>Question</th>
               <th>Why</th>
-              <th>Expected</th>
-              <th>Got</th>
               <th className="is-end">Latency</th>
             </tr>
           </thead>
@@ -46,12 +44,6 @@ export default async function EvalRunPage({ params }: { params: Promise<{ id: st
                 <td className={r.pass ? "aq-pass" : "aq-fail"}>{r.pass ? "Pass" : "Fail"}</td>
                 <td>{r.question}</td>
                 <td>{r.reason ?? ""}</td>
-                <td>
-                  <pre className="aq-json">{JSON.stringify(r.expected, null, 1)}</pre>
-                </td>
-                <td>
-                  <pre className="aq-json">{r.got ? JSON.stringify(r.got, null, 1) : "—"}</pre>
-                </td>
                 <td className="is-end">{r.latencyMs === null ? "—" : `${(r.latencyMs / 1000).toFixed(1)} s`}</td>
               </tr>
             ))}

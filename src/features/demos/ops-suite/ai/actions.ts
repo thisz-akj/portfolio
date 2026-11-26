@@ -7,10 +7,12 @@ import { getPersona } from "../auth/persona.server";
 import { ROLE_LABEL } from "../auth/permissions";
 import { todayIST } from "../filters/dates";
 import { allow, LIMITS } from "../lib/rateLimit";
-import { aiConfigured, requestPlan } from "./claude.server";
+import { refundAiQuestion, takeAiQuestion } from "@/lib/aiQuota";
+import { aiConfigured, requestPlan, type PlanCall } from "./llm.server";
+import { getCachedPlan, putCachedPlan } from "./planCache";
 import { planFromExpected } from "./examples";
 import { GOLDEN } from "./golden";
-import { describePlan, PROMPT_VERSION, validatePlan } from "./plan";
+import { PROMPT_VERSION, validatePlan } from "./plan";
 import { executePlan } from "./semantic.server";
 import type { AskResult } from "./types";
 
@@ -46,7 +48,7 @@ export async function aiStatusAction(): Promise<{ configured: boolean; examples:
 export async function askAction(raw: unknown): Promise<AskResult> {
   const question = typeof raw === "string" ? raw.trim().replace(/\s+/g, " ") : "";
   if (question.length < 3 || question.length > 300) return { ok: false, reason: "invalid", message: "Ask a question between 3 and 300 characters." };
-  if (!aiConfigured()) return { ok: false, reason: "no_key", message: "AI is switched off on this deployment (no API key). Try one of the example questions — they run hand-written plans through the same engine." };
+  if (!aiConfigured()) return { ok: false, reason: "no_key", message: "Free-form questions are off in this preview. Try one of the example questions." };
   if (!allow(`ai:${await clientKey()}`, LIMITS.ai)) return { ok: false, reason: "limit", message: "That's a lot of questions in a short time — please wait a few minutes." };
 
   const db = await getDb();
@@ -54,9 +56,19 @@ export async function askAction(raw: unknown): Promise<AskResult> {
   const [{ n }] = await db.select({ n: count() }).from(aiTraces).where(and(gte(aiTraces.at, startOfDay), ne(aiTraces.status, "example")));
   if (n >= DAILY_LIMIT) return { ok: false, reason: "limit", message: "Today's question budget for this public demo is used up — it resets at midnight India time." };
 
+  // Free questions per visitor per day (examples don't count); then the UI invites a message instead.
+  const visitor = await clientKey();
+  const quota = takeAiQuestion("ops-ask", visitor);
+  if (!quota.ok) return { ok: false, reason: "quota", message: "You've used today's free questions." };
+
   const persona = await getPersona();
   const personaLabel = persona ? `${persona.name} (${ROLE_LABEL[persona.role]})` : "Demo Admin (Admin)";
-  const call = await requestPlan(question, { today: todayIST(), persona: personaLabel });
+  // Same question asked before today (same persona) → reuse its plan: zero tokens, still run on live data.
+  const cacheCtx = { today: todayIST(), persona: personaLabel, version: PROMPT_VERSION };
+  const cachedJson = getCachedPlan(question, cacheCtx);
+  const call: PlanCall = cachedJson
+    ? { ok: true, status: "ok", json: cachedJson, model: "cache", servedBy: "cache", effort: "-", latencyMs: 0, inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, costUsd: 0 }
+    : await requestPlan(question, { today: cacheCtx.today, persona: personaLabel });
   const base = {
     persona: personaLabel,
     question,
@@ -71,13 +83,16 @@ export async function askAction(raw: unknown): Promise<AskResult> {
     costUsd: call.costUsd,
   };
   if (!call.ok) {
+    if (call.status === "error") refundAiQuestion("ops-ask", visitor); // service trouble shouldn't cost a question
     const traceId = await trace({ ...base, status: call.status === "refused" ? "refused" : "error", error: call.error });
-    return { ok: false, reason: call.status === "refused" ? "refused" : "error", message: call.error ?? "Something went wrong", traceId };
+    const message = call.status === "refused" ? "I can only answer questions about this business's data." : "Something went wrong — please try again.";
+    return { ok: false, reason: call.status === "refused" ? "refused" : "error", message, traceId };
   }
   const valid = validatePlan(call.json);
+  if (valid.ok && !cachedJson) putCachedPlan(question, cacheCtx, call.json);
   if (!valid.ok) {
     const traceId = await trace({ ...base, status: "invalid", plan: call.json as object, error: valid.error });
-    return { ok: false, reason: "invalid", message: `I couldn't turn that into a safe query: ${valid.error}. Try rephrasing.`, traceId };
+    return { ok: false, reason: "invalid", message: "I couldn't answer that safely. Try rephrasing the question.", traceId };
   }
   try {
     const answer = await executePlan(valid.value.plan);
@@ -88,11 +103,12 @@ export async function askAction(raw: unknown): Promise<AskResult> {
       mode: "ai",
       traceId,
       question,
-      plan: valid.value.plan,
+      title: valid.value.plan.title,
+      explanation: valid.value.plan.explanation,
       notes: valid.value.notes,
-      query: describePlan(valid.value.plan),
       answer,
-      usage: { model: call.model, servedBy: call.servedBy, effort: call.effort, latencyMs: call.latencyMs, inputTokens: call.inputTokens, outputTokens: call.outputTokens, cacheReadTokens: call.cacheReadTokens, costUsd: call.costUsd },
+      usage: { latencyMs: call.latencyMs },
+      remaining: quota.remaining,
     };
   } catch (err) {
     console.error("[ops-suite] plan execution failed:", err);
@@ -105,11 +121,11 @@ export async function runExampleAction(id: unknown): Promise<AskResult> {
   const g = GOLDEN.find((x) => x.example && x.id === id);
   if (!g) return { ok: false, reason: "invalid", message: "Unknown example" };
   const valid = validatePlan(await planFromExpected(g.expected, g.question));
-  if (!valid.ok) return { ok: false, reason: "invalid", message: valid.error };
+  if (!valid.ok) return { ok: false, reason: "invalid", message: "This example couldn't run." };
   const answer = await executePlan(valid.value.plan);
   const persona = await getPersona();
   const traceId = await trace({ persona: persona?.name ?? null, question: g.question, status: "example", plan: valid.value.plan, promptVersion: PROMPT_VERSION, rows: answer.kind === "metric" ? answer.rows.length : answer.kind === "list" ? answer.total : 0 });
-  return { ok: true, mode: "example", traceId, question: g.question, plan: valid.value.plan, notes: valid.value.notes, query: describePlan(valid.value.plan), answer, usage: null };
+  return { ok: true, mode: "example", traceId, question: g.question, title: valid.value.plan.title, explanation: valid.value.plan.explanation, notes: valid.value.notes, answer, usage: null, remaining: null };
 }
 
 export async function feedbackAction(traceId: unknown, value: unknown): Promise<{ ok: boolean }> {

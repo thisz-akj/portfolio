@@ -1,0 +1,17 @@
+{
+ "ranAt": "2026-11-25",
+ "calls": {
+  "passed": 21,
+  "total": 21
+ },
+ "heard": {
+  "understood": 0.88,
+  "clips": 108
+ },
+ "sttMs": 379,
+ "turnMs": {
+  "quick": 0.2,
+  "harder": 703.0
+ },
+ "aboutFirstWordMs": 1094.3
+}

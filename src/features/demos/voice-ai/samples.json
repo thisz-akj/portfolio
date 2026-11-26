@@ -1,0 +1,591 @@
+{
+ "clock": "2026-11-23T19:30:00+05:30",
+ "samples": [
+  {
+   "id": "showcase-follow-up",
+   "title": "Follow-up booking",
+   "blurb": "Everything in one breath: doctor, day, name. Booked in two turns.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "Hi, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon. It's Arjun Mehta.",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Dr. Rao has 12:45 pm or 3 pm tomorrow, Tuesday 24 November. Which would you prefer?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Name: Arjun Mehta · Doctor: Dr. Rao · Visit: follow-up · Day: Tue 24 Nov · Pref: afternoon"
+      },
+      {
+       "kind": "checked",
+       "text": "Calendar: Dr. Rao · Tue 24 Nov 12:45, Tue 24 Nov 15:00 free"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "the later one",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Done. Arjun Mehta is booked with Dr. Rao tomorrow, Tuesday 24 November at 3 pm. You'll get an SMS confirmation shortly. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "booked",
+       "text": "Dr. Rao · Tue 24 Nov 15:00 · Arjun Mehta"
+      },
+      {
+       "kind": "sms",
+       "text": "Confirmation SMS queued"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Kavya Rao",
+      "start": "2026-11-24T15:00:00+05:30",
+      "label": "Tue 24 Nov 15:00"
+     }
+    },
+    {
+     "role": "caller",
+     "text": "no that's all",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Thank you for calling Lotus Family Clinic. Take care!",
+     "events": [
+      {
+       "kind": "ended",
+       "text": "Caller said goodbye"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Kavya Rao",
+      "start": "2026-11-24T15:00:00+05:30",
+      "label": "Tue 24 Nov 15:00"
+     }
+    }
+   ],
+   "summary": {
+    "outcome": "booked",
+    "text": "Arjun Mehta booked with Dr. Rao, Tue 24 Nov 15:00 (follow-up). Returning patient. 3 caller turns. No escalation needed."
+   }
+  },
+  {
+   "id": "child-fever-change-day",
+   "title": "Changes their mind",
+   "blurb": "A parent books, then moves the visit to another day.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "I want an appointment for my son, he has a fever",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Dr. Menon sees patients on Tuesdays, Thursdays and Saturdays. What day would suit you?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Needs: children · Visit: fever"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "tomorrow morning",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Dr. Menon has 9:30 am or 10:15 am tomorrow, Tuesday 24 November. Which would you prefer?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Day: Tue 24 Nov · Pref: morning"
+      },
+      {
+       "kind": "checked",
+       "text": "Calendar: Dr. Menon · Tue 24 Nov 09:30, Tue 24 Nov 10:15 free"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "first one",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "9:30 am it is. May I have the patient's full name?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "Rohan Sharma",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Done. Rohan Sharma is booked with Dr. Menon tomorrow, Tuesday 24 November at 9:30 am. You'll get an SMS confirmation shortly. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Name: Rohan Sharma"
+      },
+      {
+       "kind": "booked",
+       "text": "Dr. Menon · Tue 24 Nov 09:30 · Rohan Sharma"
+      },
+      {
+       "kind": "sms",
+       "text": "Confirmation SMS queued"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Anita Menon",
+      "start": "2026-11-24T09:30:00+05:30",
+      "label": "Tue 24 Nov 09:30"
+     }
+    },
+    {
+     "role": "caller",
+     "text": "actually can we make it Thursday",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "No problem, let me change that. Dr. Menon has 9:30 am or 10:30 am on Thursday 26 November. Which would you prefer?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Day: Thu 26 Nov"
+      },
+      {
+       "kind": "changed",
+       "text": "Released Tue 24 Nov 09:30 to rebook"
+      },
+      {
+       "kind": "checked",
+       "text": "Calendar: Dr. Menon · Thu 26 Nov 09:30, Thu 26 Nov 10:30 free"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "second",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Done. Rohan Sharma is booked with Dr. Menon on Thursday 26 November at 10:30 am. You'll get an SMS confirmation shortly. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "booked",
+       "text": "Dr. Menon · Thu 26 Nov 10:30 · Rohan Sharma"
+      },
+      {
+       "kind": "sms",
+       "text": "Confirmation SMS queued"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Anita Menon",
+      "start": "2026-11-26T10:30:00+05:30",
+      "label": "Thu 26 Nov 10:30"
+     }
+    },
+    {
+     "role": "caller",
+     "text": "bye",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Thank you for calling Lotus Family Clinic. Take care!",
+     "events": [
+      {
+       "kind": "ended",
+       "text": "Caller said goodbye"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Anita Menon",
+      "start": "2026-11-26T10:30:00+05:30",
+      "label": "Thu 26 Nov 10:30"
+     }
+    }
+   ],
+   "summary": {
+    "outcome": "booked",
+    "text": "Rohan Sharma booked with Dr. Menon, Thu 26 Nov 10:30 (fever). 7 caller turns. No escalation needed."
+   }
+  },
+  {
+   "id": "doctor-not-in-that-day",
+   "title": "Doctor's day off",
+   "blurb": "Asks for a day the doctor isn't in and gets the nearest real slots.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "skin doctor on tuesday at 4",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Dr. Iyer isn't in on Tuesdays. The nearest I have with Dr. Iyer is on Wednesday 25 November at 12:30 pm, or on Friday 27 November at 12:30 pm. Which would you prefer?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Needs: skin · Day: Tue 24 Nov · Time: 4 pm"
+      },
+      {
+       "kind": "checked",
+       "text": "Calendar: Dr. Iyer · Wed 25 Nov 12:30, Fri 27 Nov 12:30 free"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "Wednesday",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "12:30 pm it is. May I have the patient's full name?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "Fatima Sheikh",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Done. Fatima Sheikh is booked with Dr. Iyer on Wednesday 25 November at 12:30 pm. You'll get an SMS confirmation shortly. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Name: Fatima Sheikh"
+      },
+      {
+       "kind": "booked",
+       "text": "Dr. Iyer · Wed 25 Nov 12:30 · Fatima Sheikh"
+      },
+      {
+       "kind": "sms",
+       "text": "Confirmation SMS queued"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Sameer Iyer",
+      "start": "2026-11-25T12:30:00+05:30",
+      "label": "Wed 25 Nov 12:30"
+     }
+    },
+    {
+     "role": "caller",
+     "text": "no",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Thank you for calling Lotus Family Clinic. Take care!",
+     "events": [
+      {
+       "kind": "ended",
+       "text": "Caller said goodbye"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Sameer Iyer",
+      "start": "2026-11-25T12:30:00+05:30",
+      "label": "Wed 25 Nov 12:30"
+     }
+    }
+   ],
+   "summary": {
+    "outcome": "booked",
+    "text": "Fatima Sheikh booked with Dr. Iyer, Wed 25 Nov 12:30. 4 caller turns. No escalation needed."
+   }
+  },
+  {
+   "id": "faq-then-dentist-earliest",
+   "title": "Question, then booking",
+   "blurb": "Opening hours first, then the earliest dentist slot.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "what are your timings?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "We're open Monday to Saturday, 9:30 am to 7 pm, and closed on Sundays. Is there anything else I can help with? I can also book an appointment.",
+     "events": [
+      {
+       "kind": "answered",
+       "text": "Question: hours"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "yes",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Which doctor would you like to see? We have Dr. Rao, our general physician; Dr. Iyer, our skin specialist; Dr. Menon, our children's doctor; and Dr. Qureshi, our dentist.",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "dentist",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Dr. Qureshi sees patients Monday to Friday. What day would suit you?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Needs: dental"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "as soon as possible",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "The nearest I have with Dr. Qureshi is tomorrow, Tuesday 24 November at 3 pm, or on Wednesday 25 November at 3 pm. Which would you prefer?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Pref: earliest"
+      },
+      {
+       "kind": "checked",
+       "text": "Calendar: Dr. Qureshi · Tue 24 Nov 15:00, Wed 25 Nov 15:00 free"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "the first one",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "3 pm it is. May I have the patient's full name?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "my name is priya nair",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Done. Priya Nair is booked with Dr. Qureshi tomorrow, Tuesday 24 November at 3 pm. You'll get an SMS confirmation shortly. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Name: Priya Nair"
+      },
+      {
+       "kind": "booked",
+       "text": "Dr. Qureshi · Tue 24 Nov 15:00 · Priya Nair"
+      },
+      {
+       "kind": "sms",
+       "text": "Confirmation SMS queued"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Farhan Qureshi",
+      "start": "2026-11-24T15:00:00+05:30",
+      "label": "Tue 24 Nov 15:00"
+     }
+    },
+    {
+     "role": "caller",
+     "text": "no thanks",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Thank you for calling Lotus Family Clinic. Take care!",
+     "events": [
+      {
+       "kind": "ended",
+       "text": "Caller said goodbye"
+      }
+     ],
+     "booking": {
+      "doctor": "Dr. Farhan Qureshi",
+      "start": "2026-11-24T15:00:00+05:30",
+      "label": "Tue 24 Nov 15:00"
+     }
+    }
+   ],
+   "summary": {
+    "outcome": "booked",
+    "text": "Priya Nair booked with Dr. Qureshi, Tue 24 Nov 15:00. Asked about: hours. 7 caller turns. No escalation needed."
+   }
+  },
+  {
+   "id": "emergency",
+   "title": "Urgent call",
+   "blurb": "Describes an emergency. The agent stops booking and directs to 112/108.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "my father has chest pain and is sweating",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "This sounds urgent. Please hang up and call 112 now, or 108 for an ambulance. I'm also alerting our doctor on duty.",
+     "events": [
+      {
+       "kind": "handoff",
+       "text": "Caller described a possible emergency"
+      }
+     ],
+     "booking": null
+    }
+   ],
+   "summary": {
+    "outcome": "handoff",
+    "text": "URGENT. Call back: caller described a possible emergency. 1 caller turn."
+   }
+  },
+  {
+   "id": "cancel-existing",
+   "title": "Cancel request",
+   "blurb": "An existing appointment goes to the front desk as a call-back.",
+   "turns": [
+    {
+     "role": "agent",
+     "text": "Hello, you've reached Lotus Family Clinic. The front desk is closed right now, but I can book an appointment or answer a quick question. How can I help?",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "I need to cancel my appointment, it's Vikram Singh",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "I can't cancel existing appointments myself, so I've noted your request for Vikram Singh and the front desk will call you back when we open. Is there anything else I can help with?",
+     "events": [
+      {
+       "kind": "understood",
+       "text": "Name: Vikram Singh"
+      },
+      {
+       "kind": "request",
+       "text": "Cancel existing appointment → front desk"
+      }
+     ],
+     "booking": null
+    },
+    {
+     "role": "caller",
+     "text": "no",
+     "events": [],
+     "booking": null
+    },
+    {
+     "role": "agent",
+     "text": "Thank you for calling Lotus Family Clinic. Take care!",
+     "events": [
+      {
+       "kind": "ended",
+       "text": "Caller said goodbye"
+      }
+     ],
+     "booking": null
+    }
+   ],
+   "summary": {
+    "outcome": "request",
+    "text": "Request: Cancel an existing appointment. 2 caller turns."
+   }
+  }
+ ]
+}

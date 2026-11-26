@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { aiConfigured } from "@/features/demos/ops-suite/ai/claude.server";
-import { PROMPT_VERSION } from "@/features/demos/ops-suite/ai/plan";
+import { aiConfigured } from "@/features/demos/ops-suite/ai/llm.server";
 import { loadQuality } from "@/features/demos/ops-suite/ai/quality.server";
 import { formatDate } from "@/features/demos/ops-suite/lib/format";
 import { PORTAL_BASE } from "@/features/demos/ops-suite/nav";
@@ -36,7 +35,7 @@ export default async function AiQualityPage() {
         <h1>AI quality</h1>
         <p>
           How well “Ask Ops Suite” works, measured two ways: <strong>live monitoring</strong> of every real question, and <strong>offline evals</strong> on{" "}
-          {q.goldenSize} fixed questions with known-correct plans, run by the Python harness. Prompt version {PROMPT_VERSION} ·{" "}
+          {q.goldenSize} fixed questions with known answers ·{" "}
           {aiConfigured() ? "AI is on" : "AI is off on this deployment"}.
         </p>
       </div>
@@ -45,13 +44,13 @@ export default async function AiQualityPage() {
         <div className="ops-kpi">
           <span className="ops-kpi-label">Questions (7 days)</span>
           <strong className="ops-kpi-value">{s.total.toLocaleString("en-IN")}</strong>
-          <span className="ops-kpi-sub">{s.refused} declined by the model</span>
+          <span className="ops-kpi-sub">{s.refused} declined</span>
         </div>
         <div className="ops-kpi">
-          <span className="ops-kpi-label">Valid plans</span>
+          <span className="ops-kpi-label">Valid answers</span>
           <strong className="ops-kpi-value">{pct(s.ok, answered)}</strong>
           <span className="ops-kpi-sub">
-            {s.invalid} rejected by the validator · {s.errors} errors
+            {s.invalid} caught by checks · {s.errors} errors
           </span>
         </div>
         <div className="ops-kpi">
@@ -62,7 +61,7 @@ export default async function AiQualityPage() {
         <div className="ops-kpi">
           <span className="ops-kpi-label">Cost (7 days)</span>
           <strong className="ops-kpi-value">{usd(s.cost, 2)}</strong>
-          <span className="ops-kpi-sub">{usd(s.avgCost)} per question · {s.fallbacks} served by fallback</span>
+          <span className="ops-kpi-sub">{usd(s.avgCost)} per question</span>
         </div>
         <div className="ops-kpi">
           <span className="ops-kpi-label">Helpful</span>
@@ -79,22 +78,22 @@ export default async function AiQualityPage() {
             <ColumnChart title="Questions per day" note="last 14 days, excluding examples" unit="count" valueLabel="Questions" points={q.daily.map((d) => ({ label: formatDate(d.day).replace(/ \d{4}$/, ""), value: d.total, detail: `${pct(d.ok, d.total)} valid` }))} />
           ) : (
             <p className="aq-empty">
-              No live questions yet. {aiConfigured() ? "Ask something on " : "Add ANTHROPIC_API_KEY, then ask something on "}
-              <Link href={`${PORTAL_BASE}/ask`}>Ask Ops Suite</Link> — every question is traced here (latency, tokens, cost, validity, feedback).
+              No live questions yet. {aiConfigured() ? "Ask something on " : "Live questions appear here once AI is on for this deployment. Try "}
+              <Link href={`${PORTAL_BASE}/ask`}>Ask Ops Suite</Link> — every question is tracked here (speed, cost, validity, feedback).
             </p>
           )}
         </section>
 
         <section className="ops-card aq-wide" aria-labelledby="runs-title">
           <h2 id="runs-title" className="viz-title">
-            Eval runs <span>golden set of {q.goldenSize} questions · exact-match grading on the plan</span>
+            Test runs <span>{q.goldenSize} fixed questions with known answers</span>
           </h2>
           {q.runs.length ? (
             <div className="ops-scroll ops-lines-scroll">
               <table className="ops-table ops-lines">
                 <thead>
                   <tr>
-                    <th>Configuration</th>
+                    <th>Run</th>
                     <th className="is-end">Accuracy</th>
                     <th className="is-end">p50</th>
                     <th className="is-end">p95</th>
@@ -107,7 +106,7 @@ export default async function AiQualityPage() {
                     <tr key={r.id}>
                       <td>
                         <Link href={`${PORTAL_BASE}/ai-quality/runs/${r.id}`} className="ops-row-link">
-                          <span className="ops-primary">{r.label}</span>
+                          <span className="ops-primary">Test run #{r.id}</span>
                         </Link>
                       </td>
                       <td className="is-end">
@@ -130,21 +129,20 @@ export default async function AiQualityPage() {
             </div>
           ) : (
             <div className="aq-empty">
-              No eval runs yet. Run the Python harness (it calls Claude, so it needs an API key and costs a few cents per run):
-              <code>{`cd ops-ai && python -m ops_ai.eval --effort low --effort medium`}</code>
+              No test runs yet. Results appear here after each scheduled run.
             </div>
           )}
         </section>
 
         {q.latest && q.byTag.length > 0 && (
           <section className="ops-card">
-            <BarList title="Accuracy by question type" note={q.latest.label} unit="pct" valueLabel="Accuracy" points={q.byTag.map((t) => ({ label: t.tag, value: t.passed / t.total, detail: `${t.passed}/${t.total}` }))} />
+            <BarList title="Accuracy by question type" note={`Test run #${q.latest.id}`} unit="pct" valueLabel="Accuracy" points={q.byTag.map((t) => ({ label: t.tag, value: t.passed / t.total, detail: `${t.passed}/${t.total}` }))} />
           </section>
         )}
 
         <section className="ops-card" aria-labelledby="problems-title">
           <h2 id="problems-title" className="viz-title">
-            Recent failures <span>rejected plans, errors and refusals</span>
+            Recent failures <span>caught answers, errors and refusals</span>
           </h2>
           {q.problems.length ? (
             <ul className="ops-feed-list">

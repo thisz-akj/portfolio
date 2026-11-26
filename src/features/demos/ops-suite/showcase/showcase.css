@@ -1,0 +1,18 @@
+/* /demos/ops-suite showcase + flagship tile on /demos */
+.ops-show { display: flex; flex-direction: column; gap: 3rem; }
+.ops-show-cta { display: flex; flex-wrap: wrap; align-items: center; gap: 1.25rem; }
+.ops-show-cta p { max-width: 46ch; color: var(--mid); font-size: 0.9rem; }
+.ops-show-part { display: grid; grid-template-columns: 1.1fr 1fr; gap: 2rem; align-items: center; }
+.ops-show-part:nth-child(odd) figure { order: 2; }
+.ops-show-part figure { margin: 0; border: 1px solid var(--line-2); border-radius: 10px; overflow: hidden; background: #0a0a0a; }
+.ops-show-part h3 { font-family: var(--f-display); font-style: italic; font-weight: 400; font-size: clamp(1.6rem, 2.6vw, 2.2rem); line-height: 1.1; margin: 0.4rem 0 0.9rem; }
+.ops-show-part ul { display: flex; flex-direction: column; gap: 0.5rem; padding-left: 1.1rem; color: var(--accent); font-size: 0.92rem; }
+.ops-show-links { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.2rem; }
+.card-flagship { grid-column: 1 / -1; display: grid; grid-template-columns: 1fr 1.15fr; gap: 2rem; align-items: center; }
+.card-flagship .card-shot { border: 1px solid var(--line-2); border-radius: 8px; overflow: hidden; }
+.card-flagship .card-parts { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+@media (max-width: 860px) {
+  .ops-show-part, .card-flagship { grid-template-columns: 1fr; }
+  .ops-show-part:nth-child(odd) figure { order: 0; }
+}
+.card-text { display: flex; flex-direction: column; gap: 1rem; min-width: 0; }

@@ -202,5 +202,6 @@ describe("ui helpers", async () => {
     expect(csv.startsWith("﻿Name,Amount\r\n")).toBe(true);
     expect(csv).toContain(`"'=HYPERLINK(""x"")",1200.5`);
     expect(csv).toContain(`"Shah ""& Co.""",`);
+    expect(toCsv(["n"], [["-4"], ["+91 98765 43210"], ["-SUM(A1)"]])).toBe("\uFEFFn\r\n-4\r\n+91 98765 43210\r\n'-SUM(A1)\r\n");
   });
 });

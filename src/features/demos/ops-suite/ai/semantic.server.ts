@@ -174,9 +174,11 @@ export async function executeMetric(plan: Plan, now = new Date()): Promise<Metri
     return sql.join(parts, sql` and `);
   };
   const timeSeries = m.groupBy === "month";
+  // "which X dropped/grew most" → rank groups by change, not by current value (limit applied after ranking)
+  const rankByChange = m.compare === "previous_period" && !!m.groupBy && !timeSeries;
   const query = (range: DateRange) =>
     group
-      ? sql`select ${sql.raw(group)} as label, ${sql.raw(ms.agg)} as value from ${sql.raw(fact.from)} where ${where(range)} group by 1 order by ${timeSeries ? sql.raw("1 asc") : sql.raw(`2 ${m.sort} nulls last, 1`)} limit ${timeSeries ? 36 : m.limit}`
+      ? sql`select ${sql.raw(group)} as label, ${sql.raw(ms.agg)} as value from ${sql.raw(fact.from)} where ${where(range)} group by 1 order by ${timeSeries ? sql.raw("1 asc") : sql.raw(`2 ${m.sort} nulls last, 1`)} limit ${timeSeries ? 36 : rankByChange ? 500 : m.limit}`
       : sql`select 'Total' as label, ${sql.raw(ms.agg)} as value from ${sql.raw(fact.from)} where ${where(range)}`;
 
   const current = periodRange(m.period as Period, now);
@@ -201,6 +203,11 @@ export async function executeMetric(plan: Plan, now = new Date()): Promise<Metri
       change: previous !== undefined && previous !== null && previous !== 0 ? (value - previous) / Math.abs(previous) : null,
     };
   });
+  if (rankByChange) {
+    const dir = m.sort === "asc" ? 1 : -1;
+    rows.sort((x, y) => (x.change === null || x.change === undefined ? 1 : y.change === null || y.change === undefined ? -1 : dir * (x.change - y.change)));
+    rows.splice(m.limit);
+  }
   return {
     kind: "metric",
     unit: def.unit,

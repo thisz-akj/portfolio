@@ -1,11 +1,16 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, ThumbsDown, ThumbsUp } from "lucide-react";
 import { askAction, feedbackAction, runExampleAction } from "../../ai/actions";
 import type { AskResult } from "../../ai/types";
 import { BarList, ColumnChart, fmtValue } from "../dashboard/Charts";
+import { AiLimitDialog } from "@/components/shared/AiLimitDialog";
+import { assistantCopy } from "@/content/assistant";
+
+const LIMIT_KEY = "ai-limit:ops-ask";
+const todayIST = () => new Date(Date.now() + 5.5 * 3600_000).toISOString().slice(0, 10);
 
 type Ok = Extract<AskResult, { ok: true }>;
 const monthFmt = new Intl.DateTimeFormat("en-IN", { month: "short", year: "2-digit", timeZone: "UTC" });
@@ -45,7 +50,7 @@ function Answer({ r }: { r: Ok }) {
       body = (
         <BarList
           title={`${a.metricLabel} by ${a.groupLabel.toLowerCase()}`}
-          note={`${a.periodLabel}${a.previousLabel ? ` · change vs ${a.previousLabel}` : ""}`}
+          note={`${a.periodLabel}${a.previousLabel ? ` · ranked by change vs ${a.previousLabel}` : ""}`}
           unit={a.unit}
           valueLabel={a.metricLabel}
           points={a.rows.map((x) => ({
@@ -78,15 +83,15 @@ function Answer({ r }: { r: Ok }) {
       </div>
     );
   } else {
-    body = <p className="ai-unsupported">{r.plan.explanation}</p>;
+    body = <p className="ai-unsupported">{r.explanation}</p>;
   }
 
   return (
     <article className="ops-card ai-answer">
       <header>
-        <p className="ops-eyebrow">{r.question}</p>
-        <h2>{r.plan.title}</h2>
-        {a.kind !== "unsupported" && <p className="ai-explain">{r.plan.explanation}</p>}
+        {r.title.trim().toLowerCase() !== r.question.trim().toLowerCase() && <p className="ops-eyebrow">{r.question}</p>}
+        <h2>{r.title}</h2>
+        {a.kind !== "unsupported" && <p className="ai-explain">{r.explanation}</p>}
         {r.notes.map((n) => (
           <p key={n} className="ops-hint">
             Note: {n}
@@ -94,21 +99,13 @@ function Answer({ r }: { r: Ok }) {
         ))}
       </header>
       {body}
-      {a.kind !== "unsupported" && (
-        <details className="ai-query" open={false}>
-          <summary>How it ran</summary>
-          <code>{r.query}</code>
-          <p className="ops-hint">The model picked this plan from a fixed catalogue; the server validated it and ran read-only SQL built from vetted fragments.</p>
-        </details>
-      )}
       <footer className="ai-meta">
         {r.mode === "example" ? (
-          <span className="ai-badge is-example">Hand-written example plan · no model call</span>
+          <span className="ai-badge is-example">Example answer · pre-written</span>
         ) : (
           r.usage && (
             <span className="ai-badge">
-              <Sparkles size={12} aria-hidden="true" /> {r.usage.servedBy}
-              {r.usage.servedBy !== r.usage.model ? ` (fallback from ${r.usage.model})` : ""} · effort {r.usage.effort} · {(r.usage.latencyMs / 1000).toFixed(1)} s · {(r.usage.inputTokens + r.usage.outputTokens).toLocaleString("en-IN")} tokens · ${r.usage.costUsd.toFixed(4)}
+              <Sparkles size={12} aria-hidden="true" /> AI answer · {(r.usage.latencyMs / 1000).toFixed(1)} s
             </span>
           )
         )}
@@ -133,12 +130,37 @@ function Answer({ r }: { r: Ok }) {
   );
 }
 
-export function AskPanel({ configured, examples }: { configured: boolean; examples: { id: string; question: string }[] }) {
+export function AskPanel({ configured, examples, freeLimit = 3 }: { configured: boolean; examples: { id: string; question: string }[]; freeLimit?: number }) {
   const [q, setQ] = useState("");
   const [results, setResults] = useState<Ok[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const box = useRef<HTMLTextAreaElement>(null);
+  // Free-question allowance (server-enforced in askAction; mirrored here for the pop-up).
+  const [remaining, setRemaining] = useState<number | null>(null);
+  const [limitReached, setLimitReached] = useState(false);
+  const [limitOpen, setLimitOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (window.localStorage.getItem(LIMIT_KEY) === todayIST()) setLimitReached(true);
+    } catch {
+      /* storage unavailable */
+    }
+  }, []);
+
+  const closeLimit = useCallback(() => setLimitOpen(false), []);
+
+  const hitLimit = () => {
+    try {
+      window.localStorage.setItem(LIMIT_KEY, todayIST());
+    } catch {
+      /* storage unavailable */
+    }
+    setLimitReached(true);
+    setRemaining(0);
+    setLimitOpen(true);
+  };
 
   const run = (fn: () => Promise<AskResult>) =>
     start(async () => {
@@ -147,22 +169,32 @@ export function AskPanel({ configured, examples }: { configured: boolean; exampl
       if (res.ok) {
         setResults((r) => [res, ...r].slice(0, 6));
         setQ("");
-      } else setError(res.message);
+        if (res.remaining !== null) {
+          setRemaining(res.remaining);
+          if (res.remaining === 0) hitLimit(); // that was the last free question
+        }
+      } else if (res.reason === "quota") hitLimit();
+      else setError(res.message);
     });
+
+  const ask = (text: string) => {
+    if (limitReached) setLimitOpen(true);
+    else if (text.trim()) run(() => askAction(text));
+  };
 
   return (
     <div className="ai-panel">
       {!configured && (
         <p className="ai-banner" role="note">
-          <strong>AI is off on this deployment</strong> (no API key configured). The example questions below still run — they use hand-written
-          plans through the same validator and query engine, and are labelled as such.
+          <strong>Free-form questions are off in this preview.</strong> The example questions below still work — they show pre-written
+          answers, labelled as such.
         </p>
       )}
       <form
         className="ai-ask"
         onSubmit={(e) => {
           e.preventDefault();
-          if (q.trim()) run(() => askAction(q));
+          ask(q);
         }}
       >
         <label htmlFor="ai-q" className="ops-sr">
@@ -175,16 +207,23 @@ export function AskPanel({ configured, examples }: { configured: boolean; exampl
           maxLength={300}
           value={q}
           disabled={!configured || pending}
-          placeholder={configured ? "e.g. Which region's orders dropped the most last month?" : "Add ANTHROPIC_API_KEY to ask your own questions"}
+          readOnly={limitReached}
+          placeholder={
+            !configured
+              ? "Free-form questions are off in this preview — try an example"
+              : limitReached
+                ? assistantCopy.limit.placeholder
+                : "e.g. Which region's orders dropped the most last month?"
+          }
           onChange={(e) => setQ(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
-              if (q.trim()) run(() => askAction(q));
+              ask(q);
             }
           }}
         />
-        <button type="submit" className="ops-btn is-primary" disabled={!configured || pending || !q.trim()}>
+        <button type="submit" className="ops-btn is-primary" disabled={!configured || pending || (!limitReached && !q.trim())}>
           <Sparkles size={14} /> {pending ? "Thinking…" : "Ask"}
         </button>
       </form>
@@ -195,17 +234,14 @@ export function AskPanel({ configured, examples }: { configured: boolean; exampl
             type="button"
             className="ops-chip ai-chip"
             disabled={pending}
-            onClick={() => {
-              if (configured) {
-                setQ(x.question);
-                run(() => askAction(x.question));
-              } else run(() => runExampleAction(x.id));
-            }}
+            // Examples always use their pre-written answers: instant, zero tokens, and they don't use a free question.
+            onClick={() => run(() => runExampleAction(x.id))}
           >
             <span className="ops-chip-text">{x.question}</span>
           </button>
         ))}
       </div>
+      {configured && remaining !== null && remaining > 0 && <p className="ops-hint ai-remaining">{assistantCopy.limit.remaining(remaining, freeLimit)}</p>}
       <div aria-live="polite">
         {error && (
           <p className="ops-error ai-error" role="alert">
@@ -217,6 +253,7 @@ export function AskPanel({ configured, examples }: { configured: boolean; exampl
       {results.map((r, i) => (
         <Answer key={`${r.traceId ?? "x"}-${i}`} r={r} />
       ))}
+      <AiLimitDialog open={limitOpen} onClose={closeLimit} limit={freeLimit} />
     </div>
   );
 }

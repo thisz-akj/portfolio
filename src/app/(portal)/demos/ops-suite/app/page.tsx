@@ -81,7 +81,7 @@ export default async function DashboardPage() {
         </section>
         <section className="ops-card ops-signals ops-dash-wide" aria-labelledby="signals-title">
           <h2 id="signals-title" className="viz-title">
-            Signals <span>forecast and anomalies, computed by the Python insights job</span>
+            Signals <span>forecasts and anomalies, refreshed nightly</span>
           </h2>
           {d.signals.length ? (
             <ul>
@@ -94,7 +94,7 @@ export default async function DashboardPage() {
                     {sg.href ? <Link href={sg.href}>{sg.title}</Link> : <strong>{sg.title}</strong>}
                     <p>{sg.detail}</p>
                     <p className="ops-feed-meta">
-                      {sg.method} · computed {ago(sg.computedAt, now)}
+                      computed {ago(sg.computedAt, now)}
                     </p>
                   </div>
                 </li>
@@ -102,8 +102,7 @@ export default async function DashboardPage() {
             </ul>
           ) : (
             <p className="aq-empty">
-              No signals yet. They come from <code>ops-ai</code> (pandas + statsmodels): <code>cd ops-ai &amp;&amp; python -m ops_ai.insights</code> — and nightly
-              in CI after the demo reset.
+              No signals yet. They&apos;re computed nightly after the demo data resets.
             </p>
           )}
         </section>

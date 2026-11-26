@@ -9,11 +9,11 @@ describe("bentoTracks", () => {
     expect(t.rows.split("minmax").length - 1).toBe(3);
   });
   it("grows only the hovered tile's tracks", () => {
-    const t = bentoTracks(1, 3); // B: cols 5–6, row 1
+    const t = bentoTracks(1, 3); // B (computer vision): right half, cols 4–6, rows 1–2
     const cols = t.columns.match(/[\d.]+fr/g)!;
-    expect(cols.slice(4)).toEqual(["1.9fr", "1.9fr"]);
-    expect(cols.slice(0, 4)).toEqual(["1fr", "1fr", "1fr", "1fr"]);
-    expect(t.rows.match(/[\d.]+fr/g)).toEqual(["1.7fr", "1fr", "1fr"]);
+    expect(cols.slice(3)).toEqual(["1.9fr", "1.9fr", "1.9fr"]);
+    expect(cols.slice(0, 3)).toEqual(["1fr", "1fr", "1fr"]);
+    expect(t.rows.match(/[\d.]+fr/g)).toEqual(["1.7fr", "1.7fr", "1fr"]);
   });
   it("keeps the same number of tracks in every state (so it can animate)", () => {
     for (let i = 0; i < PLACEMENTS.length; i++) {

@@ -15,10 +15,10 @@ describe("content integrity", () => {
   it("project images exist in /public", () => {
     for (const p of projects) for (const src of [p.cover, ...p.gallery]) expect(existsSync(`public${src}`), src).toBe(true);
   });
-  it("solution and hero art exist in /public", async () => {
-    const { heroImages } = await import("@/content/hero");
-    for (const src of [...solutions.map((s) => s.art), ...heroImages.map((h) => h.art)]) expect(existsSync(`public${src}`), src).toBe(true);
-    const clips = [...solutions.map((s) => s.video), ...heroImages.map((h) => h.video)].filter(Boolean);
+  it("solution and hero art exist in /public", () => {
+    for (const src of [...solutions.map((s) => s.art), "/video/hero-motion.webp", "/video/hero-motion-mobile.webp"])
+      expect(existsSync(`public${src}`), src).toBe(true);
+    const clips = [...solutions.map((s) => s.video), "hero-motion", "hero-motion-mobile"].filter(Boolean);
     for (const v of clips) {
       expect(existsSync(`public/video/${v}.mp4`), `${v}.mp4`).toBe(true);
       expect(existsSync(`public/video/${v}.webp`), `${v}.webp`).toBe(true);

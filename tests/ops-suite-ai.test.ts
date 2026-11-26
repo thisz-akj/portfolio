@@ -83,8 +83,8 @@ describe("execution", () => {
     if (b.kind !== "metric") throw new Error();
     expect(b.rows.some((r) => r.label === "South")).toBe(true);
     expect(b.rows.every((r) => r.previous !== undefined)).toBe(true);
-    const vals = b.rows.map((r) => r.value);
-    expect([...vals].sort((x, y) => x - y)).toEqual(vals);
+    const changes = b.rows.map((r) => r.change ?? Infinity);
+    expect([...changes].sort((x, y) => x - y)).toEqual(changes); // comparisons rank by change
   });
   it("is read-only even if a fragment tried to write", async () => {
     const { getDb } = await import("@/features/demos/ops-suite/db/client");
@@ -116,5 +116,16 @@ describe("periods and prompt", () => {
     const { askAction } = await import("@/features/demos/ops-suite/ai/actions");
     const r = await askAction("What were orders last month?");
     expect(r.ok === false && r.reason).toBe("no_key");
+  });
+});
+
+describe("comparisons rank by change", () => {
+  it("puts the biggest drop first when sorting ascending", async () => {
+    const v = validatePlan({ kind: "metric", title: "t", explanation: "e", metric: { metric: "orders_value", groupBy: "region", filters: [], period: "last_month", compare: "previous_period", sort: "asc", limit: 3 }, list: null });
+    const a = await executePlan(v.ok ? v.value.plan : (null as never), NOW);
+    if (a.kind !== "metric") throw new Error();
+    expect(a.rows.length).toBeLessThanOrEqual(3);
+    const changes = a.rows.map((r) => r.change ?? Infinity);
+    expect([...changes].sort((x, y) => x - y)).toEqual(changes);
   });
 });
