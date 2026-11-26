@@ -31,8 +31,10 @@ async function connect(): Promise<Handle> {
   if (dbDriver() === "postgres") {
     const { default: postgres } = await import("postgres");
     const { drizzle } = await import("drizzle-orm/postgres-js");
-    // prepare: false keeps it compatible with Neon's / PgBouncer's transaction pooler.
-    const sql = postgres(process.env.DATABASE_URL!, { prepare: false, max: 5 });
+    // prepare: false keeps it compatible with transaction poolers (Supabase/Neon/PgBouncer).
+    // max_pipeline: 1 — Supabase's transaction pooler hangs on pipelined queries (parallel queries on one
+    // connection sit in ClientRead until the 2 min statement timeout); one in flight per connection fixes it.
+    const sql = postgres(process.env.DATABASE_URL!, { prepare: false, max: 5, max_pipeline: 1 });
     return { db: drizzle({ client: sql, schema }) as unknown as Db, driver: "postgres", close: () => sql.end() };
   }
   const { PGlite } = await import("@electric-sql/pglite");

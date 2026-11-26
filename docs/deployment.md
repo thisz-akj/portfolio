@@ -3,20 +3,22 @@
 | Part | Where |
 |---|---|
 | Next.js site, demo UIs, API routes, nightly Ops reset (`vercel.json`, region `bom1` Mumbai) | Vercel |
-| Ops Suite database | Neon Postgres, closest Asia region (Singapore `aws-ap-southeast-1` unless Mumbai is offered), pooled URL |
+| Ops Suite database | Supabase Postgres (free plan), closest Asia region offered (Southeast Asia/Singapore best; currently Tokyo), **transaction pooler** URL |
 | Free-question counts across serverless instances | Upstash Redis (REST) |
 | Assistant :8001, DocDesk :8002, voice :8003, LiveKit voice worker, Caddy (HTTPS) | One 4 GB VPS in India, `deploy/docker-compose.yml` |
 | Voice calls | LiveKit Cloud (India South) |
 
-Order: Neon → Upstash → VPS → Vercel (the site needs the VPS URL; the voice worker needs the site URL, so set `SITE_INTERNAL_URL` after the first Vercel deploy and restart `voice-agent`).
+Order: Supabase → Upstash → VPS → Vercel (the site needs the VPS URL; the voice worker needs the site URL, so set `SITE_INTERNAL_URL` after the first Vercel deploy and restart `voice-agent`).
 
-## 1. Neon
-1. Create a project in the region **closest to Mumbai** (Singapore, AWS ap-southeast-1, unless Mumbai is listed). Never a US/EU region: the site's functions run in Mumbai and each Ops page makes several queries in a row.
-2. Copy the **pooled** connection string (host contains `-pooler`) → `DATABASE_URL`.
-3. From this machine, migrate and seed it once:
-   `export DATABASE_URL='<pooled url>' NODE_OPTIONS=--network-family-autoselection-attempt-timeout=2000`
+## 1. Supabase (database)
+1. New project on the **free plan**, region closest to Mumbai that's offered (Southeast Asia/Singapore ≈ 60 ms; Tokyo ≈ 110 ms — Ops pages load in ~0.3 s vs ~0.7 s). Never US/EU. Don't buy the IPv4 add-on.
+2. **Connect → Connection String → Method: Transaction pooler** (host `…pooler.supabase.com`, port **6543**, user `postgres.<project-ref>`). The direct `db.<ref>.supabase.co` address is IPv6-only and won't work from Vercel.
+3. Keep the password out of chats and git: put `DATABASE_URL='…'` in `.env.supabase` (git-ignored, `.env*`), then migrate + seed once:
+   `export NODE_OPTIONS=--network-family-autoselection-attempt-timeout=2000; set -a; . ./.env.supabase; set +a`
    `npm run db:migrate && npm run db:seed`
    (the NODE_OPTIONS flag stops Node giving up after 250 ms per address on a far-away database: `ETIMEDOUT` in ~1 s)
+4. The client sets `max_pipeline: 1` (`db/client.ts`): the transaction pooler hangs on pipelined queries. Keep it.
+5. Free projects pause after a week idle; the nightly Ops reset (Vercel cron) keeps it active.
 
 ## 2. Upstash
 Create a Redis database (region Mumbai or nearest) → copy **REST URL** and **REST token** →
@@ -44,7 +46,7 @@ Import `thisz-akj/portfolio` (framework Next.js, defaults). Environment variable
 | Variable | Value |
 |---|---|
 | `NEXT_PUBLIC_SITE_URL` | `https://<your domain or project>.vercel.app` |
-| `DATABASE_URL` | Neon pooled URL |
+| `DATABASE_URL` | Supabase transaction-pooler URL (paste it in Vercel yourself) |
 | `CRON_SECRET` | `openssl rand -hex 32` (Vercel cron sends it) |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | from Upstash |
 | `GROQ_API_KEY` | Groq key (Ops Ask, Autopilot) |

@@ -9,7 +9,7 @@ Positioning: **independent applied AI engineer, AI automation first, computer vi
 - CV visuals are generated, not real footage: `python3 scripts/render-vision-media.py [--stills] [scene]` (`--frontcam` = the CV card preview frame `public/art/amr-front-camera.webp`; its box %s are printed and must match `Preview.tsx`) → `public/work/cv-*.webp` + `public/video/cv-*.mp4` (credited in `docs/credits.md`). Projects/solutions can carry a looping `clip` (mp4, poster = same name .webp).
 
 ## Deployment
-Vercel (site, `bom1`) + Neon + Upstash (free-question counts, `aiQuota`) + one VPS running `deploy/docker-compose.yml` (assistant, DocDesk, voice, LiveKit worker, Caddy HTTPS at `/assistant` `/docintel` `/voice`). Steps + env list: `docs/deployment.md`.
+Vercel (site, `bom1`) + Supabase Postgres (transaction pooler, `max_pipeline: 1`; URL in git-ignored `.env.supabase`) + Upstash (free-question counts, `aiQuota`) + one VPS running `deploy/docker-compose.yml` (assistant, DocDesk, voice, LiveKit worker, Caddy HTTPS at `/assistant` `/docintel` `/voice`). Steps + env list: `docs/deployment.md`.
 
 ## Commands
 Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/node/bin:$PATH`.
@@ -35,7 +35,7 @@ Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/n
 Phases 0–8 built (plan/phase log + deep detail: `docs/demos/ops-suite.md` — read only the section you need).
 Portfolio wiring: `/work/ops-suite` (project 01), one flagship tile on `/demos` + `OpsSuiteDemo` showcase, three solution cards deep-link via `demoHref`.
 
-**DB:** Drizzle + Postgres 16 local (`DATABASE_URL` in `.env.local`, db `ops_suite`), Neon on Vercel, PGlite in-memory in tests (`OPS_PGLITE_DIR=memory://`).
+**DB:** Drizzle + Postgres 16 local (`DATABASE_URL` in `.env.local`, db `ops_suite`), Supabase on Vercel (see Deployment), PGlite in-memory in tests (`OPS_PGLITE_DIR=memory://`).
 `npm run db:generate` (after schema edits — commit `drizzle/`) · `db:migrate` · `db:seed` (deterministic truncate+refill, ~16k rows, Indian B2B ₹) · `db:reset` · `db:studio`. AI tables (`ai_*`) survive reseeds.
 
 **Code map** (`src/features/demos/ops-suite/`):
@@ -66,7 +66,7 @@ Screenshots: `npm run shots` (server on :3000, Playwright Chromium installed) �
 - Testing AI quota from scripts: send `x-forwarded-for: <fake>` or you burn the owner's own 3 free questions (visitor = IP, "local" in dev).
 - Playwright probes: run the script from inside the repo (`scripts/_x.mjs`, delete after) — from the scratchpad `playwright` won't resolve. Use `tsx` with a `main()` (no top-level await).
 
-**Pending:** port `ops_ai.eval` to Groq and run the 33-question golden set (also check `qwen/qwen3.8-27b` handles the strict plan schema) → flip demos to `live` with measured accuracy/latency in the case study; Vercel deploy (`DATABASE_URL` Neon pooled, `CRON_SECRET`, `GROQ_API_KEY`, the Python assistant hosted somewhere + `ASSISTANT_URL`/`ASSISTANT_TOKEN`; GitHub secrets for the Python workflow); move `aiQuota` + caches to a shared store (e.g. Upstash) if deployed serverless. Tests: `npm test` (209) + `ops-ai` pytest (14) + `assistant` pytest (35) + `docintel` pytest (34).
+**Pending:** port `ops_ai.eval` to Groq and run the 33-question golden set (also check `qwen/qwen3.8-27b` handles the strict plan schema) → flip demos to `live` with measured accuracy/latency in the case study; finish the deploy (`docs/deployment.md`: Supabase done + seeded; Upstash, VPS, Vercel to do; GitHub secrets for the Python workflow). Tests: `npm test` (229) + `ops-ai` pytest (14) + `assistant` pytest (35) + `docintel` pytest (34).
 
 ## Portfolio assistant ("Ask about Azad") — `assistant/` + `src/components/assistant/`
 Site-wide chat (launcher bottom-right, ⌘K) about Azad's work; separate from Ops Suite AI. Python FastAPI; LLMs via Groq (free tier, httpx) then Gemini (`google-genai`) as fallback chain `ASSISTANT_MODELS` — details in `assistant/README.md`. Only `GROQ_API_KEY` is set right now (Gemini links are skipped). Python reads `.env.local` too; it reads env once at start — restart `assistant:dev` after changing keys (`--reload` only watches code).
