@@ -3,7 +3,7 @@
 | Part | Where |
 |---|---|
 | Next.js site, demo UIs, API routes, nightly Ops reset (`vercel.json`, region `bom1` Mumbai) | Vercel |
-| Ops Suite database | Neon Postgres (Mumbai), pooled URL |
+| Ops Suite database | Neon Postgres, closest Asia region (Singapore `aws-ap-southeast-1` unless Mumbai is offered), pooled URL |
 | Free-question counts across serverless instances | Upstash Redis (REST) |
 | Assistant :8001, DocDesk :8002, voice :8003, LiveKit voice worker, Caddy (HTTPS) | One 4 GB VPS in India, `deploy/docker-compose.yml` |
 | Voice calls | LiveKit Cloud (India South) |
@@ -11,10 +11,12 @@
 Order: Neon → Upstash → VPS → Vercel (the site needs the VPS URL; the voice worker needs the site URL, so set `SITE_INTERNAL_URL` after the first Vercel deploy and restart `voice-agent`).
 
 ## 1. Neon
-1. Create a project in **AWS ap-south-1 (Mumbai)**.
+1. Create a project in the region **closest to Mumbai** (Singapore, AWS ap-southeast-1, unless Mumbai is listed). Never a US/EU region: the site's functions run in Mumbai and each Ops page makes several queries in a row.
 2. Copy the **pooled** connection string (host contains `-pooler`) → `DATABASE_URL`.
 3. From this machine, migrate and seed it once:
-   `DATABASE_URL='<pooled url>' npm run db:migrate && DATABASE_URL='<pooled url>' npm run db:seed`
+   `export DATABASE_URL='<pooled url>' NODE_OPTIONS=--network-family-autoselection-attempt-timeout=2000`
+   `npm run db:migrate && npm run db:seed`
+   (the NODE_OPTIONS flag stops Node giving up after 250 ms per address on a far-away database: `ETIMEDOUT` in ~1 s)
 
 ## 2. Upstash
 Create a Redis database (region Mumbai or nearest) → copy **REST URL** and **REST token** →
