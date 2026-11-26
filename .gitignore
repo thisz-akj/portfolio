@@ -57,6 +57,3 @@ __pycache__/
 .pytest_cache/
 /.logs/
 /voice/agent/cache/
-
-# raw source media (processed copies live in public/)
-/azad_folder/
