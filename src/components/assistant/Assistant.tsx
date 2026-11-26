@@ -37,7 +37,18 @@ export function Assistant() {
 
   useEffect(() => {
     setMac(/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent));
-    return onLoaderDone(() => setReady(true));
+    // Only the home hero sends "loaded"; on any other first page show the launcher straight away
+    // (it used to stay hidden forever on a direct visit to /work, /demos, …). Safety net: 4 s.
+    if (window.location.pathname !== "/") {
+      setReady(true);
+      return;
+    }
+    const t = window.setTimeout(() => setReady(true), 4000);
+    const off = onLoaderDone(() => setReady(true));
+    return () => {
+      window.clearTimeout(t);
+      off();
+    };
   }, []);
 
   useEffect(() => {
@@ -84,7 +95,9 @@ export function Assistant() {
         tl.kill();
       };
     }
-    if (el.style.visibility !== "visible") return;
+    // Nothing to close if it was never opened. (Don't test for "visible": GSAP's autoAlpha leaves
+    // visibility as "inherit" once shown, and that check made the panel impossible to close.)
+    if (el.style.visibility === "hidden") return;
     if (reduced) tl.to(el, { autoAlpha: 0, duration: 0.15 });
     else tl.to(el, { clipPath: `circle(0% at ${IRIS_AT})`, duration: 0.55, ease: "power3.in" });
     tl.set(el, { visibility: "hidden" });
