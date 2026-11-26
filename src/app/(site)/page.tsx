@@ -10,6 +10,7 @@ import { WaveField } from "@/components/shared/WaveField";
 import { expertiseIcons } from "@/components/ui/Icons";
 import { HiredBento } from "@/components/hired/HiredBento";
 import { TechStack } from "@/components/shared/TechStack";
+import { PhoneCollapse } from "@/components/shared/PhoneCollapse";
 import { techStack } from "@/content/techStack";
 import { about, experience, expertise, philosophy, philosophyHighlight, site, skills } from "@/content/site";
 import { solutions } from "@/content/solutions";
@@ -29,16 +30,18 @@ export default function Home() {
         <div className="about-body">
           <p className="eyebrow">02 · Beyond the brief</p>
           <SectionHeading>About Me</SectionHeading>
-          <ScrubText
-            text={about.text}
-            mode="word"
-            phrase={about.highlight}
-            className="about-text"
-            floor={0.15}
-            feather={0.1}
-            start="top 90%"
-            end="bottom 60%"
-          />
+          <PhoneCollapse className="about-collapse">
+            <ScrubText
+              text={about.text}
+              mode="word"
+              phrase={about.highlight}
+              className="about-text"
+              floor={0.15}
+              feather={0.1}
+              start="top 90%"
+              end="bottom 60%"
+            />
+          </PhoneCollapse>
           <ScrubText text={about.pullquote} className="about-pullquote" floor={0.12} start="top 85%" end="top 55%" />
 
           <div className="about-block" aria-labelledby="philosophy-label">

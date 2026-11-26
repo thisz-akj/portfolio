@@ -146,3 +146,6 @@ export const techStack: TechGroup[] = [
     ],
   },
 ];
+
+/** Caption under the phone-only icon strip (TechStack's `.tech-marquee`). */
+export const techStackNote = (count: number) => `${count} tools across AI models, agents, voice, automation, data, cloud and vision`;
