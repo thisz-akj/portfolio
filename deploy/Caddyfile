@@ -1,0 +1,25 @@
+{$API_HOST} {
+	encode zstd gzip
+
+	# Each service also checks its own token (ASSISTANT_TOKEN / DOCINTEL_TOKEN / VOICE_TOKEN).
+	handle_path /assistant/* {
+		reverse_proxy assistant:8001 {
+			flush_interval -1 # stream chat answers as they arrive
+		}
+	}
+	handle_path /docintel/* {
+		request_body {
+			max_size 12MB
+		}
+		reverse_proxy docintel:8002
+	}
+	handle_path /voice/* {
+		request_body {
+			max_size 12MB
+		}
+		reverse_proxy voice:8003
+	}
+	handle {
+		respond "ok" 200
+	}
+}

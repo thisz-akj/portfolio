@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { refundAiQuestion, takeAiQuestion, visitorFromHeaders } from "@/lib/aiQuota";
 import { snapshotLookup } from "@/features/demos/document-intelligence/snapshot.server";
 
+/** Vercel function time limit (s): long enough for streamed answers and uploads. */
+export const maxDuration = 60;
+
 /**
  * Proxy to the DocDesk service (docintel/, FastAPI). Keeps the service private, allow-lists paths,
  * rate-limits, and counts free questions / uploads per visitor. When the service is unreachable, read-only
@@ -100,17 +103,17 @@ export async function POST(req: Request, { params }: { params: Promise<{ path: s
     const file = form.get("file");
     if (!(file instanceof File) || file.size === 0) return NextResponse.json({ detail: { code: "invalid", message: "Upload a PDF file." } }, { status: 400 });
     if (file.size > MAX_UPLOAD) return NextResponse.json({ detail: { code: "too_large", message: "That file is too large for the demo (2 MB max)." } }, { status: 413 });
-    const quota = takeAiQuestion("docdesk-upload", ip);
+    const quota = await takeAiQuestion("docdesk-upload", ip);
     const qh = { "x-ai-remaining": String(quota.remaining), "x-ai-limit": String(quota.limit) };
     if (!quota.ok) return NextResponse.json({ detail: { code: "quota", message: "Free uploads for today are used up." } }, { status: 429, headers: qh });
     const out = new FormData();
     out.set("file", file, file.name.slice(0, 120) || "document.pdf");
     try {
       const res = await upstream("documents", { method: "POST", body: out, timeoutMs: 45_000 });
-      if (!res.ok) refundAiQuestion("docdesk-upload", ip);
+      if (!res.ok) await refundAiQuestion("docdesk-upload", ip);
       return passThrough(res, qh);
     } catch {
-      refundAiQuestion("docdesk-upload", ip);
+      await refundAiQuestion("docdesk-upload", ip);
       return offline();
     }
   }
@@ -151,24 +154,24 @@ export async function POST(req: Request, { params }: { params: Promise<{ path: s
     return snap === undefined || snap instanceof Response ? offline() : NextResponse.json(snap);
   }
 
-  const quota = takeAiQuestion("docdesk-ask", ip);
+  const quota = await takeAiQuestion("docdesk-ask", ip);
   const qh = { "x-ai-remaining": String(quota.remaining), "x-ai-limit": String(quota.limit) };
   if (!quota.ok) return NextResponse.json({ detail: { code: "quota", message: "Free questions for today are used up." } }, { status: 429, headers: qh });
   try {
     const res = await upstream(path, { method: "POST", body: payload, headers: { "content-type": "application/json" } });
     if (!res.ok) {
-      refundAiQuestion("docdesk-ask", ip);
+      await refundAiQuestion("docdesk-ask", ip);
       return passThrough(res, qh);
     }
     const data = (await res.json()) as { mode?: string; cached?: boolean; busy?: boolean };
     // Answers that cost nothing (cache, matched example, passages fallback) don't use up a free question.
     const free = data.cached || data.mode === "example" || data.mode === "passages";
-    if (free) refundAiQuestion("docdesk-ask", ip);
+    if (free) await refundAiQuestion("docdesk-ask", ip);
     const remaining = free ? quota.remaining + 1 : quota.remaining;
     return NextResponse.json(data, { headers: { "x-ai-remaining": String(remaining), "x-ai-limit": String(quota.limit), "cache-control": "no-store" } });
   } catch (err) {
     console.error("[docdesk] ask failed:", err);
-    refundAiQuestion("docdesk-ask", ip);
+    await refundAiQuestion("docdesk-ask", ip);
     return offline();
   }
 }

@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { refundAiQuestion, takeAiQuestion, visitorFromHeaders } from "@/lib/aiQuota";
 
+/** Vercel function time limit (s): long enough for streamed answers and uploads. */
+export const maxDuration = 60;
+
 /**
  * Proxy to the Front Desk Voice service (voice/, FastAPI). Keeps the service private, allow-lists paths,
  * rate-limits, counts free live calls per visitor ("voice-call") and caps speech clips per visitor per day.
@@ -86,15 +89,15 @@ export async function POST(req: Request, { params }: { params: Promise<{ path: s
 
   // A new live call: counted per visitor per day.
   if (path === "calls") {
-    const quota = takeAiQuestion("voice-call", ip);
+    const quota = await takeAiQuestion("voice-call", ip);
     const qh = { "x-ai-remaining": String(quota.remaining), "x-ai-limit": String(quota.limit) };
     if (!quota.ok) return json(429, "quota", "Free live calls for today are used up.", qh);
     try {
       const res = await upstream("calls", { method: "POST", timeoutMs: 8_000 });
-      if (!res.ok) refundAiQuestion("voice-call", ip);
+      if (!res.ok) await refundAiQuestion("voice-call", ip);
       return passThrough(res, qh);
     } catch {
-      refundAiQuestion("voice-call", ip);
+      await refundAiQuestion("voice-call", ip);
       return offline();
     }
   }

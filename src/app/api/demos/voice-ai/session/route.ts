@@ -36,12 +36,12 @@ export async function POST(req: Request) {
   const line = body.line === "about" ? "about" : "clinic";
 
   // Out of free turns today → no call at all (saves the voice allowance); the page shows the "build this" pop-up.
-  if (peekAiQuestion("voice-turn", ip, Date.now(), VOICE_FREE_TURNS) <= 0)
+  if (await peekAiQuestion("voice-turn", ip, Date.now(), VOICE_FREE_TURNS) <= 0)
     return json(429, "turns", "You've used today's free demo.");
 
   let qh: Record<string, string> = {};
   if (line === "clinic") {
-    const quota = takeAiQuestion("voice-call", ip);
+    const quota = await takeAiQuestion("voice-call", ip);
     qh = { "x-ai-remaining": String(quota.remaining), "x-ai-limit": String(quota.limit) };
     if (!quota.ok) return json(429, "quota", "Free live calls for today are used up.", qh);
   }
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ url: LIVEKIT_URL, token, line }, { headers: { ...qh, "cache-control": "no-store" } });
   } catch (err) {
     console.error("[voice] session failed:", err);
-    if (line === "clinic") refundAiQuestion("voice-call", ip);
+    if (line === "clinic") await refundAiQuestion("voice-call", ip);
     return json(503, "offline", "Live calls are offline right now. The sample calls still play.");
   }
 }

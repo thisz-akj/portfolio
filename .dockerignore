@@ -1,0 +1,13 @@
+# Docker builds only need the Python services (see deploy/python.Dockerfile)
+*
+!assistant
+!docintel
+!voice
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.env
+**/.env.*
+!**/.env.example
+voice/quality/.audio
+voice/agent/cache

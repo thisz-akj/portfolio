@@ -1,0 +1,67 @@
+# The portfolio's Python side on one server: assistant, DocDesk, Front Desk Voice, the LiveKit voice
+# worker, and Caddy for HTTPS. The Next.js site runs on Vercel and calls these over HTTPS.
+#
+#   cd deploy && cp env.example .env   # fill it in
+#   docker compose up -d --build
+#
+# Caddy serves https://$API_HOST/{assistant,docintel,voice}/… and gets the certificate itself.
+
+x-service: &service
+  restart: unless-stopped
+  env_file: .env
+  build: &build
+    context: ..
+    dockerfile: deploy/python.Dockerfile
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  assistant:
+    <<: *service
+    build: { <<: *build, args: { SERVICE: assistant } }
+    command: uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8001 --proxy-headers
+    healthcheck: &health
+      test: ["CMD", "python", "-c", "import urllib.request,os;urllib.request.urlopen('http://127.0.0.1:'+os.environ['PORT']+'/health',timeout=3)"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    environment: { PORT: "8001" }
+
+  docintel:
+    <<: *service
+    build: { <<: *build, args: { SERVICE: docintel } }
+    command: uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8002 --proxy-headers
+    healthcheck: *health
+    environment: { PORT: "8002" }
+
+  voice:
+    <<: *service
+    image: portfolio-voice
+    build: { <<: *build, args: { SERVICE: voice } }
+    command: uvicorn app.main:create_app --factory --host 0.0.0.0 --port 8003 --proxy-headers
+    healthcheck: *health
+    environment: { PORT: "8003" }
+
+  voice-agent:
+    <<: *service
+    image: portfolio-voice
+    build: { <<: *build, args: { SERVICE: voice } }
+    command: python -m agent.worker start
+    # Connects out to LiveKit Cloud; no inbound port.
+
+  caddy:
+    image: caddy:2.10
+    restart: unless-stopped
+    ports: ["80:80", "443:443", "443:443/udp"]
+    environment:
+      API_HOST: ${API_HOST:?set API_HOST in deploy/.env}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [assistant, docintel, voice]
+
+volumes:
+  caddy_data:
+  caddy_config:

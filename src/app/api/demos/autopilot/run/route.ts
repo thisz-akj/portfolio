@@ -5,6 +5,9 @@ import { simulate, SCENARIO_IDS } from "@/features/demos/autopilot/engine";
 import { readWithModel } from "@/features/demos/autopilot/model.server";
 import type { Choice, ScenarioId } from "@/features/demos/autopilot/types";
 
+/** Vercel function time limit (s): long enough for streamed answers and uploads. */
+export const maxDuration = 60;
+
 /**
  * Autopilot: replays a scenario with the visitor's answers and returns the business steps so far.
  * Tapped options and presets cost nothing; a typed message that rules can't read may use one model call
@@ -58,13 +61,13 @@ export async function POST(req: Request) {
   if (run.needsModel) {
     const { choiceId, kind, text } = run.needsModel;
     const prev = run.choices[choiceId] as { text: string; fields?: Record<string, string> };
-    const q = takeAiQuestion("autopilot-read", visitor);
+    const q = await takeAiQuestion("autopilot-read", visitor);
     let read: Record<string, string> | null = null;
     if (q.ok) {
       quota = { remaining: q.remaining, limit: q.limit };
       read = await readWithModel(kind, text);
       if (!read) {
-        refundAiQuestion("autopilot-read", visitor);
+        await refundAiQuestion("autopilot-read", visitor);
         quota = { remaining: q.remaining + 1, limit: q.limit };
         notice = "The assistant that reads typed messages is busy, so the automation asked a follow-up question instead.";
       }

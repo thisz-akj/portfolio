@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { validChat } from "@/features/assistant/protocol";
 import { refundAiQuestion, takeAiQuestion, visitorFromHeaders } from "@/lib/aiQuota";
 
+/** Vercel function time limit (s): long enough for streamed answers and uploads. */
+export const maxDuration = 60;
+
 /**
  * Proxy to the Python assistant service (assistant/, FastAPI). Keeps the service private,
  * rate-limits per visitor and streams the NDJSON reply straight through.
@@ -42,7 +45,7 @@ export async function POST(req: Request) {
 
   // Free questions per visitor per day; after that the UI invites them to send a message instead.
   const visitor = visitorFromHeaders(req.headers);
-  const quota = takeAiQuestion("assistant", visitor);
+  const quota = await takeAiQuestion("assistant", visitor);
   const quotaHeaders = { "x-ai-remaining": String(quota.remaining), "x-ai-limit": String(quota.limit) };
   if (!quota.ok) return NextResponse.json({ error: "quota" }, { status: 429, headers: quotaHeaders });
 
@@ -63,11 +66,11 @@ export async function POST(req: Request) {
       cache: "no-store",
     });
   } catch {
-    refundAiQuestion("assistant", visitor);
+    await refundAiQuestion("assistant", visitor);
     return NextResponse.json({ error: "unavailable" }, { status: 503 });
   }
   if (!upstream.ok || !upstream.body) {
-    refundAiQuestion("assistant", visitor);
+    await refundAiQuestion("assistant", visitor);
     return NextResponse.json({ error: upstream.status === 422 ? "invalid" : "unavailable" }, { status: upstream.status === 422 ? 422 : 503 });
   }
   return new Response(upstream.body, {

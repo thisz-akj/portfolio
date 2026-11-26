@@ -58,7 +58,7 @@ export async function askAction(raw: unknown): Promise<AskResult> {
 
   // Free questions per visitor per day (examples don't count); then the UI invites a message instead.
   const visitor = await clientKey();
-  const quota = takeAiQuestion("ops-ask", visitor);
+  const quota = await takeAiQuestion("ops-ask", visitor);
   if (!quota.ok) return { ok: false, reason: "quota", message: "You've used today's free questions." };
 
   const persona = await getPersona();
@@ -83,7 +83,7 @@ export async function askAction(raw: unknown): Promise<AskResult> {
     costUsd: call.costUsd,
   };
   if (!call.ok) {
-    if (call.status === "error") refundAiQuestion("ops-ask", visitor); // service trouble shouldn't cost a question
+    if (call.status === "error") await refundAiQuestion("ops-ask", visitor); // service trouble shouldn't cost a question
     const traceId = await trace({ ...base, status: call.status === "refused" ? "refused" : "error", error: call.error });
     const message = call.status === "refused" ? "I can only answer questions about this business's data." : "Something went wrong — please try again.";
     return { ok: false, reason: call.status === "refused" ? "refused" : "error", message, traceId };

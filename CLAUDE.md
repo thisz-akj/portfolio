@@ -8,6 +8,9 @@ Positioning: **independent applied AI engineer, AI automation first, computer vi
 - CV projects (5): surroundsense, edge-pose-estimation, targetless-camera-lidar-calibration, visual-slam-to-navigation (merged with the old features-comparison + apartment-twin projects), edge-ai-quantization (was the INT8 study; reframed as edge hardware + precision capability; the old INT8 chart images are not used for it). Hardware renders stay unbranded (no NVIDIA logo/name).
 - CV visuals are generated, not real footage: `python3 scripts/render-vision-media.py [--stills] [scene]` (`--frontcam` = the CV card preview frame `public/art/amr-front-camera.webp`; its box %s are printed and must match `Preview.tsx`) → `public/work/cv-*.webp` + `public/video/cv-*.mp4` (credited in `docs/credits.md`). Projects/solutions can carry a looping `clip` (mp4, poster = same name .webp).
 
+## Deployment
+Vercel (site, `bom1`) + Neon + Upstash (free-question counts, `aiQuota`) + one VPS running `deploy/docker-compose.yml` (assistant, DocDesk, voice, LiveKit worker, Caddy HTTPS at `/assistant` `/docintel` `/voice`). Steps + env list: `docs/deployment.md`.
+
 ## Commands
 Node lives in `~/.local/node` — prefix shells with `export PATH=$HOME/.local/node/bin:$PATH`.
 - **`./start-portfolio.sh`** starts everything (site :3000, assistant :8001, DocDesk :8002, voice :8003, LiveKit voice agent; checks Postgres/venvs/keys; logs in `.logs/`; Ctrl+C stops only what it started; `./start-portfolio.sh status`). Or individually: `npm run dev` (port 3000) + `npm run assistant:dev` (Python chat service, :8001) — both are needed for the chatbot · `npm run build && npx next start -p 3000`

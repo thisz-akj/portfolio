@@ -57,3 +57,6 @@ __pycache__/
 .pytest_cache/
 /.logs/
 /voice/agent/cache/
+
+# server secrets for the Python services
+/deploy/.env
