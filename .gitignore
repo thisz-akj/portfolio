@@ -60,3 +60,8 @@ __pycache__/
 
 # server secrets for the Python services
 /deploy/.env
+
+# editor swap/lock files
+*.swp
+*.swo
+.*.swp
