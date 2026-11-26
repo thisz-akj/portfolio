@@ -49,5 +49,14 @@ next-env.d.ts
 
 # ops-ai Python virtualenv and caches
 /ops-ai/.venv/
+/assistant/.venv/
+/docintel/.venv/
+/voice/.venv/
+/voice/quality/.audio/
 __pycache__/
 .pytest_cache/
+/.logs/
+/voice/agent/cache/
+
+# raw source media (processed copies live in public/)
+/azad_folder/

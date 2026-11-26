@@ -1,0 +1,614 @@
+{
+ "generatedAt": "2026-11-25T02:14:41+00:00",
+ "versions": {
+  "answers": "ask-v6",
+  "extraction": "extract-v1",
+  "routes": {
+   "whole": 25,
+   "keyword": 12,
+   "ai": 5
+  }
+ },
+ "qa": {
+  "questions": 42,
+  "accuracy": 1.0,
+  "answerableAccuracy": 1.0,
+  "citationAccuracy": 1.0,
+  "notFoundAccuracy": 1.0,
+  "latencyP50": 880,
+  "latencyP95": 1625,
+  "latencyMean": 945,
+  "rows": [
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "How much notice do we need to give to end this contract without cause?",
+    "kind": "answerable",
+    "answer": "You must give sixty (60) days' written notice to end the contract without cause.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1827,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Does the agreement renew on its own?",
+    "kind": "answerable",
+    "answer": "Yes, the agreement automatically renews for successive twelve‑month terms unless a party gives notice of non‑renewal.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 616,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "What's the monthly retainer?",
+    "kind": "answerable",
+    "answer": "The monthly retainer is INR 4,50,000.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 771,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "What interest is charged on late payments?",
+    "kind": "answerable",
+    "answer": "Late payments incur interest at 1.5% per month on the overdue amount.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 994,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Who owns the deliverables?",
+    "kind": "answerable",
+    "answer": "All rights in the Deliverables vest in the Customer upon full payment of the applicable fees.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 605,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "What uptime does the provider commit to?",
+    "kind": "answerable",
+    "answer": "The provider commits to making the hosted reporting portal available 99.5% of the time each calendar month.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 594,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Which city's courts have jurisdiction?",
+    "kind": "answerable",
+    "answer": "The courts at Bengaluru, Karnataka have exclusive jurisdiction.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 940,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Is there a penalty for missing delivery deadlines?",
+    "kind": "not-in-document",
+    "answer": "The document does not mention any penalty for missing delivery deadlines.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1435,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "What is the provider's office phone number?",
+    "kind": "not-in-document",
+    "answer": "The document does not provide the provider's office phone number.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 822,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Northwind redline (v2)",
+    "question": "How long is the initial term?",
+    "kind": "answerable",
+    "answer": "The initial term is thirty‑six (36) months.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 786,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Northwind redline (v2)",
+    "question": "Within how many hours must a personal data breach be reported?",
+    "kind": "answerable",
+    "answer": "A personal data breach must be reported within forty‑eight (48) hours.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 961,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Northwind redline (v2)",
+    "question": "What's the cap on service credits?",
+    "kind": "answerable",
+    "answer": "The cap on service credits is five percent (5%) of the monthly retainer for the affected month.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 820,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Northwind redline (v2)",
+    "question": "How many days do we have to pay an invoice?",
+    "kind": "answerable",
+    "answer": "Invoices must be paid within forty‑five (45) days of the invoice date.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 908,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "question": "How much CGST is charged?",
+    "kind": "answerable",
+    "answer": "The CGST charged is ₹16,578.00.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1041,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "question": "How many lunch boxes were billed and at what rate?",
+    "kind": "answerable",
+    "answer": "120 lunch boxes were billed at a rate of ₹455.00 each.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 883,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "question": "Which bank account should we pay into?",
+    "kind": "answerable",
+    "answer": "Pay into HDFC Bank, Peenya branch, A/c No. 50200071234567, IFSC HDFC0001782.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 868,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "question": "Is there a discount for early payment?",
+    "kind": "not-in-document",
+    "answer": "The document does not mention any discount for early payment.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 717,
+    "busy": false
+   },
+   {
+    "doc": "Purchase Order SRL/PO/2026/0932",
+    "question": "When must the goods be delivered?",
+    "kind": "answerable",
+    "answer": "The goods must be delivered by 20 October 2026.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 880,
+    "busy": false
+   },
+   {
+    "doc": "Purchase Order SRL/PO/2026/0932",
+    "question": "Where should the vendor deliver?",
+    "kind": "answerable",
+    "answer": "The vendor should deliver to Saffron Retail warehouse, Hosur Road, Bengaluru 560068.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 656,
+    "busy": false
+   },
+   {
+    "doc": "Purchase Order SRL/PO/2026/0932",
+    "question": "Who approved this purchase order?",
+    "kind": "answerable",
+    "answer": "Meera Iyer, Purchase Manager, Saffron Retail LLP approved the purchase order.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 603,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice KKP/2026-27/1187",
+    "question": "What is the supplier's IFSC code?",
+    "kind": "answerable",
+    "answer": "The supplier’s IFSC code is SBIN0000881.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 984,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice KKP/2026-27/1187",
+    "question": "How many pressure cookers are on this invoice?",
+    "kind": "answerable",
+    "answer": "The invoice lists 72 pressure cookers.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 884,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice KKP/2026-27/1187",
+    "question": "What is the e-way bill number?",
+    "kind": "not-in-document",
+    "answer": "The document does not provide an e-way bill number.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 499,
+    "busy": false
+   },
+   {
+    "doc": "Mutual NDA — Northwind × Lumen Freight",
+    "question": "What is the purpose of sharing information under this NDA?",
+    "kind": "answerable",
+    "answer": "The purpose is to evaluate a possible logistics partnership for last‑mile delivery in South India, and information may be disclosed only for that purpose.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1165,
+    "busy": false
+   },
+   {
+    "doc": "Mutual NDA — Northwind × Lumen Freight",
+    "question": "How quickly must information be returned on request?",
+    "kind": "answerable",
+    "answer": "Information must be returned or destroyed within fifteen (15) days of a written request.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 623,
+    "busy": false
+   },
+   {
+    "doc": "Mutual NDA — Northwind × Lumen Freight",
+    "question": "Does the NDA grant any licence to IP?",
+    "kind": "answerable",
+    "answer": "No, the NDA does not grant any licence to intellectual property.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 611,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "How many parking spaces come with the office?",
+    "kind": "answerable",
+    "answer": "The lease includes four (4) covered car parking spaces.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 591,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "Who pays the stamp duty?",
+    "kind": "answerable",
+    "answer": "The Lessee is responsible for paying the stamp duty.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 819,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "maintenance charges kitne hain?",
+    "kind": "answerable",
+    "answer": "Maintenance charges are INR 18 per square foot of carpet area per month.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 918,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "Can we sublet part of the office?",
+    "kind": "not-in-document",
+    "answer": "The document does not address subletting any part of the office.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 814,
+    "busy": false
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "question": "How many sick days do employees get?",
+    "kind": "answerable",
+    "answer": "Employees receive ten (10) days of sick leave per year.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 753,
+    "busy": false
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "question": "When do I need a medical certificate?",
+    "kind": "answerable",
+    "answer": "A medical certificate is required when you take sick leave for more than two (2) consecutive days.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 904,
+    "busy": false
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "question": "Can probationers use earned leave?",
+    "kind": "answerable",
+    "answer": "Probationers accrue earned leave from their joining date but can use it only after they are confirmed.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 821,
+    "busy": false
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "question": "How many days of sabbatical can I take?",
+    "kind": "not-in-document",
+    "answer": "The document does not cover sabbatical leave.",
+    "pages": [],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 837,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Can we walk away from this deal early without giving a reason?",
+    "kind": "answerable",
+    "answer": "Yes, either party may terminate the agreement for convenience by giving sixty (60) days' written notice.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1625,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "If Kestrel leaks our customer data, how soon must they tell us?",
+    "kind": "answerable",
+    "answer": "Kestrel must notify the Customer of any personal data breach within seventy‑two (72) hours of becoming aware of it.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1622,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "Can Kestrel poach our analysts?",
+    "kind": "answerable",
+    "answer": "No, Kestrel cannot directly solicit your analysts during the term and for twelve months after it ends.",
+    "pages": [
+     2
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1586,
+    "busy": false
+   },
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "question": "By when must we send a non-renewal notice to stop the first automatic renewal?",
+    "kind": "answerable",
+    "answer": "You must send the non‑renewal notice by 31 Jan 2028 to stop the first automatic renewal.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 834,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "If we move out after 12 months, what's the financial hit?",
+    "kind": "answerable",
+    "answer": "If you move out after 12 months, you must pay the rent for the remaining 12‑month lock‑in period, which is the increased rent of 5% over the base amount, i.e., INR 1,97,250 per month × 12 months = INR 23,67,000.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1906,
+    "busy": false
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "question": "What will the monthly rent be in the third year?",
+    "kind": "answerable",
+    "answer": "The monthly rent in the third year will be INR 2,03,962.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1129,
+    "busy": false
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "question": "My wife is due next month, how much time off can I take?",
+    "kind": "answerable",
+    "answer": "You can take ten (10) working days of paternity leave with full pay, which must be taken within three (3) months of the birth.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 918,
+    "busy": false
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "question": "What's the total GST on this bill?",
+    "kind": "answerable",
+    "answer": "The total GST is ₹33,156.",
+    "pages": [
+     1
+    ],
+    "correct": true,
+    "grounded": true,
+    "latencyMs": 1133,
+    "busy": false
+   }
+  ]
+ },
+ "extraction": {
+  "fields": 90,
+  "correct": 90,
+  "accuracy": 1.0,
+  "confidentWrong": 0,
+  "perDoc": [
+   {
+    "doc": "Master Services Agreement — Kestrel × Northwind",
+    "type": "Contract",
+    "fields": 12,
+    "correct": 12
+   },
+   {
+    "doc": "Master Services Agreement — Northwind redline (v2)",
+    "type": "Contract",
+    "fields": 12,
+    "correct": 12
+   },
+   {
+    "doc": "Tax Invoice NWD/2026-27/0418",
+    "type": "Tax invoice",
+    "fields": 14,
+    "correct": 14
+   },
+   {
+    "doc": "Purchase Order SRL/PO/2026/0932",
+    "type": "Purchase order",
+    "fields": 11,
+    "correct": 11
+   },
+   {
+    "doc": "Tax Invoice KKP/2026-27/1187",
+    "type": "Tax invoice",
+    "fields": 14,
+    "correct": 14
+   },
+   {
+    "doc": "Mutual NDA — Northwind × Lumen Freight",
+    "type": "Contract",
+    "fields": 7,
+    "correct": 7
+   },
+   {
+    "doc": "Office Lease — Indigo Park, Bellandur",
+    "type": "Lease",
+    "fields": 12,
+    "correct": 12
+   },
+   {
+    "doc": "Leave Policy v3.2 — Northwind",
+    "type": "Policy",
+    "fields": 8,
+    "correct": 8
+   }
+  ]
+ }
+}

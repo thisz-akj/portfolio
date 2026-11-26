@@ -1,0 +1,9 @@
+[project]
+name = "docdesk"
+version = "0.1.0"
+description = "DocDesk: document Q&A with verified citations, extraction and comparison (portfolio demo service)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

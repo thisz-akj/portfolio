@@ -1,0 +1,9 @@
+[project]
+name = "front-desk-voice"
+version = "0.1.0"
+description = "Front Desk Voice: clinic phone agent — booking, questions, handover (portfolio demo service)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

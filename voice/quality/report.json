@@ -1,0 +1,193 @@
+{
+ "prompt": "understand-v1",
+ "ranAt": "2026-11-25T08:41:55",
+ "model": true,
+ "passed": 21,
+ "total": 21,
+ "turns": 77,
+ "modelCalls": 4,
+ "turnMs": {
+  "rules": {
+   "n": 73,
+   "p50": 0.2,
+   "p90": 0.9,
+   "max": 3.9
+  },
+  "model": {
+   "n": 4,
+   "p50": 703.0,
+   "p90": 905.7,
+   "max": 905.7
+  }
+ },
+ "scenarios": [
+  {
+   "id": "doctor-surname-patient",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.01
+  },
+  {
+   "id": "showcase-follow-up",
+   "pass": true,
+   "errors": [],
+   "turns": 3,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "child-fever-change-day",
+   "pass": true,
+   "errors": [],
+   "turns": 7,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "faq-then-dentist-earliest",
+   "pass": true,
+   "errors": [],
+   "turns": 7,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "exact-time-free",
+   "pass": true,
+   "errors": [],
+   "turns": 3,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "exact-time-taken",
+   "pass": true,
+   "errors": [],
+   "turns": 3,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "doctor-not-in-that-day",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "sunday-closed",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "decline-then-accept",
+   "pass": true,
+   "errors": [],
+   "turns": 5,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "name-correction-after-booking",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "emergency",
+   "pass": true,
+   "errors": [],
+   "turns": 1,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "wants-human",
+   "pass": true,
+   "errors": [],
+   "turns": 1,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "cancel-existing",
+   "pass": true,
+   "errors": [],
+   "turns": 2,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "faq-only",
+   "pass": true,
+   "errors": [],
+   "turns": 3,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "fees-midway",
+   "pass": true,
+   "errors": [],
+   "turns": 5,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "gibberish",
+   "pass": true,
+   "errors": [],
+   "turns": 2,
+   "modelCalls": 1,
+   "seconds": 0.7
+  },
+  {
+   "id": "too-far-ahead",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "negation",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 1,
+   "seconds": 0.7
+  },
+  {
+   "id": "misheard-doctor",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 1,
+   "seconds": 0.67
+  },
+  {
+   "id": "rambling",
+   "pass": true,
+   "errors": [],
+   "turns": 4,
+   "modelCalls": 0,
+   "seconds": 0.0
+  },
+  {
+   "id": "lowercase-name-midsentence",
+   "pass": true,
+   "errors": [],
+   "turns": 3,
+   "modelCalls": 1,
+   "seconds": 0.91
+  }
+ ]
+}

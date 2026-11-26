@@ -1,0 +1,1027 @@
+{
+ "ranAt": "2026-11-25T08:56:10",
+ "clips": 108,
+ "understood": 0.88,
+ "wer": 0.048,
+ "sttMs": {
+  "n": 108,
+  "p50": 379,
+  "p90": 485,
+  "max": 945
+ },
+ "byCondition": {
+  "phone": {
+   "n": 36,
+   "understood": 0.861,
+   "wer": 0.054
+  },
+  "clean": {
+   "n": 36,
+   "understood": 0.861,
+   "wer": 0.046
+  },
+  "noise": {
+   "n": 36,
+   "understood": 0.917,
+   "wer": 0.042
+  }
+ },
+ "byVoice": {
+  "slt": {
+   "n": 36,
+   "understood": 0.833,
+   "wer": 0.054
+  },
+  "awb": {
+   "n": 36,
+   "understood": 0.861,
+   "wer": 0.053
+  },
+  "rms": {
+   "n": 36,
+   "understood": 0.944,
+   "wer": 0.036
+  }
+ },
+ "assistantFirstWordMs": {
+  "n": 4,
+  "p50": 1094.3,
+  "p90": 1150.2,
+  "max": 1150.2
+ },
+ "note": "Synthetic voices (US female, US male, Scottish male); noise = pink noise; phone = 300-3400 Hz, 8 kHz. Names: spelling variants (>= 0.85 similar) count as the same.",
+ "rows": [
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Bye, I need to see Dr. Rao for a follow up, ideally Tuesday afternoon, it's Sgt. Mehta.",
+   "wer": 0.118,
+   "same": false,
+   "ms": 439
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Hi, I need to see Dr. Rao for a follow up, ideally Tuesday afternoon, it's Sgt. Mehta.",
+   "wer": 0.059,
+   "same": false,
+   "ms": 365
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Bye, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon, it's Sgt. Mehta.",
+   "wer": 0.118,
+   "same": false,
+   "ms": 398
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Hi, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon, it's Arjun Mitta.",
+   "wer": 0.059,
+   "same": false,
+   "ms": 486
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Hi, I need to see Dr. Rao for a follow up, ideally Tuesday afternoon, it's Arjun Mehta.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 482
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Hi, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon, it's Sgt. Mita.",
+   "wer": 0.118,
+   "same": false,
+   "ms": 380
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Hi, I need to see Dr. Rao for a follow up, ideally Tuesday afternoon, it's Sgt. Mehta.",
+   "wer": 0.059,
+   "same": false,
+   "ms": 379
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Hi, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon, it's Sergeant Mehta.",
+   "wer": 0.059,
+   "same": false,
+   "ms": 380
+  },
+  {
+   "line": "Hi, I need to see Doctor Rao for a follow up, ideally Tuesday afternoon. It's Arjun Mehta.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Hi, I need to see Dr. Rao for a follow-up, ideally Tuesday afternoon, it's Sergeant Mehta.",
+   "wer": 0.059,
+   "same": false,
+   "ms": 485
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Can I book Dr. I on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.154,
+   "same": false,
+   "ms": 379
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 376
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 321
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 415
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 405
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 424
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 311
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 387
+  },
+  {
+   "line": "Can I book Doctor Iyer on Friday morning? My name is Fatima Sheikh.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Can I book Dr. Iyer on Friday morning? My name is Fatima Sheik.",
+   "wer": 0.077,
+   "same": true,
+   "ms": 315
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "My son has a fever, can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 461
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "My son has a fever, can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 329
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "My son has a fever, can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 327
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "My son has a fever can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 407
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "My son has a fever can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 327
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "My son has a fever. Can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 509
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "My son has a fever, can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 637
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "My son has a fever. Can he see the children's doctor on Thursday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 325
+  },
+  {
+   "line": "My son has a fever, can he see the children's doctor on Thursday?",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "My son has a fever. Can he see the children's daughter on Thursday?",
+   "wer": 0.077,
+   "same": true,
+   "ms": 325
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Id like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 539
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Id like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 445
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Id like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 343
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 454
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 344
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 379
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 327
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 340
+  },
+  {
+   "line": "I'd like the earliest slot with the dentist, Doctor Qureshi.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "It like the earliest slot with the dentist, Dr. Qureshi.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 346
+  },
+  {
+   "line": "The second one please.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "The second one please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 336
+  },
+  {
+   "line": "The second one please.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "The second one please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 279
+  },
+  {
+   "line": "The second one please.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 280
+  },
+  {
+   "line": "The second one please.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 388
+  },
+  {
+   "line": "The second one please.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 407
+  },
+  {
+   "line": "The second one please.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 325
+  },
+  {
+   "line": "The second one please.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "The second one please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 285
+  },
+  {
+   "line": "The second one please.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 392
+  },
+  {
+   "line": "The second one please.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "The second one, please.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Actually, can we make it Wednesday at half past 11 instead?",
+   "wer": 0.091,
+   "same": true,
+   "ms": 381
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Actually, can we make it Wednesday at half past 11 instead?",
+   "wer": 0.091,
+   "same": true,
+   "ms": 599
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Actually, can we make it Wednesday at half past eleven instead?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 367
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Actually, can we make it Wednesday at half past 11 instead?",
+   "wer": 0.091,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Actually, can we make it Wednesday at half past 11 instead?",
+   "wer": 0.091,
+   "same": true,
+   "ms": 653
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Actually, can we make it Wednesday at half past 11 instead?",
+   "wer": 0.091,
+   "same": true,
+   "ms": 312
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Actually, can we make it Wednesday at half past eleven instead?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 379
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Actually, can we make it Wednesday at half past eleven instead?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 320
+  },
+  {
+   "line": "Actually, can we make it Wednesday at half past eleven instead?",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Actually, can we make it Wednesday at half past eleven instead?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 363
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 354
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 379
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 381
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 317
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 340
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 318
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 340
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 272
+  },
+  {
+   "line": "What time does the clinic open on Saturday?",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "What time does the clinic open on Saturday?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 384
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 281
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 328
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 429
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 328
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 312
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Is there parking near the clinic?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 298
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Is there a parting near the clinic?",
+   "wer": 0.333,
+   "same": false,
+   "ms": 286
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Is there a parking near the clinic?",
+   "wer": 0.167,
+   "same": true,
+   "ms": 291
+  },
+  {
+   "line": "Is there parking near the clinic?",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Is there a parting near the clinic?",
+   "wer": 0.333,
+   "same": false,
+   "ms": 461
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "I need to cancel my appointment, it's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 584
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "I need to cancel my appointment, it's the crampsing.",
+   "wer": 0.222,
+   "same": false,
+   "ms": 361
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "I need to cancel my appointment, it's the cramp thing.",
+   "wer": 0.333,
+   "same": false,
+   "ms": 501
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "I need to cancel my appointment. It's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 401
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "I need to cancel my appointment, it's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 462
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "I need to cancel my appointment. It's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 428
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "I need to cancel my appointment, it's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 945
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "I need to cancel my appointment. It's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "I need to cancel my appointment, it's Vikram Singh.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "I need to cancel my appointment. It's Vikram Singh.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 382
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Can I speak to someone at the front desk please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Can I speak to someone at the front desk please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 286
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Can I speak to someone at the front desk, please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 379
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Can I speak to someone at the front desk please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 371
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Can I speak to someone at the front desk please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 483
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Can I speak to someone at the front desk please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 286
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Can I speak to someone at the front desk, please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 382
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Can I speak to someone at the front desk, please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 370
+  },
+  {
+   "line": "Can I speak to someone at the front desk please?",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Can I speak to someone at the front desk, please?",
+   "wer": 0.0,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 309
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 343
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 279
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 424
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 326
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 400
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 341
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 314
+  },
+  {
+   "line": "My father has chest pain and is sweating.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "My father has chest pain and is sweating.",
+   "wer": 0.0,
+   "same": true,
+   "ms": 380
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "slt",
+   "condition": "clean",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 342
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "slt",
+   "condition": "noise",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 420
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "slt",
+   "condition": "phone",
+   "heard": "Dr. Menon on Tuesday at 4, for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 390
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "rms",
+   "condition": "clean",
+   "heard": "Dr. Menon on Tuesday at 4, for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 486
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "rms",
+   "condition": "noise",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 367
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "rms",
+   "condition": "phone",
+   "heard": "Dr. Menon on Tuesday at 4, for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 480
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "awb",
+   "condition": "clean",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 381
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "awb",
+   "condition": "noise",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 381
+  },
+  {
+   "line": "Doctor Menon on Tuesday at four, for my daughter Ananya.",
+   "voice": "awb",
+   "condition": "phone",
+   "heard": "Dr. Menon on Tuesday at 4 for my daughter Ananya.",
+   "wer": 0.1,
+   "same": true,
+   "ms": 381
+  }
+ ]
+}

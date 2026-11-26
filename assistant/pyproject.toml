@@ -1,0 +1,9 @@
+[project]
+name = "portfolio-assistant"
+version = "0.1.0"
+description = "Python backend for the portfolio chatbot: answers questions about Azad's work, grounded in the site's content (Gemini)"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
