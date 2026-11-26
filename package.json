@@ -24,7 +24,8 @@
     "docintel:dev": "cd docintel && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8002 --reload",
     "docintel:samples": "cd docintel && env -u PYTHONPATH .venv/bin/python -m scripts.build_samples",
     "voice:dev": "cd voice && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8003 --reload",
-    "voice:agent": "cd voice && env -u PYTHONPATH .venv/bin/python -m agent.worker dev"
+    "voice:agent": "cd voice && env -u PYTHONPATH .venv/bin/python -m agent.worker dev",
+    "audit:mobile": "node scripts/mobile-audit.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",

@@ -217,3 +217,9 @@
   .ap-msg, .ap-step.is-fresh, .ap-team, .ap-report { animation: none; }
   .ap-working::after { animation: none; }
 }
+
+/* Phones: three small stats share the row instead of the last one running off the edge */
+@media (max-width: 560px) {
+  .ap-live { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; }
+  .ap-live dt { letter-spacing: 0.02em; line-height: 1.3; }
+}

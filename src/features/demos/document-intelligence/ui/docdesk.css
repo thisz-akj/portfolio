@@ -241,3 +241,22 @@ button.dd-check:hover, .dd-check.is-active { border-color: #3a3a3a; }
 @keyframes dd-spin { to { transform: rotate(360deg); } }
 .dd-link-btn { background: none; border: 0; padding: 0; text-align: left; cursor: pointer; color: var(--white); text-decoration: underline; text-decoration-color: rgba(74, 222, 128, 0.45); text-underline-offset: 3px; line-height: inherit; }
 .dd-link-btn:hover { text-decoration-color: var(--live); }
+
+/* Phones: let the single column shrink to the screen (a plain 1fr track stretched to the
+   widest no-wrap child — the title and example chips — and pushed the viewer to 630px). */
+@media (max-width: 960px) {
+  .dd-work { grid-template-columns: minmax(0, 1fr); }
+  .dd-work-doc, .dd-work-panel { min-width: 0; }
+  .dd-work-bar h1 { min-width: 0; flex: 1; }
+}
+@media (max-width: 860px) {
+  .dd { grid-template-columns: minmax(0, 1fr); }
+  .dd-main { min-width: 0; }
+}
+@media (max-width: 560px) {
+  .dd-work-bar { gap: 0.5rem; padding: 0.6rem 0.75rem; }
+  .dd-work-bar .dd-chip:last-of-type { display: none; } /* page count — the viewer shows it */
+  .dd-work-doc { height: 52vh; }
+  .dd-viewer { padding: 0.6rem; }
+  .dd-suggest button { white-space: normal; text-align: left; }
+}

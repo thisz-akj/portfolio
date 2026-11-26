@@ -44,3 +44,9 @@
 /* Free-questions pop-up overlays the panel */
 .ai-panel { position: relative; }
 .ai-panel > .ai-limit { position: fixed; z-index: 1000; }
+
+/* Phones: long example questions wrap into soft cards, not squashed ovals */
+@media (max-width: 560px) {
+  .ai-examples .ai-chip { border-radius: 12px; padding: 0.5rem 0.75rem; line-height: 1.35; height: auto; white-space: normal; text-align: left; }
+  .ai-examples .ai-chip .ops-chip-text { white-space: normal; }
+}
