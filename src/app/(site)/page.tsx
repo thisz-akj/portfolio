@@ -35,6 +35,7 @@ export default function Home() {
               text={about.text}
               mode="word"
               phrase={about.highlight}
+              highlight={about.highlightWords}
               className="about-text"
               floor={0.15}
               feather={0.1}
