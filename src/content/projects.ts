@@ -4,6 +4,7 @@ import type { Project } from "@/types/content";
 export const projects: Project[] = [
   {
     slug: "ops-suite",
+    field: "ai",
     index: "01",
     title: "Ops Suite: a CRM, ERP and Data Portal on One Database",
     client: "Self-initiated · product demo",
@@ -33,6 +34,7 @@ export const projects: Project[] = [
   },
   {
     slug: "docdesk",
+    field: "ai",
     index: "02",
     title: "DocDesk: Answers, Fields and Checks from Business Documents",
     client: "Self-initiated · product demo",
@@ -62,6 +64,7 @@ export const projects: Project[] = [
   },
   {
     slug: "front-desk-voice",
+    field: "ai",
     index: "03",
     title: "Front Desk Voice: A Phone Agent That Books, Answers and Hands Over",
     client: "Self-initiated · product demo",
@@ -91,6 +94,14 @@ export const projects: Project[] = [
   },
   {
     slug: "surroundsense",
+    field: "cv",
+    method: [
+      "Four fisheye cameras are undistorted and projected onto the ground plane, then stitched into one 360° bird's-eye view around the vehicle.",
+      "An object detector runs on edge hardware on each camera stream; every detection is projected onto the ground plane and fused into a single vehicle-centred coordinate frame.",
+      "Blind-spot zones are defined in that frame; a warning is raised when a fused detection enters a zone and cleared when it leaves.",
+      "Validated offline on recorded datasets and live on GStreamer camera streams.",
+    ],
+    tools: ["Python", "Fisheye camera models", "Ground-plane projection", "Multi-camera fusion", "Edge AI", "GStreamer"],
     repo: "https://github.com/thisz-akj/surroundsense",
     index: "04",
     title: "SurroundSense: 360° Blind-Spot Monitoring from Four Fisheye Cameras",
@@ -131,6 +142,14 @@ export const projects: Project[] = [
   },
   {
     slug: "edge-pose-estimation",
+    field: "cv",
+    method: [
+      "A multi-head keypoint model finds the corners, wheels and handles of industrial trolleys.",
+      "The trained model is exported to ONNX and compiled to an ELF binary for the MLSoC accelerator with the vendor SDK plugins, end to end.",
+      "Running in BF16 instead of FP32 doubled throughput on the device while keypoint accuracy held, fast enough for real-time tracking.",
+      "Packaged as a ROS2 pipeline so the robot stack consumes keypoints like any other sensor.",
+    ],
+    tools: ["Python", "C++", "ROS2", "ONNX", "BF16", "SiMa.ai MLSoC SDK"],
     repo: "https://github.com/thisz-akj/ros2-ml-accelerator-pipeline",
     index: "05",
     title: "Real-Time Pose Estimation for Industrial Trolleys, on an Edge Device",
@@ -167,6 +186,14 @@ export const projects: Project[] = [
   },
   {
     slug: "targetless-camera-lidar-calibration",
+    field: "cv",
+    method: [
+      "Learned feature matching (SuperGlue) finds correspondences between what the camera and the LiDAR both see, with no calibration board.",
+      "2D–3D correspondences between image points and LiDAR points give the extrinsic transform between the two sensors.",
+      "Validation projects each person's LiDAR points into the image and measures overlap with the person's segmentation mask, plus centroid proximity: above 95% overlap across several sensor setups.",
+      "Shipped as a desktop tool with one button per stage, plus a command-line mode for batch runs.",
+    ],
+    tools: ["Python", "SuperGlue", "Pose estimation", "Instance segmentation", "Point clouds", "Sensor calibration"],
     repo: "https://github.com/thisz-akj/Visual_lidar_calibration_tool",
     index: "06",
     title: "Targetless Camera–LiDAR Calibration",
@@ -202,6 +229,14 @@ export const projects: Project[] = [
     clip: "/video/cv-calibration.mp4",
   },  {
     slug: "visual-slam-to-navigation",
+    field: "cv",
+    method: [
+      "Two visual SLAM front ends run side by side on the same video: one with classic features and one with learned features, the second written from scratch.",
+      "Tracked poses and depth are fused into a dense 3D map; the apartment map is levelled and squared into a digital twin with exact ground truth.",
+      "The map becomes a 2D navigation map with keep-out margins around obstacles, on which a robot plans and drives its own routes.",
+      "Every run is scored against ground truth (tracking error, worst-case drift, goal accuracy), on a laptop CPU without a GPU.",
+    ],
+    tools: ["Visual SLAM", "Feature matching", "3D reconstruction", "Digital twin", "Path planning", "Python"],
     repo: "https://github.com/thisz-akj/Visual-Slam2Nav",
     index: "07",
     title: "Visual SLAM to Navigation: a Robot Maps a Room and Drives Itself",
@@ -245,6 +280,14 @@ export const projects: Project[] = [
 
   {
     slug: "edge-ai-quantization",
+    field: "cv",
+    method: [
+      "Perception models are quantised and compiled per job at FP32, FP16, BF16 or INT8, for edge accelerators and industrial edge computers.",
+      "A controlled study measured what INT8 costs an object detector on clean images and on blurred, dark and compressed ones, against a 1.94× speed-up on one CPU thread.",
+      "The study also reports a mitigation that only partly recovered the accuracy loss, so the trade-off is known before deployment.",
+      "Complete perception pipelines (camera, detection, tracking, planning) run on robots in the field.",
+    ],
+    tools: ["PyTorch", "ONNX Runtime", "INT8 / BF16 / FP16", "TensorRT", "SiMa.ai MLSoC", "Python"],
     repo: "https://github.com/thisz-akj/INT8_DETECTION_UNDER_DEGRADATION",
     index: "08",
     title: "Edge AI Acceleration: Quantization and Compilation for Robot Hardware",

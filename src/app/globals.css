@@ -879,3 +879,52 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   .tm-row { animation: none; }
   .tm-track + .tm-track { display: none; }
 }
+
+/* ── Two audiences (owner, 2026-11-27): résumés, achievements, work tabs, CV "How it works" ── */
+.hero-facts .hero-cv { color: inherit; text-decoration: underline; text-decoration-color: rgba(242, 240, 235, 0.35); text-underline-offset: 3px; transition: text-decoration-color 0.3s; }
+.hero-facts .hero-cv:hover { text-decoration-color: var(--white); }
+
+.about-sub-label { margin-top: 2.6rem; }
+.about-achievements { list-style: none; margin-top: 0.9rem; }
+.about-achievements li {
+  display: flex; justify-content: space-between; gap: 1.5rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line);
+  font-family: var(--f-heading); font-size: 0.95rem; color: #cfcdc8; line-height: 1.45;
+}
+.about-achievements li:last-child { border-bottom: none; }
+.about-ach-year { font-family: var(--f-mono); font-size: 0.72rem; letter-spacing: 0.1em; color: var(--mid); white-space: nowrap; padding-top: 0.15rem; }
+.about-resumes { scroll-margin-top: 6rem; }
+.about-resume-links { display: flex; flex-wrap: wrap; gap: 0.7rem; margin-top: 1rem; }
+.about-resume-btn { display: inline-flex; align-items: center; gap: 0.45rem; }
+
+.work-tabs { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0 0 2.2rem; }
+.work-tab {
+  display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.6rem 1rem; border-radius: 999px;
+  border: 1px solid var(--line-2); color: #b9b7b2; background: transparent; cursor: pointer;
+  font-family: var(--f-heading); font-size: 0.88rem; transition: color 0.3s, border-color 0.3s, background 0.3s;
+}
+.work-tab:hover { color: var(--white); border-color: #444; }
+.work-tab[aria-selected="true"] { background: var(--white); color: var(--black); border-color: var(--white); }
+.work-tab-count { font-family: var(--f-mono); font-size: 0.65rem; opacity: 0.6; }
+
+.detail-tools { list-style: none; display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 1.4rem !important; padding: 0 !important; }
+.detail-tools li {
+  margin: 0 !important; padding: 0.32rem 0.7rem !important; border: 1px solid var(--line-2); border-radius: 999px;
+  font-family: var(--f-mono); font-size: 0.68rem; letter-spacing: 0.06em; color: #b9b7b2; list-style: none;
+}
+.detail-tools li::before { content: none !important; }
+@media (max-width: 767px) {
+  .about-sub-label { margin-top: 2rem; }
+  .about-resume-btn { width: 100%; justify-content: space-between; }
+  .work-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin: 0 calc(var(--gutter) * -1) 1.6rem; padding: 0 var(--gutter); }
+  .work-tab { white-space: nowrap; }
+}
+/* (two audiences) — layout fixes */
+.detail-block ul.detail-tools { flex-direction: row; flex-wrap: wrap; gap: 0.45rem; padding-left: 0; }
+.detail-block ul.detail-tools li { font-family: var(--f-mono); font-size: 0.68rem; line-height: 1.4; color: #b9b7b2; }
+.hero-facts .v { flex-wrap: wrap; justify-content: flex-end; text-align: right; row-gap: 0.35rem; }
+.hero-facts .v > span { white-space: nowrap; }
+@media (max-width: 767px) {
+  .hero-facts .sep { margin: 0 0.35em; }
+  .hero-facts .v { letter-spacing: 0.1em; }
+}
+.hero-facts .v.live { flex-wrap: nowrap; }

@@ -12,7 +12,7 @@ import { HiredBento } from "@/components/hired/HiredBento";
 import { TechStack } from "@/components/shared/TechStack";
 import { PhoneCollapse } from "@/components/shared/PhoneCollapse";
 import { techStack } from "@/content/techStack";
-import { about, experience, expertise, philosophy, philosophyHighlight, site, skills } from "@/content/site";
+import { about, achievements, experience, expertise, philosophy, philosophyHighlight, resumes, site, skills } from "@/content/site";
 import { solutions } from "@/content/solutions";
 import { clients } from "@/content/clients";
 
@@ -79,6 +79,25 @@ export default function Home() {
                 <div className="about-role-period">{r.period}</div>
               </Reveal>
             ))}
+            <p className="about-right-label about-sub-label">Achievements</p>
+            <ul className="about-achievements">
+              {achievements.map((x) => (
+                <li key={x.title}>
+                  <span>{x.title}</span>
+                  <span className="about-ach-year">{x.year}</span>
+                </li>
+              ))}
+            </ul>
+            <div className="about-resumes" id="resume">
+              <p className="about-right-label about-sub-label">Résumé</p>
+              <div className="about-resume-links">
+                {resumes.map((r) => (
+                  <a key={r.href} href={r.href} className="btn-pill about-resume-btn" target="_blank" rel="noreferrer">
+                    {r.label} <ArrowUpRight size={15} strokeWidth={1.75} aria-hidden />
+                  </a>
+                ))}
+              </div>
+            </div>
             <div className="skills-grid">
               {skills.map((sk) => (
                 <div key={sk.title}>

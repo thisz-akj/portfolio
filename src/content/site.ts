@@ -2,23 +2,22 @@ import type { Role } from "@/types/content";
 
 /**
  * Owner-editable site configuration.
- * Anything marked TODO is a placeholder — replace before publishing.
  */
 export const site = {
   name: "Azad Kumar Jha",
   shortName: "Azad",
-  role: "Independent Applied AI Engineer",
-  roles: ["Automate", "Integrate", "Evaluate"],
-  tagline: "I build AI systems that survive contact with real users.",
+  role: "Applied AI Engineer",
+  roles: ["AI automation", "Computer vision", "Robotics"],
+  tagline: "I build AI systems that survive contact with the real world.",
   taglineHighlight: "survive contact",
   description:
-    "Independent applied AI engineer building AI automation for founders and product teams: workflow agents, document intelligence, support copilots, voice agents and the evaluation that keeps them honest.",
+    "Applied AI engineer building AI automation for businesses (workflow agents, document intelligence, voice and support agents) and computer vision for robots and vehicles (perception, SLAM, sensor calibration, edge AI), with the evaluation that keeps both honest.",
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: "azadkumarjha09@gmail.com",
   phone: { display: "+91 70736 75669", tel: "+917073675669" },
-  status: "Available for projects",
+  status: "Open to full-time roles & projects",
   location: {
-    city: "India", // TODO(owner): city you want to show
+    city: "Chennai, India",
     coords: "",
   },
   socials: [
@@ -86,6 +85,7 @@ export const about = {
 export const experience: Role[] = [
   { company: "Independent", title: "Applied AI Engineer", period: "Now" },
   { company: "Virya Autonomous Technologies", title: "Robotics AI Engineer", period: "2026 – Now" },
+  { company: "Fuvii · AI marketing for local businesses", title: "AI Engineer (Freelance)", period: "2026" },
   { company: "IIT Madras · Centre for Responsible AI", title: "ML Research Intern", period: "2025" },
 ];
 
@@ -111,3 +111,16 @@ export const liveDemoCopy = {
   sent: { title: "Thanks, request received", body: "I'll email you within two working days to set up a time." },
   error: "Couldn't send right now. Please email me instead:",
 };
+
+/** Shown under Experience in About (from the résumé). */
+export const achievements = [
+  { title: "GATE rank 8603, Data Science & Artificial Intelligence", year: "2025" },
+  { title: "Amazon ML Challenge: top 0.5% of national participants", year: "2024" },
+  { title: "Finalist, International Rover Challenge (Space Robotics Society)", year: "2024" },
+];
+
+/** Downloadable résumés (public/resume/), one per kind of role. Built from resume/ (each folder has a build.mjs). */
+export const resumes = [
+  { label: "Computer vision & robotics", href: "/resume/azad-kumar-cv-robotics.pdf" },
+  { label: "Applied AI & automation", href: "/resume/azad-kumar-applied-ai.pdf" },
+];

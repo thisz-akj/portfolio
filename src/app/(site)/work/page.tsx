@@ -1,33 +1,28 @@
 import type { Metadata } from "next";
 import { projects } from "@/content/projects";
-import { Bento } from "@/components/home/Bento";
-import { WorkIndex } from "@/components/home/WorkIndex";
+import { WorkBrowser } from "@/components/home/WorkBrowser";
 import { SectionHeading } from "@/components/shared/SectionHeading";
 
 export const metadata: Metadata = {
   title: "Work",
-  description: "Selected projects and case studies: an AI-automated CRM/ERP/data portal, visual SLAM, camera–LiDAR calibration, quantization studies.",
+  description: "Case studies in AI automation (CRM/ERP with plain-English analytics, document intelligence, voice agents) and computer vision & robotics (visual SLAM, 360° blind-spot monitoring, camera–LiDAR calibration, edge AI).",
 };
 
 export default function WorkPage() {
   return (
-    <>
-      <section className="inner" style={{ paddingBottom: "3rem" }}>
+    <WorkBrowser
+      projects={projects}
+      head={
         <div className="inner-head">
           <p className="eyebrow">Work &amp; case studies</p>
           <h1 className="inner-title">Things that shipped.</h1>
           <p className="lede">
-            Problem, contribution, approach, results and lessons — written from the project reports, with the numbers
-            left in.
+            AI automation products and computer vision &amp; robotics work: problem, contribution, results and lessons,
+            with the numbers left in.
           </p>
         </div>
-        <Bento projects={projects} initial={projects.length} />
-      </section>
-      <section className="work-section">
-        <p className="eyebrow">Index</p>
-        <SectionHeading>Every project</SectionHeading>
-        <WorkIndex projects={projects} />
-      </section>
-    </>
+      }
+      indexHeading={<SectionHeading>Every project</SectionHeading>}
+    />
   );
 }

@@ -149,6 +149,15 @@ export interface Project {
   usp?: string[];
   /** Where it's used: one line per industry */
   industries?: { name: string; use: string }[];
+  /** Which audience it belongs to: AI automation products or computer vision & robotics work (Work page tabs). */
+  field: "ai" | "cv";
+  /**
+   * CV & robotics only (owner, 2026-11-27): the technical method and tools, shown on the case study for
+   * recruiters. The automation products stay outcome-only (confidentiality rule) — a test enforces this,
+   * and neither field goes into the assistant corpus.
+   */
+  method?: string[];
+  tools?: string[];
 }
 
 export interface Client {

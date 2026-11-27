@@ -1,4 +1,5 @@
 export const PROJECT_TYPES = [
+  "Full-time role (I'm hiring)",
   "AI feature for my product",
   "Make our AI reliable (evaluation)",
   "Computer vision / robotics",

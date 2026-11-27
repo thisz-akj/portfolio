@@ -83,8 +83,19 @@ export default async function CaseStudy({ params }: { params: Promise<{ slug: st
             <h2><span>02</span>My contribution</h2>
             <p>{p.contribution}</p>
           </section>
+          {p.method && (
+            <section className="detail-block">
+              <h2><span>03</span>How it works</h2>
+              <ul>{p.method.map((m) => <li key={m}>{m}</li>)}</ul>
+              {p.tools && (
+                <ul className="detail-tools" aria-label="Methods and tools">
+                  {p.tools.map((t) => <li key={t}>{t}</li>)}
+                </ul>
+              )}
+            </section>
+          )}
           <section className="detail-block">
-            <h2><span>03</span>Results</h2>
+            <h2><span>{p.method ? "04" : "03"}</span>Results</h2>
             <div className="metrics">
               {p.results.map((r) => (
                 <div className="metric" key={r.label}>
@@ -95,7 +106,7 @@ export default async function CaseStudy({ params }: { params: Promise<{ slug: st
             </div>
           </section>
           <section className="detail-block">
-            <h2><span>04</span>Lessons learned</h2>
+            <h2><span>{p.method ? "05" : "04"}</span>Lessons learned</h2>
             <ul>{p.lessons.map((l) => <li key={l}>{l}</li>)}</ul>
           </section>
         </div>
