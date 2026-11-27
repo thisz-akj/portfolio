@@ -881,8 +881,6 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 }
 
 /* ── Two audiences (owner, 2026-11-27): résumés, achievements, work tabs, CV "How it works" ── */
-.hero-facts .hero-cv { color: inherit; text-decoration: underline; text-decoration-color: rgba(242, 240, 235, 0.35); text-underline-offset: 3px; transition: text-decoration-color 0.3s; }
-.hero-facts .hero-cv:hover { text-decoration-color: var(--white); }
 
 .about-sub-label { margin-top: 2.6rem; }
 .about-achievements { list-style: none; margin-top: 0.9rem; }

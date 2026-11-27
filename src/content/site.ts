@@ -15,9 +15,9 @@ export const site = {
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   email: "azadkumarjha09@gmail.com",
   phone: { display: "+91 70736 75669", tel: "+917073675669" },
-  status: "Open to full-time roles & projects",
+  status: "Available for projects",
   location: {
-    city: "Chennai, India",
+    city: "Bengaluru, India",
     coords: "",
   },
   socials: [
@@ -121,6 +121,6 @@ export const achievements = [
 
 /** Downloadable résumés (public/resume/), one per kind of role. Built from resume/ (each folder has a build.mjs). */
 export const resumes = [
-  { label: "Computer vision & robotics", href: "/resume/azad-kumar-cv-robotics.pdf" },
   { label: "Applied AI & automation", href: "/resume/azad-kumar-applied-ai.pdf" },
+  { label: "Computer vision & robotics", href: "/resume/azad-kumar-cv-robotics.pdf" },
 ];

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { ArrowDown } from "lucide-react";
-import { site, resumes } from "@/content/site";
+import { site } from "@/content/site";
 import { gsap, markLoaderDone, prefersReducedMotion, uCurve } from "@/lib/motion";
 
 /**
@@ -171,19 +171,6 @@ export function Hero() {
           <li>
             <span className="k">Status</span>
             <span className="v live">{site.status}</span>
-          </li>
-          <li>
-            <span className="k">Résumé</span>
-            <span className="v">
-              {resumes.map((r, i) => (
-                <span key={r.href}>
-                  {i > 0 && <span className="sep">·</span>}
-                  <a className="hero-cv" href={r.href} target="_blank" rel="noreferrer">
-                    {r.label}
-                  </a>
-                </span>
-              ))}
-            </span>
           </li>
         </ul>
       </div>
