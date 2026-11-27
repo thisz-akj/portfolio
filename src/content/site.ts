@@ -90,7 +90,7 @@ export const about = {
 export const experience: Role[] = [
   { company: "Independent", title: "Applied AI Engineer", period: "Now" },
   { company: "Virya Autonomous Technologies", title: "Robotics AI Engineer", period: "2026 – Now" },
-  { company: "Freelance · AI automation for companies", title: "AI Engineer", period: "2026" },
+  { company: "Fuvii · AI marketing for local businesses", title: "AI Engineer (Freelance)", period: "2026" },
   { company: "IIT Madras · Centre for Responsible AI", title: "ML Research Intern", period: "2025" },
 ];
 
