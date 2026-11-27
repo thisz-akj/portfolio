@@ -40,7 +40,7 @@ export default function Home() {
               floor={0.15}
               feather={0.1}
               start="top 90%"
-              end="bottom 60%"
+              end="bottom 80%"
             />
           </PhoneCollapse>
           <ScrubText text={about.pullquote} className="about-pullquote" floor={0.12} start="top 85%" end="top 55%" />

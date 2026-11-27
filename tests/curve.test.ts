@@ -31,3 +31,14 @@ describe("featherOpacity", () => {
     expect(b).toBeGreaterThanOrEqual(a);
   });
 });
+
+describe("featherOpacity end state", () => {
+  it("lights every unit fully at progress 1 (the last ~10% used to stay near the floor)", () => {
+    for (const total of [5, 40, 216]) {
+      for (let i = 0; i < total; i++) expect(featherOpacity(i, total, 1, 0.15, 0.1)).toBe(1);
+    }
+  });
+  it("still starts every unit at the floor", () => {
+    expect(featherOpacity(0, 216, 0, 0.15, 0.1)).toBe(0.15);
+  });
+});

@@ -43,5 +43,26 @@ export function SmoothScroll() {
     return () => window.clearTimeout(id);
   }, [pathname]);
 
+  // Re-measure every scroll animation when the page's height settles after a change (web fonts, the hero
+  // film sizing itself, images, "Read more"). Measuring once at load left the About bio's fade ending
+  // ~2 lines early, so its last line stayed dark. Debounced; only reacts to real height changes.
+  useEffect(() => {
+    let last = document.documentElement.scrollHeight;
+    let t = 0;
+    const ro = new ResizeObserver(() => {
+      const h = document.documentElement.scrollHeight;
+      if (Math.abs(h - last) < 2) return;
+      last = h;
+      window.clearTimeout(t);
+      t = window.setTimeout(() => ScrollTrigger.refresh(), 200);
+    });
+    ro.observe(document.body);
+    document.fonts?.ready.then(() => ScrollTrigger.refresh());
+    return () => {
+      ro.disconnect();
+      window.clearTimeout(t);
+    };
+  }, []);
+
   return null;
 }
