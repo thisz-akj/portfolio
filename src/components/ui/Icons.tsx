@@ -1,8 +1,10 @@
 import {
   AudioLines,
+  Bot,
   Boxes,
   BrainCircuit,
   ChartLine,
+  Cpu,
   Eye,
   FileSearch,
   Gauge,
@@ -33,6 +35,8 @@ export const expertiseIcons = {
   file: FileSearch,
   chart: ChartLine,
   scan: ScanEye,
+  robot: Bot,
+  chip: Cpu,
 };
 
 /* lucide no longer ships brand marks — minimal inline versions */

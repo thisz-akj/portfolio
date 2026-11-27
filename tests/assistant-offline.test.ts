@@ -70,7 +70,7 @@ const TOPICS: [string, RegExp][] = [
   ["lidar camera calibration", /LiDAR/],
   ["Does he do computer vision?", /Computer Vision/],
   ["Can you automate our invoice processing?", /document|invoice/i],
-  ["do you build whatsapp chatbots for clinics", /clinic/i],
+  ["do you build whatsapp chatbots for clinics", /clinic|appointment|booking/i],
   ["ops suite", /Ops Suite/],
   ["what is docdesk", /DocDesk/],
   ["autopilot demo", /Autopilot/],

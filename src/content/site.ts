@@ -42,44 +42,49 @@ export const pages = [
 ];
 
 export const philosophy =
-  "I enjoy working with startups and businesses that want to move beyond experimentation and build AI solutions that deliver measurable value.";
+  "I enjoy working with teams that want to move beyond experimentation and build AI that delivers measurable value, whether it runs a business process or a robot.";
 
 /** Words in `philosophy` set in the italic serif on the home page. */
 export const philosophyHighlight = ["beyond", "measurable"];
 
-/** "What I build": the kinds of projects customers hire me for. */
+/** "What I build": AI automation (left column on desktop) and computer vision & robotics (right column), three each — owner: balance both. */
 export const expertise = [
   {
     icon: "workflow" as const,
     title: "AI Automation",
-    items: ["Workflow automation", "AI agents", "Business process automation", "Intelligent integrations"],
-  },
-  {
-    icon: "brain" as const,
-    title: "AI Applications",
-    items: ["Custom AI tools", "LLM-powered applications", "Chatbots", "RAG systems"],
+    items: ["Workflow automation", "AI agents", "Voice & chat agents", "Integrations with existing tools"],
   },
   {
     icon: "scan" as const,
     title: "Computer Vision",
-    items: ["Object detection", "Segmentation", "Tracking", "OCR", "Visual intelligence systems"],
+    items: ["Object detection & segmentation", "Tracking & pose estimation", "Monocular depth", "OCR & visual inspection"],
   },
   {
-    icon: "chart" as const,
-    title: "Machine Learning",
-    items: ["Custom model development", "Data pipelines", "Optimization", "Deployment"],
+    icon: "brain" as const,
+    title: "AI Applications",
+    items: ["LLM-powered applications", "RAG & document intelligence", "Custom AI tools", "Evaluation & monitoring"],
+  },
+  {
+    icon: "robot" as const,
+    title: "Robotics & Autonomy",
+    items: ["Perception on ROS2", "Visual SLAM & 3D mapping", "Camera–LiDAR calibration & fusion", "Navigation"],
   },
   {
     icon: "boxes" as const,
     title: "AI Product Engineering",
-    items: ["Backend development", "API integrations", "End-to-end AI product development"],
+    items: ["Backend & APIs", "Data pipelines", "End-to-end product delivery"],
+  },
+  {
+    icon: "chip" as const,
+    title: "Edge AI & Deployment",
+    items: ["Quantization (INT8 / BF16)", "Compilation for accelerators", "Real-time inference", "Reproducible evaluation"],
   },
 ];
 
 export const about = {
-  text: "I'm Azad, an Applied AI Engineer focused on building intelligent systems that solve real-world problems.\n\nI work with startups and businesses to turn ideas, manual processes, and complex requirements into practical AI-powered solutions. My work spans AI automation, custom AI applications, LLM-powered systems, machine learning, and computer vision.\n\nI've collaborated with different companies on AI automation and product development, helping translate business requirements into working technical solutions. Alongside this, my engineering experience includes developing robotics perception systems at Virya Autonomous Technologies and working on AI research at IIT Madras.\n\nThis combination of experience allows me to approach problems from both a business and engineering perspective — whether it's automating repetitive operations, integrating AI into an existing product, developing a custom computer vision model, or building an AI-powered application from scratch.\n\nI take projects end to end: understanding the problem, designing the architecture, developing the solution, integrating APIs and existing tools, testing, and deploying a working system.",
-  highlight: "end to end",
-  pullquote: "Have an idea, a process to automate, or an AI product to build? Let's make it happen.",
+  text: "I'm Azad, an Applied AI Engineer in Bengaluru. I build AI that has to work outside the demo: in the daily operations of a business, and on robots and vehicles in the field.\n\nOn the automation side, I build voice and chat agents, document intelligence and workflows that connect the tools a business already uses, from the phone and WhatsApp to email, CRM and accounts. As a freelancer for Fuvii, I built voice agents, automated review replies and search-ranking tracking for their local-business clients.\n\nOn the robotics side, I build perception for autonomous mobile robots and driver assistance at Virya Autonomous Technologies: detection, tracking, pose, depth and LiDAR perception, deployed in real time on edge hardware. My own projects range from visual SLAM that lets a robot map a room and drive itself, to calibrating cameras and LiDAR without a target.\n\nThe two halves share one habit, which my AI research at IIT Madras made second nature: measure it. Every system I ship comes with a fixed test set and real numbers for accuracy, speed and cost, whether it's answering a customer's call or finding a trolley's wheels.",
+  highlight: "outside the demo",
+  pullquote: "A process to automate, or a robot that needs to see: either way, I build AI that holds up in the real world.",
 };
 
 export const experience: Role[] = [
