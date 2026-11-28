@@ -29,7 +29,8 @@
     "carousel:capture": "node scripts/carousel/capture.mjs && node scripts/carousel/capture.mjs --tall",
     "carousel:record": "node scripts/carousel/record.mjs",
     "carousel:build": "node scripts/carousel/build.mjs",
-    "carousel:walkthrough": "node scripts/carousel/walkthrough.mjs"
+    "carousel:walkthrough": "node scripts/carousel/walkthrough.mjs",
+    "carousel:poster": "node scripts/carousel/poster.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",
