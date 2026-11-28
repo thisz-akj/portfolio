@@ -28,7 +28,8 @@
     "audit:mobile": "node scripts/mobile-audit.mjs",
     "carousel:capture": "node scripts/carousel/capture.mjs && node scripts/carousel/capture.mjs --tall",
     "carousel:record": "node scripts/carousel/record.mjs",
-    "carousel:build": "node scripts/carousel/build.mjs"
+    "carousel:build": "node scripts/carousel/build.mjs",
+    "carousel:walkthrough": "node scripts/carousel/walkthrough.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",
