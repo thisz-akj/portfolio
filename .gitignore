@@ -65,3 +65,6 @@ __pycache__/
 *.swp
 *.swo
 .*.swp
+
+# carousel + screenshots for presenting (npm run carousel)
+/presentation/

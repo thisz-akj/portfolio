@@ -136,3 +136,11 @@ describe("chat quick answers: FAQ wording fits the question", () => {
     expect(offlineAnswer("will it sound like a robot").text).toMatch(/^No\./);
   });
 });
+
+describe("pronoun rule in chat replies (neutral)", () => {
+  it("rewrites he/she/his to Azad even when the model slips", async () => {
+    const { neutral } = await import("@/lib/neutral");
+    expect(neutral("He builds real-time pipelines. His work runs on robots.")).toBe("Azad builds real-time pipelines. Azad's work runs on robots.");
+    expect(neutral("Azad's computer-vision work")).toBe("Azad's computer-vision work");
+  });
+});

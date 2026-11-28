@@ -24,13 +24,7 @@ export function speakable(text: string): string {
  * Owner rule: answers say "Azad"/"Azad's", never he/she. The model sometimes slips, so on this line (where every
  * answer is about Azad) third-person pronouns are rewritten before anything is shown or spoken.
  */
-export function neutral(text: string, name = "Azad"): string {
-  const cap = (w: string, r: string) => (w[0] === w[0].toUpperCase() ? r[0].toUpperCase() + r.slice(1) : r);
-  return text
-    .replace(/\b(himself|herself)\b/gi, name)
-    .replace(/\b(his|her)\b(?=\s+[a-z])/gi, () => `${name}'s`)
-    .replace(/\b(he|she|him|her)\b/gi, (w) => cap(w, name));
-}
+export { neutral } from "@/lib/neutral";
 
 const ABBREVIATIONS = /\b(?:Dr|Mr|Mrs|Ms|St|vs|etc|e\.g|i\.e|approx|No)\.$/i;
 

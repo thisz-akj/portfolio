@@ -25,7 +25,10 @@
     "docintel:samples": "cd docintel && env -u PYTHONPATH .venv/bin/python -m scripts.build_samples",
     "voice:dev": "cd voice && env -u PYTHONPATH .venv/bin/uvicorn app.main:create_app --factory --host 127.0.0.1 --port 8003 --reload",
     "voice:agent": "cd voice && env -u PYTHONPATH .venv/bin/python -m agent.worker dev",
-    "audit:mobile": "node scripts/mobile-audit.mjs"
+    "audit:mobile": "node scripts/mobile-audit.mjs",
+    "carousel:capture": "node scripts/carousel/capture.mjs && node scripts/carousel/capture.mjs --tall",
+    "carousel:record": "node scripts/carousel/record.mjs",
+    "carousel:build": "node scripts/carousel/build.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.13.0",

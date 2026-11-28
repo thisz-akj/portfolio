@@ -6,6 +6,7 @@ import { ArrowUpRight } from "lucide-react";
 import { gsap, prefersReducedMotion } from "@/lib/motion";
 import { parseMarkdown, type Inline } from "@/features/assistant/markdown";
 import type { AssistantRoute, AssistantTrace } from "@/features/assistant/protocol";
+import { neutral } from "@/lib/neutral";
 
 export interface UiMessage {
   id: string;
@@ -59,7 +60,8 @@ export function AssistantMessage({
   onSelect?: () => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
-  const blocks = useMemo(() => parseMarkdown(message.content), [message.content]);
+  // Replies name Azad instead of he/she even when the model slips (rule from the assistant prompt).
+  const blocks = useMemo(() => parseMarkdown(message.role === "assistant" ? neutral(message.content) : message.content), [message.content, message.role]);
   const waiting = message.status === "streaming" && !message.content;
 
   // Entrance: user bubbles rise and settle; assistant replies fade up.
